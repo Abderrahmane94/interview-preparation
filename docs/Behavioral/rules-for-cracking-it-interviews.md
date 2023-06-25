@@ -2,8 +2,6 @@
 
 # Rules for cracking IT interviews 
 
-**HAYS Company**
-
 1. **Research the company**: Before your interview, research the company's mission,
    values, and recent projects. This will give you a better understanding of what the
    company does and how you can contribute to its success as an IT professional.
@@ -49,3 +47,5 @@
     solve complex problems on the job. Be prepared to give examples of how you
     approach problem-solving, such as breaking down complex issues into manageable
     tasks or collaborating with others to find a solution.
+
+HAYS Company
