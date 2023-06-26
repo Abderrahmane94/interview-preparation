@@ -71,6 +71,89 @@ Eager loading is the default behavior in Angular, where all modules are loaded w
 - Optimizing change detection.
 - Other techniques include using AOT compilation and minimizing the use of expensive operations such as regular expressions.
 
+## What's Rxjs?
+RxJS (Reactive Extensions for JavaScript) is a library for reactive programming using Observables, which is a powerful paradigm for handling asynchronous and event-based programming in JavaScript. RxJS is a key part of the Angular framework and provides a wide range of operators and utilities for managing and transforming asynchronous data streams.
+
+Here are some key concepts and features of RxJS:
+
+1. **Observables**: Observables represent a sequence of values over time. They can emit values, complete, or throw errors. Observables can be created from various sources such as events, timers, AJAX requests, or even from existing data structures.
+
+2. **Operators**: RxJS provides a rich set of operators that allow you to transform, filter, combine, and manipulate data emitted by observables. Operators enable powerful operations such as mapping, filtering, reducing, merging, combining, and throttling data streams.
+
+3. **Subscription**: Subscriptions are used to initiate and control the execution of observables. By subscribing to an observable, you can receive and handle the emitted values, errors, and completion notifications. Subscriptions can be managed to control the lifecycle of the subscription and avoid memory leaks.
+
+4. **Subjects**: Subjects are a type of observable that can be used to multicast values to multiple subscribers. They act as both an observer and an observable, allowing you to manually push values into the subject and distribute them to subscribers.
+
+5. **Schedulers**: Schedulers are used to control the execution and timing of observable operations. They provide control over concurrency, allowing you to define how observables should be scheduled for execution, such as running them immediately, on a specific interval, or asynchronously.
+
+6. **Error Handling**: RxJS provides various operators and techniques for handling errors in observables. You can catch and handle errors using operators like `catchError` or `retry`, and you can also propagate errors to subscribers for custom error handling.
+
+7. **Backpressure and Flow Control**: RxJS offers mechanisms for dealing with backpressure and controlling the flow of data when dealing with fast producers and slow consumers. Operators like `throttle`, `debounce`, and `buffer` help in managing the flow of data emitted by observables.
+
+RxJS is widely used for handling asynchronous operations in Angular applications, such as making HTTP requests, handling user input, managing real-time data streams, and coordinating multiple asynchronous operations. Its functional and reactive programming approach provides a declarative and composable way to handle complex asynchronous scenarios with ease.
+
+## Some RxJS operators
+1. `map`: Transforms each value emitted by an observable by applying a mapping function to it.
+
+   Example:
+   ```typescript
+   import { from } from 'rxjs';
+   import { map } from 'rxjs/operators';
+
+   const source = from([1, 2, 3, 4, 5]);
+   const mapped = source.pipe(map(x => x * 2));
+   mapped.subscribe(result => console.log(result)); // Output: 2, 4, 6, 8, 10
+   ```
+
+2. `filter`: Filters the values emitted by an observable based on a condition.
+
+   Example:
+   ```typescript
+   import { from } from 'rxjs';
+   import { filter } from 'rxjs/operators';
+
+   const source = from([1, 2, 3, 4, 5]);
+   const filtered = source.pipe(filter(x => x % 2 === 0));
+   filtered.subscribe(result => console.log(result)); // Output: 2, 4
+   ```
+
+3. `merge`: Combines multiple observables into a single observable that emits values from all the source observables concurrently.
+
+   Example:
+   ```typescript
+   import { interval, merge } from 'rxjs';
+
+   const source1 = interval(1000);
+   const source2 = interval(2000);
+   const merged = merge(source1, source2);
+   merged.subscribe(result => console.log(result)); // Output: 0, 0, 1, 2, 1, 3, 4, 2, ...
+   ```
+
+4. `concat`: Concatenates multiple observables, emitting values in sequential order.
+
+   Example:
+   ```typescript
+   import { of, concat } from 'rxjs';
+
+   const source1 = of(1, 2, 3);
+   const source2 = of(4, 5, 6);
+   const concatenated = concat(source1, source2);
+   concatenated.subscribe(result => console.log(result)); // Output: 1, 2, 3, 4, 5, 6
+   ```
+
+5. `take`: Takes a specified number of values emitted by an observable and then completes.
+
+   Example:
+   ```typescript
+   import { interval } from 'rxjs';
+   import { take } from 'rxjs/operators';
+
+   const source = interval(1000);
+   const taken = source.pipe(take(3));
+   taken.subscribe(result => console.log(result)); // Output: 0, 1, 2
+   ```
+
+These are just a few examples of the operators available in RxJS. RxJS provides a wide range of operators for various purposes, including transformation, filtering, combining, error handling, timing, and more. You can explore the RxJS documentation for a comprehensive list of operators and their functionalities.
 
 
 

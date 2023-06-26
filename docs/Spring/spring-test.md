@@ -25,3 +25,41 @@ JUnit and Mockito can be used together to write JUnit test cases that use mock o
 - try-catch
 - With JUnit rule
 - With annotation
+## what's new in Junit 5
+
+1. New Programming Models:
+    - JUnit 5 introduces a new programming model with annotations, including `@Test`, `@BeforeEach`, `@AfterEach`, `@BeforeAll`, and `@AfterAll`. These annotations provide more flexibility and control over test execution.
+    - Test methods no longer need to be `public void` methods; they can now have different access modifiers, return types, and accept parameters.
+
+2. Extension Model:
+    - JUnit 5 introduces a powerful extension model that allows developers to extend the behavior of test classes or methods.
+    - Extensions enable customizing test execution, adding custom test lifecycle callbacks, parameter injection, dynamic test generation, and more.
+    - Extensions can be implemented using the `Extension` API or predefined extensions provided by JUnit 5, such as `@ExtendWith`, `@BeforeEachCallback`, `@AfterEachCallback`, etc.
+
+3. Dynamic Tests:
+    - JUnit 5 introduces dynamic tests, which allow generating tests programmatically at runtime.
+    - Dynamic tests provide more flexibility for generating and executing tests based on dynamic data sets or conditions.
+    - Dynamic tests can be created using the `@TestFactory` annotation and returning a `Stream`, `Iterable`, `Iterator`, `Collection`, `Iterator<DynamicTest>`, or `Collection<DynamicTest>`.
+
+4. Parameterized Tests:
+    - JUnit 5 enhances parameterized testing by introducing the `@ParameterizedTest` annotation.
+    - Parameterized tests allow running the same test logic with different sets of parameters.
+    - Parameters can be provided using various sources, such as method arguments, CSV files, Enum values, custom providers, etc.
+
+5. Conditional Test Execution:
+    - JUnit 5 provides conditional test execution based on certain conditions using the `@EnabledOnXXX` and `@DisabledOnXXX` annotations.
+    - Conditions can be based on the operating system, Java version, system properties, environment variables, custom conditions, etc.
+
+6. Nested Tests:
+    - JUnit 5 supports nested test classes, allowing developers to group related tests and improve test organization and readability.
+    - Nested tests can have their own lifecycle and share setup/teardown methods.
+
+7. Test Instance Lifecycle:
+    - JUnit 5 introduces new lifecycle options for test instances: `PER_CLASS` and `PER_METHOD`.
+    - The `PER_CLASS` mode creates a single test instance for a test class, and all test methods share the same instance.
+    - The `PER_METHOD` mode creates a new test instance for each test method execution.
+
+8. Additional Assertions:
+    - JUnit 5 provides additional assertion methods for more expressive and readable assertions, such as `assertAll()`, `assertThrows()`, `assertTimeout()`, `assertTimeoutPreemptively()`, etc.
+
+

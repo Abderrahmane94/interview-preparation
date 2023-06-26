@@ -4,9 +4,6 @@ sidebar_position: 1
 
 # Spring Core
 
-## Can you explain the difference between Spring and JEE?
-- Spring is a lightweight and flexible framework that can be used with different application servers and provides many features and modules.
-- JEE is a complete set of specifications and technologies for building enterprise applications, but can be more complex and requires a compliant application server.
 ## What is the Spring framework?	
 The Spring framework is a popular open-source application framework for Java-based enterprise applications. It provides a comprehensive programming and configuration model for developing robust and scalable applications.
 ## What are core features of spring?	
@@ -27,4 +24,7 @@ is a fundamental concept and core feature. Spring IoC container, also known as t
 Keep the separate configuration of environments.
 ## What is Spring Actuator? What are its advantages?
 Actuators provide below pre-defined endpoints to monitor our application (Health, Info, Beans, Mappings, Configprops, Httptrace, Heapdump, Threaddump, and Shutdown).
+## Can you explain the difference between Spring and JEE?
+- Spring is a lightweight and flexible framework that can be used with different application servers and provides many features and modules.
+- JEE is a complete set of specifications and technologies for building enterprise applications, but can be more complex and requires a compliant application server.
 
