@@ -46,3 +46,29 @@ The purpose of a Daily Standup is to provide a brief **status update** to the **
 A Sprint Goal is a concise statement that describes the objective of the Sprint and the value that the team intends to deliver to the customer. The Sprint Goal helps to ensure that the team remains focused and aligned on the goals of the Sprint.
 ## What is a Velocity in Agile methodology?	
 Velocity is a **measure** of the amount of work that an Agile team can complete during a Sprint. Velocity is calculated by summing the estimates for all of the completed user stories or product backlog items during the Sprint. Velocity can be used to help the team plan and forecast future Sprints.
+## what's kanban?
+Kanban is a project management methodology that originated in the manufacturing industry and has since been widely adopted in the IT sector. It provides a visual way to manage workflows and improve productivity and efficiency.
+
+In Kanban, work items are represented as cards or sticky notes, which are moved through various stages of a workflow on a Kanban board. The board typically consists of columns that represent different stages of work, such as "To Do," "In Progress," and "Done." 
+## What's waterfall?
+Waterfall is a traditional project management methodology that is widely used in the IT sector, particularly for large-scale software development projects. It follows a linear sequential approach, where each phase of the project is completed before moving on to the next one. The name "waterfall" is derived from the idea that the project flows steadily downwards, like a waterfall.
+
+The waterfall methodology typically consists of the following sequential phases:
+
+1. **Requirements gathering**: In this phase, the project team works closely with stakeholders to gather and document all the project requirements. This involves understanding the desired features, functionality, and specifications of the software or system to be developed.
+
+2. **System design**: Once the requirements are finalized, the system design phase begins. It involves creating detailed technical specifications and architectural designs for the software or system. This phase establishes the overall structure and components of the solution.
+
+3. **Implementation**: The implementation phase involves coding and development based on the design specifications. Developers write the actual code, build the software, and integrate various components to create the desired system.
+
+4. **Testing**: After the implementation phase, thorough testing is conducted to ensure that the software or system functions correctly and meets the specified requirements. Testing can include unit testing, integration testing, system testing, and user acceptance testing.
+
+5. **Deployment**: Once testing is complete and the software is deemed ready, it is deployed to the production environment or delivered to the client. This phase involves installing the software, configuring it, and making it available for end-users.
+
+6. **Maintenance and support**: After deployment, the maintenance and support phase begins. It involves ongoing maintenance, bug fixes, updates, and providing technical support to users as needed.
+
+The waterfall methodology emphasizes a structured and sequential approach, where each phase must be completed before moving on to the next one. It is often used in projects with well-defined requirements and where changes are expected to be minimal once development begins.
+
+However, one of the main drawbacks of the waterfall methodology is its lack of flexibility. It assumes that all requirements can be defined upfront and that changes can be easily accommodated. In practice, it is often challenging to gather all requirements accurately at the beginning of a project, leading to potential delays or rework if changes are needed later.
+
+Many modern project management approaches, such as Agile and iterative methodologies, have emerged as alternatives to the waterfall model, offering more flexibility and adaptability to changing requirements and customer needs.
