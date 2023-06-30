@@ -41,8 +41,8 @@ const config = {
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
-          editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+          //editUrl:
+            //'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
         },
         blog: {
           showReadingTime: true,
@@ -85,7 +85,7 @@ const config = {
       },
       footer: {
         style: 'dark',
-        copyright: `Copyright © 21-06-2023 Interview Preparation. Built with Docusaurus.`,
+        copyright: `Copyright © 30-06-2023 Interview Preparation. Built with Docusaurus.`,
       },
       prism: {
         theme: lightCodeTheme,

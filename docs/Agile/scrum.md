@@ -1,6 +1,8 @@
-
+import TOCInline from '@theme/TOCInline';
 
 # Scrum 
+
+# <TOCInline toc={toc} />
 
 ## What is Agile methodology?	
 Agile methodology is an **iterative approach to project management** that emphasizes **flexibility**, **collaboration**, and **customer satisfaction**.
@@ -14,7 +16,7 @@ Agile methodology differs from traditional project management approaches in seve
 A Scrum Master is a **facilitator** for an Agile development team who is responsible for **managing the Scrum process** and ensuring that the team adheres to Agile principles and practices.
 ## What is a Sprint in Agile methodology?	
 A Sprint is a **time-boxed period** during which an Agile team works to **deliver** a specific **increment** of a product. Sprints typically last between **one** and **four** weeks.
-## How does Agile methodology help teams to manage risk?	
+## How does Agile methodology help teams to manage risk?
 Agile methodology helps teams to manage risk by breaking down a project into smaller, more manageable pieces and by continuously testing and validating assumptions throughout the development process.
 ## What is a User Story in Agile methodology?	
 A User Story is a brief, high-level **description** of a product feature or requirement from the perspective of an end user. User Stories are used to guide development efforts and to ensure that the team remains focused on delivering value to the customer.
@@ -46,15 +48,12 @@ The purpose of a Daily Standup is to provide a brief **status update** to the **
 A Sprint Goal is a concise statement that describes the objective of the Sprint and the value that the team intends to deliver to the customer. The Sprint Goal helps to ensure that the team remains focused and aligned on the goals of the Sprint.
 ## What is a Velocity in Agile methodology?	
 Velocity is a **measure** of the amount of work that an Agile team can complete during a Sprint. Velocity is calculated by summing the estimates for all of the completed user stories or product backlog items during the Sprint. Velocity can be used to help the team plan and forecast future Sprints.
-## what's kanban?
+## What is KANBAN?
 Kanban is a project management methodology that originated in the manufacturing industry and has since been widely adopted in the IT sector. It provides a visual way to manage workflows and improve productivity and efficiency.
-
 In Kanban, work items are represented as cards or sticky notes, which are moved through various stages of a workflow on a Kanban board. The board typically consists of columns that represent different stages of work, such as "To Do," "In Progress," and "Done." 
-## What's waterfall?
+## What is WATERFALL?
 Waterfall is a traditional project management methodology that is widely used in the IT sector, particularly for large-scale software development projects. It follows a linear sequential approach, where each phase of the project is completed before moving on to the next one. The name "waterfall" is derived from the idea that the project flows steadily downwards, like a waterfall.
-
 The waterfall methodology typically consists of the following sequential phases:
-
 1. **Requirements gathering**: In this phase, the project team works closely with stakeholders to gather and document all the project requirements. This involves understanding the desired features, functionality, and specifications of the software or system to be developed.
 
 2. **System design**: Once the requirements are finalized, the system design phase begins. It involves creating detailed technical specifications and architectural designs for the software or system. This phase establishes the overall structure and components of the solution.

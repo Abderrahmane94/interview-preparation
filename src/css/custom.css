@@ -28,3 +28,21 @@
   --ifm-color-primary-lightest: #4fddbf;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
+
+/* Modifier la couleur du texte de la table des matières */
+.table-of-contents li {
+  color: green;
+
+}
+
+.table-of-contents li {
+  margin-bottom: 15px;
+  font-size: 16px;
+  font-weight: normal;
+  color: black;
+}
+
+.theme-doc-toc-desktop {
+  display: none;
+}
+

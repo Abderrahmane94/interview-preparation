@@ -1,18 +1,23 @@
+---
+sidebar_position: 3
+---
 
+import TOCInline from '@theme/TOCInline';
 
 # Design Pattern
+# <TOCInline toc={toc} />
 
 ## What are Design Patterns?
 **Design patterns** are typical solutions to commonly occurring problems in software design. 
 
-## Creational patterns
+### 1. Creational patterns
 A creational design pattern is a type of design pattern in software engineering that focuses on object creation mechanisms.
 1. **Singleton**: Ensures that only one instance of a class exists throughout the system.
 2. **Factory Method**: Defines an interface for creating objects but allows subclasses to decide which class to instantiate.
 3. **Abstract Factory**: Provides an interface for creating families of related or dependent objects without specifying their concrete classes.
 4. **Builder**: Separates the construction of complex objects from their representation, allowing the same construction process to create different representations.
 5. **Prototype**: Creates new objects by cloning existing objects, allowing for the creation of new instances without explicitly specifying their class.
-## Structural patterns
+### 2. Structural patterns
 Structural design patterns focus on the composition and structure of classes and objects.
 1. **Adapter**: Converts the interface of a class into another interface that clients expect. It allows incompatible classes to work together by wrapping one class with another. 
 2. **Bridge**: Decouples an abstraction from its implementation, allowing them to vary independently. It provides a way to separate the interface and implementation hierarchies.
@@ -21,7 +26,7 @@ Structural design patterns focus on the composition and structure of classes and
 5. **Facade**: Provides a unified interface to a set of interfaces of a subsystem. It simplifies complex subsystems by providing a higher-level interface that clients can interact with.
 6. **Flyweight**: Shares common state across multiple objects, reducing memory consumption. It allows for efficient sharing of fine-grained objects.
 7. **Proxy**: Provides a surrogate or placeholder object that controls access to another object. It allows for additional functionality and control over object access.
-## Behavioral patterns
+### 3. Behavioral patterns
 Behavioral design patterns focus on the interaction and communication between objects and classes.
 1. **Observer**: Defines a one-to-many dependency between objects, so that when one object changes its state, all dependent objects are notified and updated automatically.
 2. **Strategy**: Encapsulates a family of algorithms and makes them interchangeable. It allows the algorithm to vary independently from clients that use it.

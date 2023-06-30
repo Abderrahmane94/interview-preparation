@@ -1,9 +1,10 @@
+import TOCInline from '@theme/TOCInline';
 
 
 # Basics
+# <TOCInline toc={toc} />
 
 ## Give me an example of a project you completed successfully.
-
 
 ## Tell me about a time when you had to solve a difficult technical problem.
 
@@ -27,7 +28,7 @@
 
 ## What are your weaknesses?
 
-## when you are blocked in a ticket, how did you react?
+## When you are blocked in a ticket, how did you react?
 1. bring it to the attention of the Scrum team during the appropriate forum, such as the Daily Scrum or a team meeting. 
 2. seek help from the relevant team members, such as the Scrum Master, Product Owner, or other developers who might have the knowledge or expertise to assist in resolving the blockage.
 3. Together with the team, we would discuss and evaluate potential solutions to overcome the blockage (**collective intelligence to find a solution**).

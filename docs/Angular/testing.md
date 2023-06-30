@@ -1,13 +1,13 @@
 ---
 sidebar_position: 2
 ---
-
+import TOCInline from '@theme/TOCInline';
 
 # Testing
+# <TOCInline toc={toc} />
+## How to implement a Unit Test in angular?
 
-## How to implement a unit test in angular?
-
-1. Set up the Testing Environment:
+1. **Set up the Testing Environment**:
    In your test file, import the necessary dependencies for testing Angular components, such as `TestBed` and the component to be tested. Also, import any additional dependencies or mock objects needed for the test.
 
    ```typescript
@@ -15,7 +15,7 @@ sidebar_position: 2
    import { YourComponent } from './your-component.component';
    ```
 
-2. Configure the Testing Module:
+2. **Configure the Testing Module**:
    Use the `TestBed.configureTestingModule()` method to configure the testing module by providing the necessary dependencies and declarations for your component. You may also need to configure providers, import modules, or provide mock objects.
 
    ```typescript
@@ -27,7 +27,7 @@ sidebar_position: 2
    });
    ```
 
-3. Create a Component Fixture:
+3. **Create a Component Fixture**:
    Use the `TestBed.createComponent()` method to create an instance of the component and obtain a reference to the component fixture. The fixture provides access to the component instance and allows you to interact with the component and its template.
 
    ```typescript
@@ -40,7 +40,7 @@ sidebar_position: 2
    });
    ```
 
-4. Write Test Cases:
+4. **Write Test Cases**:
    Use the `it()` function from Jasmine to define individual test cases. Within each test case, you can set up the necessary data or conditions, execute the component's methods or actions, and make assertions to verify the expected behavior.
 
    ```typescript
@@ -54,7 +54,7 @@ sidebar_position: 2
 
    In this example, we set the `title` property of the component, trigger change detection with `fixture.detectChanges()`, and then assert that the rendered title element contains the expected text.
 
-5. Run the Tests:
+5. **Run the Tests**:
    Use a test runner, such as Karma, to execute your tests. The test runner will launch the browser and run your tests, providing the test results and any failures or errors encountered during the test run.
 
    You can run the tests using the Angular CLI command: `ng test`.

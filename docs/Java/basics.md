@@ -1,8 +1,10 @@
 ---
 sidebar_position: 1
 ---
+import TOCInline from '@theme/TOCInline';
 
 # Basics
+# <TOCInline toc={toc} />
 
 ## What is Java?
 Java is a high-level, object-oriented programming language that is designed to be portable and platform-independent.

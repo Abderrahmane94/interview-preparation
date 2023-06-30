@@ -1,6 +1,10 @@
-
+---
+sidebar_position: 1
+---
+import TOCInline from '@theme/TOCInline';
 
 # Architecture Pattern
+# <TOCInline toc={toc} />
 
 
 ## What is difference between Architectural pattern and Design pattern?

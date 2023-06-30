@@ -1,7 +1,11 @@
+---
+sidebar_position: 2
+---
 
-
+import TOCInline from '@theme/TOCInline';
 
 # Clean Code
+# <TOCInline toc={toc} />
 
 ## How to deal with legacy code?
 - Understand the Codebase.

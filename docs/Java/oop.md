@@ -1,8 +1,10 @@
 ---
 sidebar_position: 2
 ---
+import TOCInline from '@theme/TOCInline';
 
 # Java OOP
+# <TOCInline toc={toc} />
 
 ## What is OOP?
 It is a programming paradigm that organizes software design around objects, which are instances of classes.
