@@ -15,11 +15,6 @@ import TOCInline from '@theme/TOCInline';
 - Apply Design Patterns and Principles.
 - Collaborate With Other Developers.
 ## SOLID Principals
-1. Single Responsibility 
-2. Open/Closed 
-3. Liskov Substitution 
-4. Interface Segregation 
-5. Dependency Inversion
 
 1. **Single Responsibility**: a class should only have one responsibility. Furthermore, it should only have one reason to change.
 2. **Open for Extension, Closed for Modification**: classes should be open for extension but closed for modification. In doing so, we stop ourselves from modifying existing code and causing potential new bugs in an otherwise happy application. 
