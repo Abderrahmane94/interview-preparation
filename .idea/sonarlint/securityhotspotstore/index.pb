@@ -18,12 +18,6 @@ Q
 blog/authors.yml,6\5\65bca154c5474841ddba7c69636280cc4b788b10
 @
 static/.nojekyll,f\d\fd7d73d8c4e2432f1debe39a5e0af7d5f272712f
-U
-%docs/tutorial-basics/create-a-page.md,1\8\189973c483b12f7b946f62b1801eeeb63fd5781e
-W
-'docs/tutorial-basics/congratulations.md,5\d\5d8d9902075b119f3ce2a3c731f1a62743b98fb6
-X
-(docs/tutorial-basics/deploy-your-site.md,f\7\f733726c70bf3ccce64cb8bd022501b04d8e200a
 <
 package.json,7\0\7030d0b2f71b999ff89a343de08c414af32fc93a
 9
@@ -38,20 +32,6 @@ X
 (src/components/HomepageFeatures/index.js,0\e\0eed7e26ee35bdc611a03b3011a7f1dc3878832c
 J
 src/pages/index.module.css,6\5\65d6f5fad14b040fa3c11667162d8b22d4ace350
-\
-,docs/tutorial-extras/manage-docs-versions.md,b\d\bd8a38c5339ae0979d9da7bda8d11b898bf01448
-[
-+docs/tutorial-extras/translate-your-site.md,1\3\1399fc4c3d1029d1f3cea6b6194db3438b40f149
-Z
-*docs/tutorial-basics/markdown-features.mdx,7\4\7476b37dce86dc64c87fcd2dd34b100c178ece9b
-Y
-)docs/tutorial-basics/create-a-document.md,2\7\2765e763cec65239bd31b72a45141f5db1517c00
-Z
-*docs/tutorial-basics/create-a-blog-post.md,3\7\370d0dda93810eb9f08482855b78c7508cd69481
-T
-$docs/tutorial-basics/_category_.json,3\a\3a8592e691768a280192da06ac9c09c1a8c2efe0
-T
-$docs/tutorial-extras/_category_.json,1\c\1c2696abeb9ec2caf387b28d4d4f5b04e0d906dc
 C
 static/img/logo.svg,f\6\f6c7f0e2f00296f4b869f50c11a4012a019688af
 U
@@ -60,8 +40,6 @@ Y
 )static/img/undraw_docusaurus_mountain.svg,9\0\90239e86809e24b8de8fd20d55aa20ae3589c942
 V
 &static/img/undraw_docusaurus_react.svg,2\d\2d30c4a4989ec5e8231c04a35055dcc63f8c3f6a
-=
-docs/intro.md,7\a\7a9bff1921a37ba195b27a5996feb261291f024f
 J
 docs/Agile/_category_.json,b\3\b3f141d066759c1050f2b3fb5ec63868b07c4bbb
 K

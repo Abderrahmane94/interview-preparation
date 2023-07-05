@@ -48,7 +48,21 @@ Overall, RabbitMQ provides a powerful and flexible messaging infrastructure that
 - **Swagger First** involves writing the API specification first and then generating the API implementation code based on that specification.
 - **Code First** involves writing the API implementation code first and then generating the API specification based on that code.
 ## What are the most common HTTP methods used in REST APIs
-GET, POST, PUT/PATCH, and Delete.
+REST (Representational State Transfer) is an architectural style for designing networked applications. RESTful APIs (Application Programming Interfaces) are built on this style and use HTTP (Hypertext Transfer Protocol) methods, also known as REST methods or REST verbs, to perform different operations on resources. The most commonly used REST methods are:
+
+1. **GET**: The GET method is used to retrieve or fetch a representation of a resource identified by a specific URL. It is a safe and idempotent operation, meaning it should not have any side effects on the server and can be repeated multiple times without changing the server's state.
+
+2. **POST**: The POST method is used to submit data to be processed by the server. It is commonly used to create new resources or trigger actions that result in a state change on the server. Each POST request typically results in a new resource being created on the server.
+
+3. **PUT**: The PUT method is used to update or replace an existing resource with a new representation. It requires sending the complete representation of the resource to the server, including any fields that are not being updated. If the resource doesn't exist, the server may create a new resource.
+
+4. **PATCH**: The PATCH method is used to partially update an existing resource. Unlike PUT, which requires sending the complete representation of the resource, PATCH allows sending only the changes or differences that need to be applied. The server applies the changes to the resource without affecting other fields.
+
+5. **DELETE**: The DELETE method is used to remove or delete a specified resource. After successful deletion, the server may respond with a 204 No Content status code or a 200 OK status code with a response body providing details about the deleted resource.
+6. **HEAD**: The HEAD method is similar to the GET method, but it only retrieves the headers of a resource without fetching the actual representation. It is useful for obtaining metadata about a resource, such as its size or modification date, without transferring the entire content. 
+7. **OPTIONS**: The OPTIONS method is used to retrieve the supported methods, headers, and other capabilities of a resource. It is helpful for determining the available actions that can be performed on a particular resource. 
+8. **TRACE**: The TRACE method is primarily used for diagnostic purposes. When a server receives a TRACE request, it echoes back the received request to the client, allowing the client to see what changes, if any, were made by intermediate servers during request transmission.
+
 ## What are the HTTP status codes
 100, 200, 300, 400 and 500.
 ## What are the Microservices architecture and the key components of a microservices architecture?
