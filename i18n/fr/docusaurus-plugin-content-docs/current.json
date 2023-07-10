@@ -1,0 +1,58 @@
+{
+  "version.label": {
+    "message": "Suivant",
+    "description": "The label for version current"
+  },
+  "sidebar.tutorialSidebar.category.Tips & Behavioral": {
+    "message": "Tips & Behavioral",
+    "description": "The label for category Tips & Behavioral in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.Agile": {
+    "message": "Agile",
+    "description": "The label for category Agile in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.Architecture & Clean code": {
+    "message": "Architecture & Clean code",
+    "description": "The label for category Architecture & Clean code in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.Java": {
+    "message": "Java",
+    "description": "The label for category Java in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.Spring": {
+    "message": "Spring",
+    "description": "The label for category Spring in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.Maven": {
+    "message": "Maven",
+    "description": "The label for category Maven in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.Jenkins": {
+    "message": "Jenkins",
+    "description": "The label for category Jenkins in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.Docker": {
+    "message": "Docker",
+    "description": "The label for category Docker in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.SQL": {
+    "message": "SQL",
+    "description": "The label for category SQL in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.Git": {
+    "message": "Git",
+    "description": "The label for category Git in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.Angular": {
+    "message": "Angular",
+    "description": "The label for category Angular in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.Web Services": {
+    "message": "Web Services",
+    "description": "The label for category Web Services in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.UML": {
+    "message": "UML",
+    "description": "The label for category UML in sidebar tutorialSidebar"
+  }
+}

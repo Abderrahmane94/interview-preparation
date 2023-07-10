@@ -29,7 +29,7 @@ const config = {
   // to replace "en" with "zh-Hans".
   i18n: {
     defaultLocale: 'en',
-    locales: ['en'],
+    locales: ['en','fr'],
   },
 
   presets: [
@@ -70,6 +70,10 @@ const config = {
           src: 'img/prepa.png',
         },
         items: [
+          {
+            type: 'localeDropdown',
+            position: 'right',
+          },
           {
             type: 'docSidebar',
             sidebarId: 'tutorialSidebar',
