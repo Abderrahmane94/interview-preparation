@@ -81,7 +81,7 @@ const config = {
             label: 'Questions & Answers',
           },
           {
-            href: 'https://github.com/facebook/docusaurus',
+            href: 'https://github.com/Abderrahmane94/interview-preparation',
             label: 'GitHub',
             position: 'right',
           },
