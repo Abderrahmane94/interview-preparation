@@ -4,27 +4,28 @@ sidebar_position: 2
 import TOCInline from '@theme/TOCInline';
 
 
-# Forms
+# Formulaires
 # <TOCInline toc={toc} />
 
-## Forms in Angular with Template-driven and Reactive forms
-- **Template-driven** forms are easier to set up and require less code, but can be more difficult to customize and test.
-- **Reactive forms** provide more control and flexibility and allow for more complex validation and custom form control creation.
-## How to implement forms in angular?
-To implement forms in Angular, you can follow these general steps:
+## Formulaires Angular : Template-driven et Reactive
+- Les formulaires **Template-driven** sont plus faciles à mettre en place et nécessitent moins de code, mais peuvent être plus difficiles à personnaliser et à tester.
+- Les formulaires **Reactive** offrent plus de contrôle et de flexibilité, et permettent une validation plus complexe et la création de contrôles de formulaire personnalisés.
 
-1. **Create a Component**: Create an Angular component that will contain your form. You can use the Angular CLI command `ng generate component` to generate the component files.
+## Comment implémenter des formulaires dans Angular ?
+Pour implémenter des formulaires dans Angular, voici les étapes générales :
 
-2. **Import FormsModule or ReactiveFormsModule**: In your component module, import the `FormsModule` or `ReactiveFormsModule` from `@angular/forms` based on your form requirements. `FormsModule` is used for template-driven forms, while `ReactiveFormsModule` is used for reactive forms.
+1. **Créer un composant** : créez un composant Angular qui contiendra votre formulaire avec `ng generate component`.
 
-3. **Define the Form Structure**: Declare and define the form structure in your component class. For template-driven forms, you can use `ngModel` and directives like `ngForm` and `ngSubmit` in your HTML template. For reactive forms, you will work with `FormGroup`, `FormControl`, and `FormBuilder` in your component class.
+2. **Importer FormsModule ou ReactiveFormsModule** : dans votre module, importez `FormsModule` (pour les formulaires template-driven) ou `ReactiveFormsModule` (pour les formulaires réactifs) depuis `@angular/forms`.
 
-4. **Bind Form Controls**: Bind form controls to data properties in your component. For template-driven forms, you can use two-way data binding with `ngModel`. For reactive forms, you can create and manage form controls programmatically using `FormControl` instances.
+3. **Définir la structure du formulaire** : déclarez la structure du formulaire dans votre classe de composant. Pour les formulaires template-driven, utilisez `ngModel` et les directives `ngForm`/`ngSubmit` dans le template HTML. Pour les formulaires réactifs, utilisez `FormGroup`, `FormControl` et `FormBuilder` dans la classe de composant.
 
-5. **Handle Form Submission**: Implement the logic to handle form submission. For template-driven forms, you can use the `(ngSubmit)` event on the form element and define a corresponding method in your component class. For reactive forms, you can subscribe to the `FormGroup`'s `valueChanges` or `statusChanges` observables to handle form changes and validations.
+4. **Lier les contrôles de formulaire** : liez les contrôles aux propriétés du composant. Pour les formulaires template-driven, utilisez la liaison bidirectionnelle avec `ngModel`. Pour les formulaires réactifs, créez et gérez les contrôles programmatiquement avec des instances `FormControl`.
 
-6. **Apply Form Validation**: Implement form validation by using built-in validators or creating custom validators. Angular provides a set of validators such as `required`, `minLength`, `maxLength`, etc. You can also define custom validators by creating functions that return a validator function.
+5. **Gérer la soumission** : pour les formulaires template-driven, utilisez l'événement `(ngSubmit)` sur l'élément formulaire. Pour les formulaires réactifs, souscrivez aux observables `valueChanges` ou `statusChanges` du `FormGroup`.
 
-7. **Display Form Errors**: Display form validation errors to the user. Angular provides directives such as `ngModel`, `ngForm`, and `formControlName` that automatically handle error states. You can use these directives to conditionally show error messages based on the form control's validity.
+6. **Appliquer la validation** : utilisez les validateurs intégrés (`required`, `minLength`, `maxLength`, etc.) ou créez des validateurs personnalisés sous forme de fonctions retournant une fonction de validation.
 
-8. **Submit the Form Data**: Once the form is filled and validated, you can submit the form data to a server or perform any desired actions. You can use Angular's `HttpClient` module to make HTTP requests and interact with APIs.
+7. **Afficher les erreurs** : utilisez les directives `ngModel`, `ngForm` et `formControlName` pour afficher conditionnellement les messages d'erreur selon la validité du contrôle.
+
+8. **Soumettre les données** : une fois le formulaire rempli et validé, soumettez les données à un serveur ou effectuez les actions souhaitées en utilisant le module `HttpClient` d'Angular pour interagir avec les API.

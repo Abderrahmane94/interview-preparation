@@ -6,21 +6,21 @@ import TOCInline from '@theme/TOCInline';
 # Spring Web
 # <TOCInline toc={toc} />
 
-## What is Spring Web?
-Spring Web is a **module** within the Spring Framework that provides support for **building web applications**. It offers features and abstractions to simplify the **development** of **web-based** applications, **RESTful** services, and **APIs** in the Java ecosystem.
+## Qu'est-ce que Spring Web ?
+Spring Web est un **module** du Spring Framework qui fournit un support pour la **création d'applications web**. Il offre des fonctionnalités et abstractions pour simplifier le **développement** d'applications **web**, de services **RESTful** et d'**API** dans l'écosystème Java.
 
-Spring Web provides several **key components** and features:
+Spring Web fournit plusieurs **composants et fonctionnalités clés** :
 
-1. **DispatcherServlet**: The DispatcherServlet is the central servlet in Spring Web. It acts as the front controller, receiving and dispatching requests to the appropriate handlers based on URL mappings and other configurations.
+1. **DispatcherServlet** : servlet central de Spring Web. Agit comme contrôleur frontal, recevant et distribuant les requêtes aux gestionnaires appropriés selon les mappings d'URL et autres configurations.
 
-2. **MVC Framework**: Spring Web follows the Model-View-Controller (MVC) architectural pattern. It provides an MVC framework that allows developers to separate concerns by defining controllers to handle requests, models to represent data, and views to render the response.
+2. **Framework MVC** : Spring Web suit le patron Model-Vue-Contrôleur (MVC). Il permet de séparer les préoccupations en définissant des contrôleurs pour gérer les requêtes, des modèles pour représenter les données, et des vues pour afficher la réponse.
 
-3. **Handler Mapping**: Spring Web includes various handler mapping strategies to map incoming requests to the appropriate controller methods based on URL patterns, request methods, or other criteria. It supports flexible configuration options for defining mappings.
+3. **Handler Mapping** : Spring Web inclut diverses stratégies de mapping pour associer les requêtes entrantes aux méthodes de contrôleur appropriées selon les patterns d'URL, les méthodes HTTP ou d'autres critères.
 
-4. **View Resolution**: Spring Web integrates with different view technologies, such as JSP, Thymeleaf, and FreeMarker, allowing you to choose the view technology that best suits your needs. It provides mechanisms for resolving and rendering views.
+4. **Résolution de vues** : Spring Web s'intègre avec différentes technologies de vue (JSP, Thymeleaf, FreeMarker) et fournit des mécanismes pour résoudre et afficher les vues.
 
-5. **Request/Response Handling**: Spring Web provides abstractions and utilities for handling request and response objects, including support for content negotiation, HTTP message converters, and request/response interceptors.
+5. **Gestion des requêtes/réponses** : Spring Web fournit des abstractions pour gérer les objets requête et réponse, incluant la négociation de contenu, les convertisseurs de messages HTTP et les intercepteurs.
 
-6. **RESTful Web Services**: Spring Web also includes features specifically designed for building RESTful services and APIs. It provides annotations, such as `@RestController`, `@RequestMapping`, and `@PathVariable`, to simplify the development of RESTful endpoints.
+6. **Services Web RESTful** : Spring Web inclut des fonctionnalités spécifiquement conçues pour les services et API REST, avec des annotations comme `@RestController`, `@RequestMapping` et `@PathVariable` pour simplifier le développement d'endpoints RESTful.
 
-7. **Integration with other Spring modules**: Spring Web seamlessly integrates with other modules of the Spring Framework, such as Spring Data, Spring Security, and Spring Boot, enabling you to leverage additional functionalities for data access, security, and application configuration.
+7. **Intégration avec les autres modules Spring** : Spring Web s'intègre naturellement avec Spring Data, Spring Security et Spring Boot, vous permettant de bénéficier de fonctionnalités supplémentaires pour l'accès aux données, la sécurité et la configuration.

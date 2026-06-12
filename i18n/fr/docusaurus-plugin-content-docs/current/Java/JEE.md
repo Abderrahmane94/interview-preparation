@@ -6,106 +6,96 @@ import TOCInline from '@theme/TOCInline';
 # Java Enterprise Edition
 # <TOCInline toc={toc} />
 
-## What is EJB?
+## Qu'est-ce qu'un EJB ?
+Un EJB (Enterprise JavaBean) est un composant serveur géré par le conteneur EJB qui encapsule la logique métier d'une application d'entreprise.
 
+## Quels sont les différents types d'EJB ?
+Il existe trois types d'EJB dans JEE :
+- **Session Beans** : représentent la logique métier. Classifiés en beans de session stateful et stateless.
+- **Entity Beans** (dépréciés depuis EJB 3.0) : représentent les données persistantes stockées en base de données.
+- **Message-Driven Beans** : utilisés pour traiter des messages asynchrones dans un système de messagerie.
 
-## What are the different types of EJBs?
-   There are three types of EJBs in JEE:
-   a) **Session Beans**: They represent business logic and are further classified into stateful and stateless session beans.
-   b) **Entity Beans** (Deprecated in EJB 3.0): They represent persistent data stored in a database.
-   c) **Message-Driven Beans**: They are used to process asynchronous messages in a messaging system.
+## Quel est le rôle d'un session bean ?
+Les session beans encapsulent la logique métier d'une application. Ils fournissent des services aux clients : exécuter des méthodes métier, gérer des transactions, et maintenir un état conversationnel (pour les beans stateful).
 
-## What is the purpose of a session bean?
-   Session beans encapsulate the business logic of an application. They provide services to clients, such as executing business methods, managing transactions, and maintaining conversational state (in the case of stateful session beans).
+## Quelle est la différence entre les beans de session stateful et stateless ?
+Les **beans de session stateful** maintiennent un état conversationnel avec les clients à travers plusieurs invocations de méthodes. Chaque client est associé à une instance spécifique du bean stateful.
+En revanche, les **beans de session stateless** ne maintiennent aucun état conversationnel. Ils sont sans état et peuvent servir plusieurs clients simultanément.
 
-## How are stateful and stateless session beans different?
-   **Stateful session beans** maintain conversational state with clients across multiple method invocations. Each client is associated with a specific instance of the stateful session bean. 
-   In contrast, **stateless session beans** do not maintain any conversational state. They are stateless and can serve multiple clients concurrently.
+## Quel est le rôle d'un entity bean ?
+Les **entity beans** (dépréciés dans EJB 3.0) représentent des données persistantes stockées en base de données. Ils fournissent une vue orientée objet des données et encapsulent les opérations CRUD (création, lecture, mise à jour, suppression).
 
-## What is the purpose of an entity bean?
-   **Entity beans** (deprecated in EJB 3.0) represent persistent data stored in a database. They provide an object-oriented view of the data and encapsulate the operations related to the data, such as creation, retrieval, update, and deletion (CRUD).
+## Qu'est-ce qu'un Message-Driven Bean (MDB) ?
+Les **Message-Driven Beans** traitent des messages asynchrones dans un système JMS (Java Message Service). Ils agissent comme des consommateurs de messages et sont déclenchés lorsqu'un message arrive à une destination spécifiée.
 
-## What is a message-driven bean (MDB)?
-   **Message-driven beans** are used to process asynchronous messages in a Java Message Service (JMS) system. They act as message consumers and are triggered when a message arrives at a specified destination.
+## Quel est le rôle du conteneur EJB ?
+Le conteneur EJB fournit un environnement d'exécution pour les composants EJB. Il gère leur cycle de vie, les transactions, la sécurité, la concurrence et d'autres services. Il est responsable de l'instanciation, du pooling et de la gestion des instances EJB, ainsi que de la communication entre clients et composants EJB.
 
-## What is the role of the EJB container?
-   The EJB container provides a runtime environment for executing EJB components. It manages their lifecycle, transactions, security, concurrency, and other services. The container is responsible for instantiating, pooling, and managing EJB instances, as well as handling the communication between clients and EJB components.
+## Quels sont les différents attributs de transaction dans EJB ?
+EJB supporte différents attributs de transaction :
+- **Required** : la méthode doit s'exécuter dans une transaction. Si une transaction existe déjà, elle la rejoint ; sinon, une nouvelle est démarrée.
+- **RequiresNew** : la méthode doit s'exécuter dans une nouvelle transaction. Si une transaction existe, elle est suspendue.
+- **Mandatory** : la méthode doit s'exécuter dans une transaction. Si aucune n'existe, une exception est levée.
 
-## What are the different transaction attributes in EJB?
-   EJB supports different transaction attributes, such as:
-   - **Required**: Specifies that the method must run within a transaction. If a transaction already exists, it joins it; otherwise, a new transaction is started.
-   - **RequiresNew**: Specifies that the method must run within a new transaction. If a transaction already exists, it is suspended until the method completes.
-   - **Mandatory**: Specifies that the method must run within a transaction. If no transaction exists, an exception is thrown.
+## Comment fonctionne l'injection de dépendances dans EJB ?
+L'**injection de dépendances** dans EJB permet au conteneur d'injecter les ressources et dépendances nécessaires dans un EJB (sources de données, session beans, autres EJBs). Cela réduit le couplage. Les EJBs utilisent des annotations comme `@EJB` ou `@Resource` pour déclarer et injecter des dépendances.
 
-## How does dependency injection work in EJB?
-   **Dependency injection** in EJB allows the container to inject necessary resources and dependencies into an EJB, such as data sources, session beans, or other EJBs. This reduces coupling and allows for more modular and maintainable code. EJBs can use annotations like `@EJB` or `@Resource` to declare and inject dependencies.
-   
-## How can you handle exceptions in EJB?
-   In EJB, you can handle exceptions using the **standard Java exception handling mechanism**. EJBs can throw application-specific exceptions or use system-defined exceptions like **javax.ejb.EJBException**. You can catch and handle exceptions within the EJB methods or let them propagate to the calling client, where they can be caught and processed.
-   
-## What is the purpose of the `@Stateless` annotation in EJB?
-The `@Stateless` annotation is used to declare a session bean as stateless in EJB. Statelessness means that the session bean does not maintain any conversational state with clients between method invocations. Each method call on a stateless session bean is independent of previous calls.
+## Comment gérer les exceptions dans EJB ?
+Dans EJB, vous pouvez gérer les exceptions via le **mécanisme Java standard**. Les EJBs peuvent lancer des exceptions applicatives ou des exceptions système comme **javax.ejb.EJBException**. Vous pouvez les intercepter dans les méthodes EJB ou les laisser se propager au client appelant.
 
-## What is the purpose of the `@TransactionAttribute` annotation in EJB?
-The `@TransactionAttribute` annotation is used to specify the transaction attribute for a method in an EJB. It allows you to define how the method should participate in transactions. For example, you can specify whether a method requires a transaction (`TransactionAttributeType.REQUIRED`) or should run without a transaction (`TransactionAttributeType.NOT_SUPPORTED`).
+## Quel est le rôle de l'annotation `@Stateless` dans EJB ?
+L'annotation `@Stateless` déclare un session bean comme stateless dans EJB. Stateless signifie que le bean ne maintient aucun état conversationnel avec les clients entre les invocations. Chaque appel de méthode est indépendant des précédents.
 
-## How can you implement asynchronous processing in EJB?
-Asynchronous processing can be implemented in EJB using message-driven beans (MDBs). MDBs allow you to consume messages asynchronously from a message queue or topic. By annotating an MDB class with `@MessageDriven`, you can define the message listener and specify the destination from which the messages should be consumed.
+## Quel est le rôle de l'annotation `@TransactionAttribute` dans EJB ?
+L'annotation `@TransactionAttribute` spécifie l'attribut de transaction pour une méthode EJB, définissant comment la méthode doit participer aux transactions. Par exemple : `TransactionAttributeType.REQUIRED` ou `TransactionAttributeType.NOT_SUPPORTED`.
 
-## What is the purpose of the `@Singleton` annotation in EJB?
-   The `@Singleton` annotation is used to declare a session bean as a singleton in EJB. Singleton session beans are designed to have only one instance shared by multiple clients. They are commonly used for managing application-wide resources or maintaining global state.
+## Comment implémenter le traitement asynchrone dans EJB ?
+Le traitement asynchrone peut être implémenté via des Message-Driven Beans (MDB). En annotant une classe MDB avec `@MessageDriven`, vous définissez le listener de messages et spécifiez la destination depuis laquelle les messages doivent être consommés.
 
-## How can you pass data between EJBs?
-Data can be passed between EJBs using method parameters and return values. You can define method signatures in EJB interfaces that accept and return data objects. Additionally, EJBs can use dependency injection (`@EJB`) to obtain references to other EJBs and invoke their methods, passing data as method arguments.
+## Quel est le rôle de l'annotation `@Singleton` dans EJB ?
+L'annotation `@Singleton` déclare un session bean comme singleton dans EJB. Les beans singleton sont conçus pour avoir une seule instance partagée par plusieurs clients. Ils sont couramment utilisés pour gérer des ressources à l'échelle de l'application ou maintenir un état global.
 
-## Can you explain the lifecycle of a stateful session bean?
-The lifecycle of a stateful session bean in EJB involves the following phases:
+## Comment passer des données entre EJBs ?
+Les données peuvent être passées entre EJBs via les paramètres et valeurs de retour des méthodes. Vous pouvez définir des signatures de méthode dans les interfaces EJB. De plus, les EJBs peuvent utiliser l'injection de dépendances (`@EJB`) pour obtenir des références à d'autres EJBs.
 
-1. **Creation**: The container creates an instance of the stateful session bean when a client requests it.
-2. **Method Invocation**: The client interacts with the stateful session bean by invoking its methods, passing data and performing operations.
-3. **Passivation**: If the bean is not actively being used, the container can choose to passivate (serialize) the bean's state and remove it from memory to conserve resources.
-4. **Activation**: When the client needs to access the bean again, the container activates (deserializes) the bean's state and makes it available for invocation.
-5. **Removal**: The client or the container can choose to remove the bean, causing its instance to be destroyed and releasing associated resources.
+## Pouvez-vous expliquer le cycle de vie d'un bean de session stateful ?
+Le cycle de vie d'un bean de session stateful comprend :
 
-## How can you handle concurrency in EJB?
-EJB provides built-in mechanisms to handle concurrency, ensuring thread safety and preventing concurrent access issues. By default, stateless session beans and message-driven beans are designed to be concurrent, allowing multiple clients to access them simultaneously. For stateful session beans, you can configure concurrency using annotations like `@ConcurrencyManagement` and `@Lock` to specify locking strategies and access modes.
+1. **Création** : le conteneur crée une instance du bean stateful à la demande d'un client.
+2. **Invocation de méthode** : le client interagit avec le bean en invoquant ses méthodes.
+3. **Passivation** : si le bean n'est pas activement utilisé, le conteneur peut le passiver (sérialiser) pour libérer des ressources mémoire.
+4. **Activation** : lorsque le client doit accéder à nouveau au bean, le conteneur l'active (désérialise).
+5. **Suppression** : le client ou le conteneur peut supprimer le bean, détruisant son instance et libérant les ressources associées.
 
+## Comment gérer la concurrence dans EJB ?
+EJB fournit des mécanismes intégrés pour gérer la concurrence. Par défaut, les beans stateless et les MDB sont conçus pour être concurrents. Pour les beans stateful, vous pouvez configurer la concurrence avec `@ConcurrencyManagement` et `@Lock` pour spécifier les stratégies de verrouillage.
 
-## MVC in JEE
-MVC (Model-View-Controller) is an architectural pattern commonly used in JEE (Java Enterprise Edition) applications to separate concerns and improve maintainability. Here's a short explanation of MVC in JEE:
+## MVC dans JEE
+MVC (Model-Vue-Contrôleur) est un patron architectural couramment utilisé dans les applications JEE pour séparer les préoccupations et améliorer la maintenabilité :
 
-- **Model**: The Model represents the application's data and business logic. It encapsulates the application's state and provides methods for interacting with and manipulating the data. In JEE, the Model can be implemented using Enterprise JavaBeans (EJBs), entity classes, or other data access mechanisms.
+- **Modèle** : représente les données et la logique métier de l'application. Peut être implémenté avec des EJBs, des classes entités ou d'autres mécanismes d'accès aux données.
 
-- **View**: The View represents the presentation layer of the application. It is responsible for rendering the user interface and displaying the data to the user. In JEE, the View can be implemented using JavaServer Faces (JSF) pages, JSP (JavaServer Pages), or HTML/CSS templates.
+- **Vue** : représente la couche de présentation. Responsable du rendu de l'interface utilisateur. Peut être implémentée avec JavaServer Faces (JSF), JSP ou des templates HTML/CSS.
 
-- **Controller**: The Controller acts as an intermediary between the Model and the View. It receives user input from the View and invokes the appropriate methods on the Model to update the data. It also handles the navigation flow and determines which View should be displayed based on the user's actions. In JEE, the Controller can be implemented using servlets, managed beans, or other request handling components.
+- **Contrôleur** : intermédiaire entre le Modèle et la Vue. Reçoit les entrées utilisateur, invoque les méthodes appropriées sur le Modèle et détermine quelle Vue afficher. Peut être implémenté avec des servlets, des managed beans ou d'autres composants de gestion des requêtes.
 
-The MVC pattern promotes a separation of concerns, where the Model focuses on the data and business logic, the View focuses on the presentation, and the Controller handles the interaction between the two. This separation allows for easier maintenance, testing, and reusability of the components.
+## Conteneurs dans JEE
 
-## Containers in JEE
-1. **EJB Container**:
-   The EJB container manages the execution of EJB components, which are server-side components that encapsulate business logic. The EJB container provides services such as transaction management, security, concurrency, and resource pooling. It handles the lifecycle of EJBs, including instantiation, pooling, activation, passivation, and removal. The EJB container also ensures that EJBs adhere to the EJB specification and provides mechanisms for dependency injection and remote method invocation.
+1. **Conteneur EJB** :
+   Gère l'exécution des composants EJB. Fournit des services tels que la gestion des transactions, la sécurité, la concurrence et le pooling de ressources. Gère le cycle de vie des EJBs et assure la conformité à la spécification EJB.
 
-2. **Web Container**:
-   The web container, also known as the servlet container, manages the execution of web components, such as servlets and JavaServer Pages (JSP). It provides services for handling HTTP requests and responses, managing sessions, URL mapping, security, and concurrency. The web container handles the lifecycle of web components, including instantiation, initialization, invocation, and destruction. It ensures that web components comply with the servlet and JSP specifications, and it interfaces with the web server to handle web-based communication.
-
-Both containers are part of the larger JEE application server, which provides a complete runtime environment for deploying and running enterprise applications. The application server includes additional services such as database connectivity, messaging, naming and directory services, and management and monitoring capabilities. It manages the deployment and configuration of application components and provides a scalable and reliable infrastructure for running JEE applications.
+2. **Conteneur Web** :
+   Aussi connu sous le nom de conteneur de servlets, il gère l'exécution des composants web (servlets, JSP). Fournit des services pour le traitement des requêtes/réponses HTTP, la gestion des sessions, le mapping d'URL, la sécurité et la concurrence.
 
 ## JSF
+JSF (JavaServer Faces) est un framework web basé sur les composants faisant partie de la plateforme JEE. Il simplifie le développement d'interfaces utilisateur pour les applications web.
 
-JSF (JavaServer Faces) is a component-based web framework that is part of the JEE (Java Enterprise Edition) platform. It is designed to simplify the development of user interfaces for web applications by providing a set of reusable UI components and a robust event-driven programming model. Here's an overview of JSF in JEE:
+1. **Architecture basée sur les composants** : l'interface utilisateur est construite avec des composants UI réutilisables définis de manière déclarative ou programmatique. JSF fournit un ensemble riche de composants intégrés (champs de saisie, boutons, tableaux, panneaux) et permet de créer des composants personnalisés.
 
-1. **Component-Based Architecture**:
-   JSF follows a component-based architecture, where the user interface is constructed using reusable UI components. These components can be declaratively defined in JSF pages using markup tags or programmatically created. JSF provides a rich set of built-in components for common UI elements like input fields, buttons, tables, and panels. Additionally, developers can create custom components to suit specific application requirements.
+2. **Modèle de programmation événementiel** : JSF utilise un modèle événementiel où les interactions utilisateur déclenchent des événements traités par le mécanisme JSF. Différents types d'événements sont supportés : action, changement de valeur, validation.
 
-2. **Event-Driven Programming Model**:
-   JSF uses an event-driven programming model, where user interactions trigger events that are processed by JSF's event handling mechanism. JSF supports various types of events, such as action events, value change events, and validation events. Developers can define event listeners and event handling methods to respond to user actions and update the application's state.
+3. **Managed Bean** : JSF s'appuie sur des managed beans pour stocker et gérer les données et comportements de l'application. Un managed bean est un objet Java géré par le framework JSF, servant de pont entre les composants UI et la logique métier.
 
-3. **Managed Bean**:
-   JSF relies on managed beans to store and manage the application's data and behavior. A managed bean is a Java object managed by the JSF framework. Developers can define managed beans either programmatically or using annotations. Managed beans act as a bridge between the UI components and the underlying business logic, allowing for data manipulation and processing.
+4. **Navigation et flux de pages** : JSF fournit des fonctionnalités pour gérer la navigation. Les développeurs définissent des règles de navigation spécifiant la page destination selon les actions ou événements.
 
-4. **Navigation and Page Flow**:
-   JSF provides features for managing navigation and page flow within the application. Developers can define navigation rules that specify the outcome of an action or event and the corresponding destination page. JSF handles the navigation and page rendering based on these rules, allowing for seamless user interaction and page transitions.
-
-5. **Backing Integration**:
-   JSF integrates well with other JEE technologies and frameworks. It can seamlessly work with Java EE containers, allowing for the integration of EJBs (Enterprise JavaBeans) and other Java EE components. JSF also supports integration with popular frameworks like CDI (Contexts and Dependency Injection) and JPA (Java Persistence API), enabling the development of robust and scalable enterprise applications.
+5. **Intégration** : JSF s'intègre avec les autres technologies JEE : conteneurs Java EE, EJBs, CDI (Contexts and Dependency Injection) et JPA (Java Persistence API).

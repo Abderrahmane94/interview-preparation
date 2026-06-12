@@ -1,97 +1,106 @@
 import TOCInline from '@theme/TOCInline';
 
-# Web Services
+# Services Web
 # <TOCInline toc={toc} />
 
-## Rest Vs SOAP	
-Are two different types of **web service architectures** used to transmit data between applications, 
-- **SOAP** is a more rigid and complex architecture that uses XML-based messages, 
-- **REST** is a lightweight and flexible architecture that uses standard HTTP requests and responses to exchange data in various formats
-## What is an Idempotent API?	
-An idempotent HTTP method is a method that can be invoked many times **without** the different outcomes, **POST** is the only **NOT idempotent**.
-## How to communicate between Java Microservices?	
-- (HTTP)/REST - Synchronous Communication.
-- Messaging - Asynchronous Communication.
-## What's rabbitMQ?	
-RabbitMQ is an open-source **message broker** software that enables communication and coordination between distributed systems. It implements the Advanced Message Queuing Protocol (**AMQP**) and provides a reliable, scalable, and flexible messaging platform.
+## REST vs SOAP
+Deux types différents d'**architectures de services web** utilisés pour transmettre des données entre applications :
+- **SOAP** est une architecture plus rigide et complexe utilisant des messages basés sur XML.
+- **REST** est une architecture légère et flexible utilisant des requêtes/réponses HTTP standard pour échanger des données en divers formats.
 
-Here are the key concepts and features of RabbitMQ:
+## Qu'est-ce qu'une API idempotente ?
+Une méthode HTTP idempotente est une méthode qui peut être invoquée plusieurs fois **sans** résultats différents. **POST** est la seule méthode **non idempotente**.
 
-1. **Message Broker**: RabbitMQ acts as an intermediary or a middleman between producers and consumers of messages. Producers send messages to RabbitMQ, which stores them until they are consumed by the appropriate consumers.
+## Comment communiquer entre microservices Java ?
+- (HTTP)/REST — Communication synchrone.
+- Messagerie — Communication asynchrone.
 
-2. **Message Queues**: RabbitMQ uses queues to store messages. A queue is a named buffer that holds messages until they are processed by consumers. Queues provide reliable message delivery, decoupling the producers and consumers in a distributed system.
+## Qu'est-ce que RabbitMQ ?
+RabbitMQ est un logiciel de **courtier de messages** (message broker) open-source qui permet la communication et la coordination entre systèmes distribués. Il implémente le protocole Advanced Message Queuing Protocol (**AMQP**) et fournit une plateforme de messagerie fiable, évolutive et flexible.
 
-3. **Exchange**: An exchange is responsible for receiving messages from producers and routing them to the appropriate queues. RabbitMQ supports different exchange types, including direct, topic, fanout, and headers, allowing for various message routing patterns.
+Concepts et fonctionnalités clés de RabbitMQ :
 
-4. **Binding**: Bindings define the relationship between exchanges and queues. They specify the routing rules that determine how messages should be routed from an exchange to one or more queues.
+1. **Message Broker** : RabbitMQ agit comme intermédiaire entre les producteurs et les consommateurs de messages. Les producteurs envoient des messages à RabbitMQ, qui les stocke jusqu'à leur consommation.
 
-5. **Routing Keys**: Routing keys are used by exchanges to determine which queues should receive specific messages. Producers attach a routing key to each message, and exchanges use this key to route the message to the appropriate queues based on the binding configuration.
+2. **Files de messages (Queues)** : RabbitMQ utilise des files pour stocker les messages. Une file est un tampon nommé qui contient les messages jusqu'à leur traitement par les consommateurs.
 
-6. **Message Acknowledgement**: RabbitMQ supports message acknowledgements to ensure reliable delivery. Consumers can explicitly acknowledge the successful processing of a message, indicating that RabbitMQ can remove it from the queue. If a consumer fails to acknowledge a message, RabbitMQ can re-queue it for redelivery.
+3. **Exchange** : responsable de recevoir les messages des producteurs et de les router vers les files appropriées. RabbitMQ supporte différents types d'exchange : direct, topic, fanout et headers.
 
-7. **Fault Tolerance and High Availability**: RabbitMQ supports clustering, allowing multiple RabbitMQ nodes to form a cluster and work together. Clustering provides fault tolerance and high availability, ensuring that messages are not lost even if some nodes fail.
+4. **Binding** : définit la relation entre les exchanges et les files. Spécifie les règles de routing déterminant comment les messages sont acheminés d'un exchange vers une ou plusieurs files.
 
-8. **Plugins and Extensibility**: RabbitMQ provides a plugin system that allows extending its functionality. Various plugins are available for features like message transformation, authentication, authorization, and integration with other systems.
+5. **Clés de routage (Routing Keys)** : utilisées par les exchanges pour déterminer quelles files doivent recevoir des messages spécifiques.
 
-RabbitMQ is widely used in distributed systems, microservices architectures, and other scenarios where reliable messaging and decoupling of components are crucial. It enables asynchronous communication, load balancing, and scalability, making it suitable for building robust and scalable applications.
+6. **Accusé de réception (Message Acknowledgement)** : RabbitMQ supporte les accusés de réception pour garantir une livraison fiable. Les consommateurs peuvent accuser réception explicitement d'un message traité avec succès.
 
-Developers can interact with RabbitMQ using various programming languages and client libraries that support the AMQP protocol. Popular client libraries include RabbitMQ Java client, RabbitMQ .NET client, Pika (Python), and amqplib (Node.js), among others.
+7. **Tolérance aux pannes et haute disponibilité** : RabbitMQ supporte le clustering, permettant à plusieurs nœuds de former un cluster. Cela garantit que les messages ne sont pas perdus même si certains nœuds tombent en panne.
 
-Overall, RabbitMQ provides a powerful and flexible messaging infrastructure that simplifies the development of distributed systems and enables seamless integration between different components and services.
-## What is the difference PUT and PATCH?	
-- **PUT** is used to completely replace an existing resource or create a new one at the specified URI.
-- **PATCH** is used to **partially update** an existing resource.
-## Monolithic vs microservice
-## How to define a good API?
-## How would you design a RESTful API?
-## What is an API Contract first? Do you use Swagger first or Code first?
-- **Swagger First** involves writing the API specification first and then generating the API implementation code based on that specification.
-- **Code First** involves writing the API implementation code first and then generating the API specification based on that code.
-## What are the most common HTTP methods used in REST APIs
-REST (Representational State Transfer) is an architectural style for designing networked applications. RESTful APIs (Application Programming Interfaces) are built on this style and use HTTP (Hypertext Transfer Protocol) methods, also known as REST methods or REST verbs, to perform different operations on resources. The most commonly used REST methods are:
+8. **Plugins et extensibilité** : RabbitMQ fournit un système de plugins pour étendre ses fonctionnalités (transformation de messages, authentification, autorisation, intégrations).
 
-1. **GET**: The GET method is used to retrieve or fetch a representation of a resource identified by a specific URL. It is a safe and idempotent operation, meaning it should not have any side effects on the server and can be repeated multiple times without changing the server's state.
+RabbitMQ est largement utilisé dans les systèmes distribués et les architectures microservices pour la communication asynchrone, l'équilibrage de charge et la scalabilité.
 
-2. **POST**: The POST method is used to submit data to be processed by the server. It is commonly used to create new resources or trigger actions that result in a state change on the server. Each POST request typically results in a new resource being created on the server.
+## Quelle est la différence entre PUT et PATCH ?
+- **PUT** est utilisé pour remplacer complètement une ressource existante ou en créer une nouvelle à l'URI spécifiée.
+- **PATCH** est utilisé pour **mettre à jour partiellement** une ressource existante.
 
-3. **PUT**: The PUT method is used to update or replace an existing resource with a new representation. It requires sending the complete representation of the resource to the server, including any fields that are not being updated. If the resource doesn't exist, the server may create a new resource.
+## Monolithique vs Microservices
+- **Monolithique** : une seule application déployée comme une unité.
+- **Microservices** : les applications sont décomposées en services plus petits et indépendants qui peuvent être développés, déployés et maintenus séparément.
 
-4. **PATCH**: The PATCH method is used to partially update an existing resource. Unlike PUT, which requires sending the complete representation of the resource, PATCH allows sending only the changes or differences that need to be applied. The server applies the changes to the resource without affecting other fields.
+## Comment définir une bonne API ?
+## Comment concevoir une API RESTful ?
+## Qu'est-ce que le contrat API first ? Utilisez-vous Swagger first ou Code first ?
+- **Swagger First** consiste à écrire d'abord la spécification API, puis à générer le code d'implémentation basé sur cette spécification.
+- **Code First** consiste à écrire d'abord le code d'implémentation, puis à générer la spécification API basée sur ce code.
 
-5. **DELETE**: The DELETE method is used to remove or delete a specified resource. After successful deletion, the server may respond with a 204 No Content status code or a 200 OK status code with a response body providing details about the deleted resource.
-6. **HEAD**: The HEAD method is similar to the GET method, but it only retrieves the headers of a resource without fetching the actual representation. It is useful for obtaining metadata about a resource, such as its size or modification date, without transferring the entire content. 
-7. **OPTIONS**: The OPTIONS method is used to retrieve the supported methods, headers, and other capabilities of a resource. It is helpful for determining the available actions that can be performed on a particular resource. 
-8. **TRACE**: The TRACE method is primarily used for diagnostic purposes. When a server receives a TRACE request, it echoes back the received request to the client, allowing the client to see what changes, if any, were made by intermediate servers during request transmission.
+## Quelles sont les méthodes HTTP les plus courantes dans les API REST ?
+REST (Representational State Transfer) est un style architectural pour la conception d'applications en réseau. Les méthodes HTTP les plus couramment utilisées sont :
 
-## What are the HTTP status codes
-100, 200, 300, 400 and 500.
-## What are the Microservices architecture and the key components of a microservices architecture?
-- applications are broken down into smaller, independent services that can be developed, deployed, and maintained separately. 
-- Service Registry, API Gateway, Configuration Server, Load Balancer, and Monitoring and Logging.
-## Can you describe how to handle distributed transactions across multiple microservices?
-- It's important to use a technique called the Saga pattern.
-- The Saga pattern is a design pattern for handling long-lived transactions across multiple microservices
-## What's SOAP? and how to implement?
-SOAP (Simple Object Access Protocol) is a messaging protocol used in web services to facilitate communication between different systems over a network. It is a protocol based on XML (eXtensible Markup Language) and typically relies on other protocols such as HTTP (Hypertext Transfer Protocol) for message transport.
+1. **GET** : récupère une représentation d'une ressource. Opération sûre et idempotente, sans effets secondaires sur le serveur.
 
-SOAP defines a standard format for structuring messages, allowing different systems to understand and interact with each other. It enables the exchange of information between applications, regardless of the programming languages or platforms they are built on.
+2. **POST** : soumet des données à traiter par le serveur. Généralement utilisé pour créer de nouvelles ressources ou déclencher des actions provoquant un changement d'état.
 
-To implement SOAP, you generally need to follow these steps:
+3. **PUT** : met à jour ou remplace une ressource existante avec une nouvelle représentation. Nécessite l'envoi de la représentation complète de la ressource.
 
-1. **Define the Web Service**: Determine the functionality and operations that your web service will provide. This involves deciding on the methods or functions that clients can invoke and the data that will be exchanged.
+4. **PATCH** : met à jour partiellement une ressource existante. Contrairement à PUT, permet d'envoyer uniquement les changements à appliquer.
 
-2. **Define the SOAP Message Structure**: SOAP messages are XML-based and consist of an envelope, a header, and a body. The envelope contains the root element and defines the XML namespaces used. The header may include optional information, such as authentication details or additional processing instructions. The body contains the actual data or the method invocation details.
+5. **DELETE** : supprime une ressource spécifiée. Après suppression, le serveur peut répondre avec un code 204 No Content ou 200 OK.
 
-3. **Design the WSDL**: WSDL (Web Services Description Language) is an XML-based language used to describe the web service and its operations. It specifies the methods, input/output parameters, and the location (URL) where the web service can be accessed. The WSDL document acts as a contract between the service provider and the service consumer.
+6. **HEAD** : similaire à GET mais récupère uniquement les en-têtes sans le corps de la réponse. Utile pour obtenir des métadonnées sans transférer tout le contenu.
 
-4. **Implement the Web Service**: Develop the actual web service implementation, which involves writing the code that handles the requested operations and generates the appropriate SOAP responses. The implementation can be done using different programming languages, such as Java, C#, or PHP, depending on your preferred technology stack.
+7. **OPTIONS** : récupère les méthodes, en-têtes et autres capacités supportées par une ressource. Utile pour déterminer les actions disponibles.
 
-5. **Deploy the Web Service**: Host the web service on a server or hosting environment that supports SOAP-based communication. This typically involves deploying the web service application on a web server or an application server that supports the programming language and frameworks used for implementation.
+8. **TRACE** : principalement utilisé à des fins de diagnostic. Le serveur renvoie la requête reçue au client.
 
-6. **Generate Client Code**: Once the web service is deployed, clients can consume it by generating client code based on the WSDL document. Various development tools and frameworks provide utilities to generate client code, which makes it easier for client applications to interact with the web service.
+## Quels sont les codes de statut HTTP ?
+100 (Information), 200 (Succès), 300 (Redirection), 400 (Erreur client) et 500 (Erreur serveur).
 
-7. **Interact with the Web Service**: Clients can use the generated client code to invoke the web service methods and send SOAP requests over a network. The requests are formed as SOAP messages, serialized into XML, and sent to the web service endpoint using protocols like HTTP.
+## Qu'est-ce que l'architecture microservices et ses composants clés ?
+- Les applications sont décomposées en services plus petits et indépendants pouvant être développés, déployés et maintenus séparément.
+- Composants clés : Registre de services, API Gateway, Serveur de configuration, Équilibreur de charge, Surveillance et Journalisation.
 
-8. **Handle SOAP Responses**: The web service processes the SOAP requests, executes the requested operations, and generates SOAP responses. The responses are sent back to the client, who can then extract the required data or handle any errors or exceptions that might occur during the process.
+## Comment gérer les transactions distribuées entre plusieurs microservices ?
+- Il est important d'utiliser le **pattern Saga**.
+- Le pattern Saga est un patron de conception pour gérer les transactions longues durée à travers plusieurs microservices.
 
-SOAP provides a standardized way to implement and consume web services, enabling interoperability between different systems. However, it is worth noting that in recent years, more lightweight and simpler alternatives, such as REST (Representational State Transfer), have gained popularity due to their ease of use and better compatibility with modern web development practices.
+## Qu'est-ce que SOAP et comment l'implémenter ?
+SOAP (Simple Object Access Protocol) est un protocole de messagerie utilisé dans les services web pour faciliter la communication entre différents systèmes. Il est basé sur XML et s'appuie généralement sur HTTP pour le transport.
+
+Pour implémenter SOAP :
+
+1. **Définir le service web** : déterminez la fonctionnalité et les opérations que votre service web fournira.
+
+2. **Définir la structure du message SOAP** : les messages SOAP sont basés sur XML et comprennent une enveloppe, un en-tête et un corps.
+
+3. **Concevoir le WSDL** : WSDL (Web Services Description Language) décrit le service web et ses opérations. Il spécifie les méthodes, paramètres d'entrée/sortie et l'URL d'accès.
+
+4. **Implémenter le service web** : développez l'implémentation réelle qui traite les opérations demandées et génère les réponses SOAP appropriées.
+
+5. **Déployer le service web** : hébergez le service sur un serveur supportant la communication SOAP.
+
+6. **Générer le code client** : les clients consomment le service en générant du code client basé sur le document WSDL.
+
+7. **Interagir avec le service** : les clients utilisent le code généré pour invoquer les méthodes du service et envoyer des requêtes SOAP via HTTP.
+
+8. **Gérer les réponses SOAP** : le service traite les requêtes, exécute les opérations et génère des réponses SOAP envoyées au client.
+
+SOAP fournit un moyen standardisé d'implémenter et de consommer des services web. Cependant, des alternatives plus légères comme REST ont gagné en popularité grâce à leur simplicité et meilleure compatibilité avec les pratiques modernes de développement web.

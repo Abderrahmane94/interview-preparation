@@ -5,11 +5,14 @@ import TOCInline from '@theme/TOCInline';
 
 # <TOCInline toc={toc} />
 
-## What’s Maven?	
-Maven is a **build tool** for Java projects that **manages** dependencies and builds projects based on a project object model (**POM**) file.
-## What's Maven Scopes?	
+## Qu'est-ce que Maven ?
+Maven est un **outil de build** pour les projets Java qui **gère** les dépendances et construit les projets à partir d'un fichier de modèle de projet (**POM**).
+
+## Quels sont les scopes Maven ?
 **Compile**, **Provided**, **Runtime**, **Test**, **System**, **Import**.
-## What is the Transitive Dependencies in Maven?	
-Transitive dependencies in Maven are dependencies that are **indirectly** required by your project's direct dependencies. 
-## Build lifecycle -Phases-	
+
+## Que sont les dépendances transitives dans Maven ?
+Les dépendances transitives dans Maven sont des dépendances **indirectement** requises par votre projet via ses dépendances directes.
+
+## Phases du cycle de vie de build
 **Validate**, **Compile**, **Test**, **Package**, **Verify**, **Install**, **Deploy**.

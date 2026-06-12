@@ -3,59 +3,59 @@ sidebar_position: 2
 ---
 import TOCInline from '@theme/TOCInline';
 
-# Testing
+# Tests
 # <TOCInline toc={toc} />
-## How to implement a Unit Test in angular?
 
-1. **Set up the Testing Environment**:
-   In your test file, import the necessary dependencies for testing Angular components, such as `TestBed` and the component to be tested. Also, import any additional dependencies or mock objects needed for the test.
+## Comment implémenter un test unitaire dans Angular ?
+
+1. **Configurer l'environnement de test** :
+   Dans votre fichier de test, importez les dépendances nécessaires pour tester les composants Angular, telles que `TestBed` et le composant à tester.
 
    ```typescript
    import { TestBed, ComponentFixture } from '@angular/core/testing';
-   import { YourComponent } from './your-component.component';
+   import { VotreComposant } from './votre-composant.component';
    ```
 
-2. **Configure the Testing Module**:
-   Use the `TestBed.configureTestingModule()` method to configure the testing module by providing the necessary dependencies and declarations for your component. You may also need to configure providers, import modules, or provide mock objects.
+2. **Configurer le module de test** :
+   Utilisez `TestBed.configureTestingModule()` pour configurer le module de test en fournissant les dépendances et déclarations nécessaires. Vous pouvez aussi configurer des providers, importer des modules ou fournir des objets mock.
 
    ```typescript
    beforeEach(async () => {
      await TestBed.configureTestingModule({
-       declarations: [YourComponent],
-       // other configuration options
+       declarations: [VotreComposant],
+       // autres options de configuration
      }).compileComponents();
    });
    ```
 
-3. **Create a Component Fixture**:
-   Use the `TestBed.createComponent()` method to create an instance of the component and obtain a reference to the component fixture. The fixture provides access to the component instance and allows you to interact with the component and its template.
+3. **Créer un fixture de composant** :
+   Utilisez `TestBed.createComponent()` pour créer une instance du composant et obtenir une référence au fixture. Le fixture donne accès à l'instance du composant et permet d'interagir avec lui et son template.
 
    ```typescript
-   let component: YourComponent;
-   let fixture: ComponentFixture<YourComponent>;
+   let component: VotreComposant;
+   let fixture: ComponentFixture<VotreComposant>;
 
    beforeEach(() => {
-     fixture = TestBed.createComponent(YourComponent);
+     fixture = TestBed.createComponent(VotreComposant);
      component = fixture.componentInstance;
    });
    ```
 
-4. **Write Test Cases**:
-   Use the `it()` function from Jasmine to define individual test cases. Within each test case, you can set up the necessary data or conditions, execute the component's methods or actions, and make assertions to verify the expected behavior.
+4. **Écrire les cas de test** :
+   Utilisez la fonction `it()` de Jasmine pour définir des cas de test individuels. Configurez les données ou conditions nécessaires, exécutez les méthodes du composant et faites des assertions pour vérifier le comportement attendu.
 
    ```typescript
-   it('should display the correct title', () => {
-     component.title = 'Test Title';
+   it('devrait afficher le bon titre', () => {
+     component.title = 'Titre de test';
      fixture.detectChanges();
      const titleElement = fixture.nativeElement.querySelector('.title');
-     expect(titleElement.textContent).toContain('Test Title');
+     expect(titleElement.textContent).toContain('Titre de test');
    });
    ```
 
-   In this example, we set the `title` property of the component, trigger change detection with `fixture.detectChanges()`, and then assert that the rendered title element contains the expected text.
+   Dans cet exemple, nous définissons la propriété `title`, déclenchons la détection des changements avec `fixture.detectChanges()`, puis vérifions que l'élément titre affiché contient le texte attendu.
 
-5. **Run the Tests**:
-   Use a test runner, such as Karma, to execute your tests. The test runner will launch the browser and run your tests, providing the test results and any failures or errors encountered during the test run.
+5. **Exécuter les tests** :
+   Utilisez un test runner comme Karma pour exécuter vos tests. Le test runner lancera le navigateur et exécutera vos tests en fournissant les résultats et les erreurs éventuelles.
 
-   You can run the tests using the Angular CLI command: `ng test`.
-
+   Vous pouvez exécuter les tests avec la commande Angular CLI : `ng test`.

@@ -4,7 +4,8 @@ import TOCInline from '@theme/TOCInline';
 # Jenkins
 # <TOCInline toc={toc} />
 
-## What is Jenkins?	
-Jenkins is an open-source **automation server** that is widely used to implement (**CI/CD**) **pipelines**.
-## Jenkins pipeline	
-Allows us to define a complete **list** of **events** that happen in the **code lifecycle**. Starting from the build, to testing and deployment.
+## Qu'est-ce que Jenkins ?
+Jenkins est un **serveur d'automatisation** open-source largement utilisé pour implémenter des pipelines (**CI/CD**).
+
+## Pipeline Jenkins
+Permet de définir une **liste complète** d'**événements** qui se produisent dans le **cycle de vie du code**. Du build, aux tests et jusqu'au déploiement.

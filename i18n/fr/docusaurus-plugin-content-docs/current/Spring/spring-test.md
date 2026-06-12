@@ -6,61 +6,64 @@ import TOCInline from '@theme/TOCInline';
 # Spring Test
 # <TOCInline toc={toc} />
 
-## Given-When-Then pattern	
-Pattern for **writing test** cases . It provides a clear and structured format to define the context, actions, and expected outcomes of a test.
-## Arrange-Act-Assert (AAA) pattern	
-Arrange-Act-Assert pattern, **structure** for organizing **unit tests**.
-## What is an integration test?	
-level of software testing that focuses on **verifying** the **interactions** and communication between different components, modules, or systems within an application.
-## What is Unit test?	
-A unit test is a **type of testing** where **individual** units, such as functions, methods, or classes, are tested in isolation to verify their behavior
-## What is JUnit and how does it work?
-JUnit is a **Java testing framework** that allows developers to write and run automated tests. To write a JUnit test case, you extend the JUnit **TestCase** class and define one or more **test methods**.
-## What are some commonly used assertions in JUnit?
-Common JUnit assertions include **assertTrue()**, **assertFalse()**, **assertEquals()**, and **assertNull()**.
-## What is Mockito and how does it differ from JUnit?
-Mockito is a **Java mocking framework** that creates **mock** objects for testing. It's used with JUnit to isolate specific parts of code for testing.
-## Can you give an example of how you have used JUnit and Mockito together in a project?
-JUnit and Mockito can be used together to write JUnit test cases that use mock objects created with Mockito to test the behavior of a class or method.
-## How do you handle exceptions in JUnit test cases?
-- try-catch.
-- With JUnit rule.
-- With annotation.
-## What is new in Junit 5
+## Pattern Given-When-Then
+Pattern pour l'**écriture de cas de test**. Il fournit un format clair et structuré pour définir le contexte, les actions et les résultats attendus d'un test.
 
-1. **New Programming Models**:
-    - JUnit 5 introduces a new programming model with annotations, including `@Test`, `@BeforeEach`, `@AfterEach`, `@BeforeAll`, and `@AfterAll`. These annotations provide more flexibility and control over test execution.
-    - Test methods no longer need to be `public void` methods; they can now have different access modifiers, return types, and accept parameters.
+## Pattern Arrange-Act-Assert (AAA)
+Pattern Arrange-Act-Assert, **structure** pour organiser les **tests unitaires**.
 
-2. **Extension Model**:
-    - JUnit 5 introduces a powerful extension model that allows developers to extend the behavior of test classes or methods.
-    - Extensions enable customizing test execution, adding custom test lifecycle callbacks, parameter injection, dynamic test generation, and more.
-    - Extensions can be implemented using the `Extension` API or predefined extensions provided by JUnit 5, such as `@ExtendWith`, `@BeforeEachCallback`, `@AfterEachCallback`, etc.
+## Qu'est-ce qu'un test d'intégration ?
+Niveau de test logiciel qui se concentre sur la **vérification** des **interactions** et de la communication entre différents composants, modules ou systèmes au sein d'une application.
 
-3. **Dynamic Tests**:
-    - JUnit 5 introduces dynamic tests, which allow generating tests programmatically at runtime.
-    - Dynamic tests provide more flexibility for generating and executing tests based on dynamic data sets or conditions.
-    - Dynamic tests can be created using the `@TestFactory` annotation and returning a `Stream`, `Iterable`, `Iterator`, `Collection`, `Iterator<DynamicTest>`, or `Collection<DynamicTest>`.
+## Qu'est-ce qu'un test unitaire ?
+Un test unitaire est un **type de test** où des **unités individuelles**, telles que des fonctions, méthodes ou classes, sont testées en isolation pour vérifier leur comportement.
 
-4. **Parameterized Tests**:
-    - JUnit 5 enhances parameterized testing by introducing the `@ParameterizedTest` annotation.
-    - Parameterized tests allow running the same test logic with different sets of parameters.
-    - Parameters can be provided using various sources, such as method arguments, CSV files, Enum values, custom providers, etc.
+## Qu'est-ce que JUnit et comment fonctionne-t-il ?
+JUnit est un **framework de test Java** qui permet aux développeurs d'écrire et d'exécuter des tests automatisés. Pour écrire un cas de test JUnit, vous étendez la classe **TestCase** de JUnit et définissez une ou plusieurs **méthodes de test**.
 
-5. **Conditional Test Execution**:
-    - JUnit 5 provides conditional test execution based on certain conditions using the `@EnabledOnXXX` and `@DisabledOnXXX` annotations.
-    - Conditions can be based on the operating system, Java version, system properties, environment variables, custom conditions, etc.
+## Quelles sont les assertions couramment utilisées dans JUnit ?
+Les assertions JUnit courantes incluent **assertTrue()**, **assertFalse()**, **assertEquals()** et **assertNull()**.
 
-6. **Nested Tests**:
-    - JUnit 5 supports nested test classes, allowing developers to group related tests and improve test organization and readability.
-    - Nested tests can have their own lifecycle and share setup/teardown methods.
+## Qu'est-ce que Mockito et en quoi diffère-t-il de JUnit ?
+Mockito est un **framework de mock Java** qui crée des **objets mock** pour les tests. Il est utilisé avec JUnit pour isoler des parties spécifiques du code lors des tests.
 
-7. **Test Instance Lifecycle**:
-    - JUnit 5 introduces new lifecycle options for test instances: `PER_CLASS` and `PER_METHOD`.
-    - The `PER_CLASS` mode creates a single test instance for a test class, and all test methods share the same instance.
-    - The `PER_METHOD` mode creates a new test instance for each test method execution.
+## Pouvez-vous donner un exemple d'utilisation conjointe de JUnit et Mockito ?
+JUnit et Mockito peuvent être utilisés ensemble pour écrire des cas de test JUnit utilisant des objets mock créés avec Mockito pour tester le comportement d'une classe ou méthode.
 
-8. **Additional Assertions**:
-    - JUnit 5 provides additional assertion methods for more expressive and readable assertions, such as `assertAll()`, `assertThrows()`, `assertTimeout()`, `assertTimeoutPreemptively()`, etc.
+## Comment gérez-vous les exceptions dans les cas de test JUnit ?
+- Avec try-catch.
+- Avec une règle JUnit.
+- Avec une annotation.
 
+## Quelles sont les nouveautés de JUnit 5 ?
 
+1. **Nouveaux modèles de programmation** :
+    - JUnit 5 introduit de nouvelles annotations : `@Test`, `@BeforeEach`, `@AfterEach`, `@BeforeAll` et `@AfterAll`. Elles offrent plus de flexibilité et de contrôle.
+    - Les méthodes de test n'ont plus besoin d'être `public void` ; elles peuvent avoir différents modificateurs d'accès, types de retour et accepter des paramètres.
+
+2. **Modèle d'extension** :
+    - JUnit 5 introduit un modèle d'extension puissant permettant d'étendre le comportement des classes ou méthodes de test.
+    - Les extensions permettent de personnaliser l'exécution des tests, d'ajouter des callbacks de cycle de vie, de l'injection de paramètres, la génération de tests dynamiques, etc.
+    - Les extensions peuvent utiliser l'API `Extension` ou les extensions prédéfinies : `@ExtendWith`, `@BeforeEachCallback`, `@AfterEachCallback`, etc.
+
+3. **Tests dynamiques** :
+    - JUnit 5 introduit les tests dynamiques, permettant de générer des tests par programmation à l'exécution.
+    - Créés avec l'annotation `@TestFactory` en retournant un `Stream`, `Iterable`, `Iterator` ou `Collection<DynamicTest>`.
+
+4. **Tests paramétrés** :
+    - JUnit 5 améliore les tests paramétrés avec l'annotation `@ParameterizedTest`.
+    - Les paramètres peuvent être fournis depuis des arguments de méthode, des fichiers CSV, des valeurs d'Enum, des fournisseurs personnalisés, etc.
+
+5. **Exécution conditionnelle** :
+    - JUnit 5 fournit l'exécution conditionnelle via `@EnabledOnXXX` et `@DisabledOnXXX`.
+    - Les conditions peuvent être basées sur le système d'exploitation, la version Java, les propriétés système, les variables d'environnement, etc.
+
+6. **Tests imbriqués** :
+    - JUnit 5 supporte les classes de test imbriquées, permettant de regrouper des tests liés et d'améliorer l'organisation.
+    - Les tests imbriqués peuvent avoir leur propre cycle de vie et partager des méthodes de configuration/nettoyage.
+
+7. **Cycle de vie de l'instance de test** :
+    - JUnit 5 introduit deux options : `PER_CLASS` (une seule instance pour la classe) et `PER_METHOD` (nouvelle instance par méthode de test).
+
+8. **Assertions supplémentaires** :
+    - JUnit 5 fournit des méthodes d'assertion supplémentaires : `assertAll()`, `assertThrows()`, `assertTimeout()`, `assertTimeoutPreemptively()`, etc.
