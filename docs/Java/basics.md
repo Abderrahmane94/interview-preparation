@@ -7,46 +7,306 @@ import TOCInline from '@theme/TOCInline';
 # <TOCInline toc={toc} />
 
 ## What is Java?
-Java is a high-level, object-oriented programming language that is designed to be portable and platform-independent.
+Java is a high-level, strongly-typed, object-oriented programming language designed to be **platform-independent** ("write once, run anywhere"). Java source code compiles to **bytecode**, which runs on any JVM regardless of the underlying OS.
+
 ## What are the features of Java?
-Java is known for its robustness, security, platform independence, object-oriented nature, multithreading, and scalability.
+- **Platform independence**: bytecode runs on any JVM.
+- **Object-oriented**: everything is an object (except primitives).
+- **Strongly typed**: type checking at compile time.
+- **Automatic memory management**: garbage collector handles heap memory.
+- **Multithreading**: built-in thread support.
+- **Robust**: strong exception handling, no pointer arithmetic.
+- **Secure**: no direct memory access, bytecode verification.
+- **Rich standard library**: `java.util`, `java.io`, `java.net`, etc.
+
 ## What is the difference between JDK, JRE, and JVM?
-JDK (Java Development Kit) is a software development kit that provides tools for developing Java applications, JRE (Java Runtime Environment) is an environment for running Java applications, and JVM (Java Virtual Machine) is an abstract machine that provides a runtime environment for executing Java bytecode.
+
+- **JVM (Java Virtual Machine)**: executes Java bytecode. Platform-specific (different JVM per OS). Provides garbage collection, JIT compilation, and runtime environment.
+- **JRE (Java Runtime Environment)**: JVM + standard class libraries. Needed to **run** Java applications.
+- **JDK (Java Development Kit)**: JRE + compiler (`javac`), debugger, and other development tools. Needed to **develop** Java applications.
+
+```
+JDK ⊃ JRE ⊃ JVM
+```
+
+## What is the difference between primitive types and wrapper classes?
+
+Java has 8 primitive types: `byte`, `short`, `int`, `long`, `float`, `double`, `char`, `boolean`. They are stored on the **stack** (when local variables), not on the heap.
+
+Wrapper classes (`Integer`, `Double`, etc.) are objects that wrap primitives — required for collections (`List<Integer>`, not `List<int>`).
+
+```java
+int primitive = 42;           // stack, no overhead
+Integer wrapper = 42;         // autoboxed, heap object
+
+// Pitfall: == compares references for objects
+Integer a = 200, b = 200;
+a == b;       // false — different objects
+a.equals(b);  // true
+```
+
+Java caches `Integer` values from **-128 to 127**, so `Integer.valueOf(127) == Integer.valueOf(127)` is `true`.
+
+## What is autoboxing and unboxing?
+**Autoboxing** is the automatic conversion from primitive to wrapper (`int` → `Integer`). **Unboxing** is the reverse.
+
+```java
+List<Integer> list = new ArrayList<>();
+list.add(5);           // autoboxing: int 5 → Integer(5)
+int x = list.get(0);   // unboxing: Integer(5) → int 5
+```
+
+⚠️ Unboxing a `null` wrapper throws `NullPointerException`.
+
 ## What is the difference between an abstract class and an interface?
-An abstract class can have both abstract and non-abstract methods, whereas an interface can only have abstract methods. Additionally, a class can only extend one abstract class, but it can implement multiple interfaces.
-## What is the purpose of the 'static' keyword in Java?
-The 'static' keyword in Java is used to declare a method or variable as belonging to the class, rather than to any instance of the class.
-## What is the purpose of the 'final' keyword in Java?
-The 'final' keyword in Java is used to indicate that a variable or method cannot be modified once it has been defined.
-## What is the difference between '== and '.equals()' in Java?
-'==' is used to compare the reference values of two objects, whereas '.equals()' is used to compare the content or values of two objects.
-## What is a constructor in Java?	
-A constructor in Java is a special method that is used to initialize objects of a class. It has the same name as the class and does not have a return type.
-## What is the difference between an instance variable and a static variable?	
-An instance variable is a variable that is associated with a specific instance of a class, whereas a static variable is associated with the class itself.
-## What is a package in Java?	
-A package in Java is a collection of related classes and interfaces. It is used to organize classes and prevent naming conflicts.
-## What is the purpose of the 'this' keyword in Java?	
-The 'this' keyword in Java is used to refer to the current object within a method or constructor. It is typically used to disambiguate between instance variables and local variables that have the same name.
-## What is the purpose of the 'super' keyword in Java?	
-The 'super' keyword in Java is used to call a method or constructor in the superclass of the current class. It is typically used to override methods or to call the constructor of the superclass from the constructor of a subclass.
-## What is a lambda expression in Java?	
-A lambda expression in Java is a way to create an anonymous function that can be passed around as a variable or parameter. It is typically used to simplify code that requires a functional interface.
-## What is the purpose of the 'transient' keyword in Java?	
-The 'transient' keyword in Java is used to indicate that a variable should not be serialized when an object is written to a file or transferred over a network.
-## What is the difference between a HashSet and a TreeSet in Java?	
-A HashSet is implemented using a hash table, whereas a TreeSet is implemented using a red-black tree. This means that a HashSet has faster performance for adding and removing elements, whereas a TreeSet has faster performance for retrieving elements in order.
-## What is a JavaBean?	
-A JavaBean is a reusable software component that conforms to a set of conventions for naming, behavior, and property access.
-## What is the difference between a StringBuilder and a StringBuffer in Java?	
-A StringBuilder is a mutable sequence of characters that is not synchronized, whereas a StringBuffer is a mutable sequence of characters that is synchronized.
-## What is the purpose of the 'default' keyword in a Java switch statement?	
-The 'default' keyword in a Java switch statement is used to specify the default case that is executed when none of the other cases match.
-## What is the purpose of the 'finalize' method in Java?	
-The 'finalize' method in Java is called by the garbage collector when an object is about to be destroyed. It can be used to perform final cleanup tasks or release resources.
-## What is the purpose of the 'assert' keyword in Java?	
-The 'assert' keyword in Java is used to test assumptions about the state of a program. It can be used to check that certain conditions are met and to catch errors early in the development process.
-## What is the purpose of the 'instanceof' operator in Java?	
-The 'instanceof' operator in Java is used to check whether an object is an instance of a particular class or interface. It can be used to perform type checking and to avoid class cast exceptions.
-## What is the purpose of the 'break' keyword in a Java loop?	
-The 'break' keyword in a Java loop is used to exit the loop immediately. It can be used to terminate the loop early if a certain condition is met.
+
+| | Abstract Class | Interface |
+|---|---|---|
+| Instantiation | No | No |
+| Methods | Abstract + concrete | Abstract, `default`, `static` (Java 8+), `private` (Java 9+) |
+| Fields | Any | `public static final` only |
+| Multiple inheritance | ❌ one `extends` | ✅ multiple `implements` |
+| Constructor | Yes | No |
+
+**When to use**: abstract class for shared base implementation; interface for defining a contract or capability.
+
+```java
+interface Drawable { void draw(); default void print() { System.out.println("Drawing"); } }
+abstract class Shape { protected String color; abstract double area(); }
+class Circle extends Shape implements Drawable {
+    double area() { return Math.PI * r * r; }
+    public void draw() { System.out.println("Drawing circle"); }
+}
+```
+
+## What is the purpose of the `static` keyword?
+`static` members belong to the **class**, not to any instance. They are shared across all objects.
+
+```java
+class Counter {
+    static int count = 0;  // shared
+    int id;
+    Counter() { id = ++count; }
+}
+Counter.count;  // access via class name (preferred)
+```
+
+`static` methods cannot access instance (`this`) fields. `static` blocks run once when the class is loaded.
+
+## What is the purpose of the `final` keyword?
+
+- **`final` variable**: cannot be reassigned after initialization.
+- **`final` method**: cannot be overridden.
+- **`final` class**: cannot be subclassed (e.g., `String`, `Integer`).
+
+```java
+final int MAX = 100;       // constant
+final class Immutable {}   // cannot extend
+```
+
+## What is the difference between `==` and `.equals()`?
+
+- `==` compares **references** (memory addresses) for objects; compares **values** for primitives.
+- `.equals()` compares **content** (must be properly overridden).
+
+```java
+String a = new String("hello");
+String b = new String("hello");
+a == b;        // false — different objects
+a.equals(b);   // true — same content
+```
+
+Always use `.equals()` for object comparison. For `null`-safe equality, use `Objects.equals(a, b)`.
+
+## What is a constructor in Java?
+A constructor initializes a new object. It has the same name as the class and no return type. If no constructor is defined, Java provides a default no-arg constructor.
+
+```java
+class Person {
+    String name;
+    int age;
+
+    Person() { this("Unknown", 0); }            // no-arg, calls other constructor
+    Person(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+}
+```
+
+Constructors cannot be `static`, `abstract`, or `final`. They can be overloaded.
+
+## What is the purpose of the `this` keyword?
+`this` refers to the **current object**:
+
+```java
+class Point {
+    int x, y;
+    Point(int x, int y) {
+        this.x = x;   // disambiguates field from parameter
+        this.y = y;
+    }
+    Point copy() { return this; }   // return current object
+}
+```
+
+`this(...)` calls another constructor in the same class (must be first statement).
+
+## What is the purpose of the `super` keyword?
+`super` refers to the **parent class**:
+
+```java
+class Animal { void speak() { System.out.println("..."); } }
+class Dog extends Animal {
+    @Override
+    void speak() {
+        super.speak();              // call parent method
+        System.out.println("Woof");
+    }
+    Dog() { super(); }             // call parent constructor (implicit if omitted)
+}
+```
+
+## What is the difference between an instance variable and a static variable?
+
+- **Instance variable**: each object has its own copy, stored on the heap with the object.
+- **Static variable**: one copy shared across all instances, stored in the method area.
+
+```java
+class Dog {
+    static int count = 0;   // shared — how many dogs exist
+    String name;            // instance — each dog has its own name
+    Dog(String name) { this.name = name; count++; }
+}
+```
+
+## What is a lambda expression in Java?
+A lambda is a concise way to represent an anonymous function. It can be used wherever a **functional interface** is expected.
+
+```java
+// Old: anonymous class
+Comparator<String> comp = new Comparator<>() {
+    public int compare(String a, String b) { return a.compareTo(b); }
+};
+
+// Lambda
+Comparator<String> comp = (a, b) -> a.compareTo(b);
+
+// Method reference (even shorter)
+Comparator<String> comp = String::compareTo;
+```
+
+## What is the purpose of the `transient` keyword?
+Fields marked `transient` are **excluded from serialization**.
+
+```java
+class User implements Serializable {
+    String username;
+    transient String password;  // not saved when serialized
+}
+```
+
+## What is a JavaBean?
+A JavaBean is a class following these conventions:
+1. Public no-arg constructor.
+2. Private fields with public getters/setters.
+3. Implements `Serializable`.
+
+```java
+public class Product implements Serializable {
+    private String name;
+    private double price;
+
+    public Product() {}
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    public double getPrice() { return price; }
+    public void setPrice(double price) { this.price = price; }
+}
+```
+
+Used extensively in Spring, JPA, and JSP frameworks.
+
+## What is the difference between `StringBuilder` and `StringBuffer`?
+
+| | `StringBuilder` | `StringBuffer` |
+|---|---|---|
+| Thread-safe | No | Yes (synchronized) |
+| Performance | Faster | Slower |
+
+`String` itself is **immutable** — any "modification" creates a new object. Use `StringBuilder` for building strings in loops.
+
+```java
+StringBuilder sb = new StringBuilder("Hello");
+sb.append(" World").insert(5, ",").reverse();
+String result = sb.toString();
+```
+
+## What is the purpose of the `instanceof` operator?
+Checks if an object is an instance of a class/interface. Since Java 16 (pattern matching), it can also bind the result:
+
+```java
+Object obj = "Hello";
+
+// Classic
+if (obj instanceof String) { String s = (String) obj; }
+
+// Pattern matching (Java 16+)
+if (obj instanceof String s) { System.out.println(s.length()); }
+```
+
+## What is the purpose of the `assert` keyword?
+Used during development/testing to check assumptions. Disabled by default at runtime (enable with `-ea` JVM flag).
+
+```java
+int age = getAge();
+assert age >= 0 : "Age cannot be negative: " + age;
+```
+
+Not for production validation — use proper exceptions instead.
+
+## What is a package in Java?
+A package is a namespace for organizing related classes and interfaces. It maps to directory structure.
+
+```java
+package com.company.utils;     // declaration at top of file
+
+import java.util.List;         // import from another package
+import com.company.utils.*;    // wildcard import (not recommended)
+```
+
+Benefits: prevents naming conflicts, controls access (`package-private`), organizes code.
+
+## What is the purpose of the `break` and `continue` keywords?
+
+- **`break`**: exits the current loop or switch immediately.
+- **`continue`**: skips the rest of the current iteration and moves to the next.
+
+```java
+for (int i = 0; i < 10; i++) {
+    if (i == 3) continue;  // skip 3
+    if (i == 7) break;     // stop at 7
+    System.out.print(i + " ");
+}
+// Output: 0 1 2 4 5 6
+```
+
+## What is the purpose of the `default` keyword in a switch statement?
+Executes when no `case` matches. Also used in interfaces (Java 8+) for default method implementations.
+
+```java
+switch (day) {
+    case MONDAY: System.out.println("Start of week"); break;
+    case FRIDAY: System.out.println("End of week"); break;
+    default: System.out.println("Midweek");
+}
+```
+
+Java 14+ switch expressions:
+```java
+String label = switch (day) {
+    case MONDAY -> "Start";
+    case FRIDAY -> "End";
+    default -> "Mid";
+};
+```
