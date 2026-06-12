@@ -3,32 +3,33 @@
 # Décrivez-vous
 
 
-Good morning / afternoon
+Bonjour / Bonsoir
 
-Thank you for giving me the opportunity to introduce myself.
+Merci de me donner l'opportunité de me présenter.
 
-My name is **Abderrahmane Sardaoui**, I'm a Java Full-stack Developer with more than 6 years of proven experience in the IT sector and Development.
+Je m'appelle **Abderrahmane Sardaoui**, je suis Développeur Java Full-stack avec plus de 6 ans d'expérience avérée dans le secteur IT et le développement logiciel.
 
-I’m **passionate about technology**,
+Je suis **passionné par la technologie**,
 
-I consider myself as a good **team player** and I like to **collaborate with others**.
+Je me considère comme un bon **joueur d'équipe** et j'aime **collaborer avec les autres**.
 
-during my last experience involved in the developpment of a CRM (Collaborative CRM/Operational CRM) using java, Spring, hibernate, angular, git, jenkins, docker, my responsabilities was to:
-- Evaluated client requirements and translated them into user stories to ensure clear
-  understanding.
-- Implemented code solutions and conducted thorough unit testing to ensure
-  functionality and quality.
-- Designed user interfaces.
-I was also a **Full stack developer at Elit** which is an energy supplier
-I worked on 2 projects
-1- The first is **GTC**: Financial system for electricity and gas bills.
-2- the second is **CTC**: Energy bill accounting system.
-I was involved in both the backend and the frontend
-- For the **Back end**:
-  - I did the Functional analysis,
-  - APIs design and documentation using swagger/OpenAPI
-  - Database modelization
-  - Implement Unit and Integration Tests using Junit and Mockito
-  - Wrote clean, maintainable, scalable, and well-tested code.
-- For the **Front-end**: I have implemented views using Angular
-  The Technology used is Java 8, JEE, Spring, Spring boot, JSF, Angular, PostgreSQL, Subversion, Maven.
+Lors de ma dernière expérience, j'ai participé au développement d'un CRM (CRM Collaboratif / Opérationnel) en utilisant Java, Spring, Hibernate, Angular, Git, Jenkins, Docker. Mes responsabilités étaient :
+- Analyser les besoins clients et les traduire en user stories pour assurer une compréhension claire.
+- Implémenter des solutions de code et effectuer des tests unitaires approfondis pour garantir la fonctionnalité et la qualité.
+- Concevoir des interfaces utilisateur.
+
+J'ai également travaillé comme **développeur Full Stack chez Elit**, fournisseur d'énergie.
+J'ai travaillé sur 2 projets :
+1. Le premier est **GTC** : système financier pour les factures d'électricité et de gaz.
+2. Le second est **CTC** : système de comptabilité des factures d'énergie.
+
+J'ai participé au développement back-end et front-end :
+- **Back-end** :
+  - Analyse fonctionnelle
+  - Conception et documentation des APIs avec Swagger/OpenAPI
+  - Modélisation de la base de données
+  - Implémentation de tests unitaires et d'intégration avec JUnit et Mockito
+  - Écriture de code propre, maintenable, scalable et bien testé.
+- **Front-end** : implémentation de vues avec Angular.
+
+Les technologies utilisées : Java 8, JEE, Spring, Spring Boot, JSF, Angular, PostgreSQL, Subversion, Maven.

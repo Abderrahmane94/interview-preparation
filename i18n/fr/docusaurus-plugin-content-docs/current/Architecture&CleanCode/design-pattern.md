@@ -4,35 +4,37 @@ sidebar_position: 3
 
 import TOCInline from '@theme/TOCInline';
 
-# Design Pattern
+# Patrons de Conception
 # <TOCInline toc={toc} />
 
-## What are Design Patterns?
-**Design patterns** are typical solutions to commonly occurring problems in software design. 
+## Qu'est-ce que les patrons de conception ?
+Les **patrons de conception** sont des solutions typiques à des problèmes récurrents en conception logicielle.
 
-### 1. Creational patterns
-A creational design pattern is a type of design pattern in software engineering that focuses on object creation mechanisms.
-1. **Singleton**: Ensures that only one instance of a class exists throughout the system.
-2. **Factory Method**: Defines an interface for creating objects but allows subclasses to decide which class to instantiate.
-3. **Abstract Factory**: Provides an interface for creating families of related or dependent objects without specifying their concrete classes.
-4. **Builder**: Separates the construction of complex objects from their representation, allowing the same construction process to create different representations.
-5. **Prototype**: Creates new objects by cloning existing objects, allowing for the creation of new instances without explicitly specifying their class.
-### 2. Structural patterns
-Structural design patterns focus on the composition and structure of classes and objects.
-1. **Adapter**: Converts the interface of a class into another interface that clients expect. It allows incompatible classes to work together by wrapping one class with another. 
-2. **Bridge**: Decouples an abstraction from its implementation, allowing them to vary independently. It provides a way to separate the interface and implementation hierarchies.
-3. **Composite**: Composes objects into a tree-like structure to represent part-whole hierarchies. It allows clients to treat individual objects and compositions uniformly.
-4. **Decorator**: Dynamically adds responsibilities or behaviors to objects without subclassing. It provides a flexible alternative to subclassing for extending functionality.
-5. **Facade**: Provides a unified interface to a set of interfaces of a subsystem. It simplifies complex subsystems by providing a higher-level interface that clients can interact with.
-6. **Flyweight**: Shares common state across multiple objects, reducing memory consumption. It allows for efficient sharing of fine-grained objects.
-7. **Proxy**: Provides a surrogate or placeholder object that controls access to another object. It allows for additional functionality and control over object access.
-### 3. Behavioral patterns
-Behavioral design patterns focus on the interaction and communication between objects and classes.
-1. **Observer**: Defines a one-to-many dependency between objects, so that when one object changes its state, all dependent objects are notified and updated automatically.
-2. **Strategy**: Encapsulates a family of algorithms and makes them interchangeable. It allows the algorithm to vary independently from clients that use it.
-3. **Command**: Encapsulates a request as an object, allowing the parameterization of clients with different requests, queueing or logging requests, and supporting undoable operations.
-4. **Template Method**: Defines the skeleton of an algorithm in a base class, allowing subclasses to override certain steps of the algorithm without changing its structure.
-5. **Iterator**: Provides a way to access elements of an aggregate object sequentially without exposing its underlying representation. It decouples the traversal logic from the object structure.
-6. **State**: Allows an object to alter its behavior when its internal state changes. It encapsulates state-specific behavior into separate classes and allows objects to dynamically change their behavior.
-7. **Chain of Responsibility**: Allows an object to pass a request along a chain of potential handlers until one of them handles the request. It decouples senders and receivers and provides flexibility in handling requests.
-8. **Interpreter**: Defines a representation for a grammar along with an interpreter that uses the representation to interpret sentences in the language. It allows the creation of domain-specific languages.
+### 1. Patrons de création
+Les patrons de création se concentrent sur les mécanismes d'instanciation des objets.
+1. **Singleton** : garantit qu'une seule instance d'une classe existe dans le système.
+2. **Factory Method** : définit une interface pour créer des objets, mais laisse les sous-classes décider quelle classe instancier.
+3. **Abstract Factory** : fournit une interface pour créer des familles d'objets liés sans spécifier leurs classes concrètes.
+4. **Builder** : sépare la construction d'objets complexes de leur représentation, permettant au même processus de construction de créer différentes représentations.
+5. **Prototype** : crée de nouveaux objets en clonant des objets existants, sans spécifier explicitement leur classe.
+
+### 2. Patrons structurels
+Les patrons structurels se concentrent sur la composition et la structure des classes et des objets.
+1. **Adapter** : convertit l'interface d'une classe en une autre interface attendue par les clients. Permet à des classes incompatibles de travailler ensemble.
+2. **Bridge** : découple une abstraction de son implémentation, permettant à chacune de varier indépendamment.
+3. **Composite** : compose des objets en structure arborescente pour représenter des hiérarchies tout-partie.
+4. **Decorator** : ajoute dynamiquement des responsabilités ou comportements aux objets sans héritage.
+5. **Facade** : fournit une interface unifiée à un ensemble d'interfaces d'un sous-système, simplifiant son utilisation.
+6. **Flyweight** : partage l'état commun entre plusieurs objets pour réduire la consommation mémoire.
+7. **Proxy** : fournit un objet substitut qui contrôle l'accès à un autre objet, permettant des fonctionnalités supplémentaires.
+
+### 3. Patrons comportementaux
+Les patrons comportementaux se concentrent sur l'interaction et la communication entre objets et classes.
+1. **Observer** : définit une dépendance un-à-plusieurs entre objets, de sorte que lorsqu'un objet change d'état, tous les dépendants sont notifiés et mis à jour automatiquement.
+2. **Strategy** : encapsule une famille d'algorithmes et les rend interchangeables, permettant à l'algorithme de varier indépendamment des clients.
+3. **Command** : encapsule une requête sous forme d'objet, permettant la paramétrisation des clients et le support des opérations annulables.
+4. **Template Method** : définit le squelette d'un algorithme dans une classe de base, permettant aux sous-classes de redéfinir certaines étapes sans changer la structure globale.
+5. **Iterator** : fournit un moyen d'accéder séquentiellement aux éléments d'un objet agrégat sans exposer sa représentation interne.
+6. **State** : permet à un objet de modifier son comportement lorsque son état interne change, en encapsulant les comportements spécifiques à chaque état dans des classes séparées.
+7. **Chain of Responsibility** : permet à un objet de passer une requête le long d'une chaîne de gestionnaires potentiels jusqu'à ce que l'un d'eux la traite.
+8. **Interpreter** : définit une représentation grammaticale et un interpréteur associé pour interpréter des phrases dans un langage dédié.

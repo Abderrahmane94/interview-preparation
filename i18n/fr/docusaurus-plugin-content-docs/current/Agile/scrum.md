@@ -4,70 +4,90 @@ import TOCInline from '@theme/TOCInline';
 
 # <TOCInline toc={toc} />
 
-## Qu'est-ce que la méthodologie Agile?	
+## Qu'est-ce que la méthodologie Agile ?
 La méthodologie Agile est une **approche itérative de la gestion de projet** qui met l'accent sur la **flexibilité**, la **collaboration** et la **satisfaction client**.
-## What are the core values of Agile methodology?	
-The core values of Agile methodology are individuals and interactions, working software, customer collaboration, and responding to change.
-## What are the benefits of using Agile methodology?	
-Some benefits of using Agile methodology include **increased collaboration**, **faster feedback cycles**, better **alignment with customer needs**, and improved **adaptability to change**.
-## How does Agile methodology differ from traditional project management approaches?	
-Agile methodology differs from traditional project management approaches in several ways, including a focus on flexibility and responsiveness, a willingness to adapt to changing requirements, and an emphasis on continuous improvement.
-## What is a Scrum Master, and what are their responsibilities?	
-A Scrum Master is a **facilitator** for an Agile development team who is responsible for **managing the Scrum process** and ensuring that the team adheres to Agile principles and practices.
-## What is a Sprint in Agile methodology?	
-A Sprint is a **time-boxed period** during which an Agile team works to **deliver** a specific **increment** of a product. Sprints typically last between **one** and **four** weeks.
-## How does Agile methodology help teams to manage risk?
-Agile methodology helps teams to manage risk by breaking down a project into smaller, more manageable pieces and by continuously testing and validating assumptions throughout the development process.
-## What is a User Story in Agile methodology?	
-A User Story is a brief, high-level **description** of a product feature or requirement from the perspective of an end user. User Stories are used to guide development efforts and to ensure that the team remains focused on delivering value to the customer.
-## What are the key principles of Agile methodology?	
-The key principles of Agile methodology include **prioritizing customer satisfaction**, **embracing change**, **delivering working software frequently**, promoting **collaboration and communication**, and maintaining a focus on **simplicity**.
-## How do you measure the success of an Agile project?	
-Success in Agile projects is typically measured by the **amount of value delivered to the customer**, the **speed** at which that value is delivered, and the team's ability to continuously **improve** and adapt to **changing** requirements.
-## What is the difference between Agile and Waterfall methodologies?	
-The main difference between Agile and Waterfall methodologies is that Agile is an **iterative** and **incremental** approach that emphasizes flexibility, collaboration, and customer satisfaction, while Waterfall is a **linear** and **sequential** approach that emphasizes planning, documentation, and control.
-## What is a Product Backlog in Agile methodology?	
-A Product Backlog is a **prioritized list of features** or requirements for a product that is maintained by the Product Owner. The Product Backlog guides the development efforts of the Agile team and is constantly refined and reprioritized based on feedback and changing requirements.
-## What is a Sprint Review in Agile methodology?	
-A Sprint Review is a **meeting** held at the **end** of each Sprint during which the Agile team **demonstrates** the work that was completed during the Sprint and receives **feedback** from **stakeholders**. The Sprint Review helps to ensure that the team is delivering value to the customer and that the product is meeting its goals.
-## What is a Retrospective in Agile methodology?	
-A Retrospective is a **meeting** held at the **end** of each Sprint during which the Agile team **reflects** on their performance and identifies areas for **improvement**. The Retrospective helps to promote continuous improvement and to ensure that the team is always striving to work more effectively and efficiently.
-## What is the role of the Product Owner in Agile methodology?	
-The Product Owner is responsible for **defining and prioritizing the features** and requirements for a product and for ensuring that the team is delivering value to the customer. The Product Owner works closely with stakeholders to gather feedback and to ensure that the product is meeting its goals.
-## What is the role of the Development Team in Agile methodology?	
-The Development Team is responsible for **designing, developing, and testing the product increment** during each Sprint. The Development Team is self-organizing and cross-functional, meaning that they have all of the skills and knowledge necessary to deliver the product increment.
-## What is a Burndown Chart in Agile methodology?	
-A Burndown Chart is a **visual representation** of the **amount** of work remaining in a Sprint or in the overall project. The Burndown Chart helps the Agile team to track progress and to identify potential issues that may impact the project's ability to deliver value to the customer.
-## What is Continuous Integration in Agile methodology?	
-Continuous Integration is a practice in which **code changes** are **merged** into a central repository and **tested** automatically on a regular basis. Continuous Integration helps to ensure that the code is always in a working state and that issues are identified and addressed quickly.
-## What is the difference between a Release and a Sprint in Agile methodology?	
-A Release is a **larger**, more significant **milestone** in the development of a product, while a Sprint is a **time-boxed period** during which a specific increment of the product is delivered. Releases typically encompass multiple Sprints and may involve more significant changes to the product.
-## What is the purpose of a Daily Standup in Agile methodology?	
-The purpose of a Daily Standup is to provide a brief **status update** to the **team** on progress since the last meeting, discuss any impediments or issues, and identify what needs to be accomplished before the next meeting. The Daily Standup helps to ensure that the team remains aligned and focused on achieving the goals of the Sprint.
-## What is a Sprint Goal in Agile methodology?	
-A Sprint Goal is a concise statement that describes the objective of the Sprint and the value that the team intends to deliver to the customer. The Sprint Goal helps to ensure that the team remains focused and aligned on the goals of the Sprint.
-## What is a Velocity in Agile methodology?	
-Velocity is a **measure** of the amount of work that an Agile team can complete during a Sprint. Velocity is calculated by summing the estimates for all of the completed user stories or product backlog items during the Sprint. Velocity can be used to help the team plan and forecast future Sprints.
-## What is KANBAN?
-Kanban is a project management methodology that originated in the manufacturing industry and has since been widely adopted in the IT sector. It provides a visual way to manage workflows and improve productivity and efficiency.
-In Kanban, work items are represented as cards or sticky notes, which are moved through various stages of a workflow on a Kanban board. The board typically consists of columns that represent different stages of work, such as "To Do," "In Progress," and "Done." 
-## What is WATERFALL?
-Waterfall is a traditional project management methodology that is widely used in the IT sector, particularly for large-scale software development projects. It follows a linear sequential approach, where each phase of the project is completed before moving on to the next one. The name "waterfall" is derived from the idea that the project flows steadily downwards, like a waterfall.
-The waterfall methodology typically consists of the following sequential phases:
-1. **Requirements gathering**: In this phase, the project team works closely with stakeholders to gather and document all the project requirements. This involves understanding the desired features, functionality, and specifications of the software or system to be developed.
 
-2. **System design**: Once the requirements are finalized, the system design phase begins. It involves creating detailed technical specifications and architectural designs for the software or system. This phase establishes the overall structure and components of the solution.
+## Quelles sont les valeurs fondamentales de la méthodologie Agile ?
+Les valeurs fondamentales de la méthodologie Agile sont : les individus et les interactions, les logiciels fonctionnels, la collaboration avec le client et l'adaptation au changement.
 
-3. **Implementation**: The implementation phase involves coding and development based on the design specifications. Developers write the actual code, build the software, and integrate various components to create the desired system.
+## Quels sont les avantages de la méthodologie Agile ?
+Parmi les avantages, on compte une **collaboration accrue**, des **cycles de feedback plus rapides**, une meilleure **adéquation aux besoins clients** et une **adaptabilité au changement** améliorée.
 
-4. **Testing**: After the implementation phase, thorough testing is conducted to ensure that the software or system functions correctly and meets the specified requirements. Testing can include unit testing, integration testing, system testing, and user acceptance testing.
+## En quoi la méthodologie Agile diffère-t-elle des approches traditionnelles ?
+La méthodologie Agile se distingue par son accent sur la flexibilité et la réactivité, sa volonté de s'adapter aux exigences changeantes et son engagement envers l'amélioration continue.
 
-5. **Deployment**: Once testing is complete and the software is deemed ready, it is deployed to the production environment or delivered to the client. This phase involves installing the software, configuring it, and making it available for end-users.
+## Qu'est-ce qu'un Scrum Master et quelles sont ses responsabilités ?
+Un Scrum Master est un **facilitateur** pour une équipe Agile, responsable de **gérer le processus Scrum** et de s'assurer que l'équipe respecte les principes et pratiques Agile.
 
-6. **Maintenance and support**: After deployment, the maintenance and support phase begins. It involves ongoing maintenance, bug fixes, updates, and providing technical support to users as needed.
+## Qu'est-ce qu'un Sprint dans la méthodologie Agile ?
+Un Sprint est une **période délimitée dans le temps** durant laquelle une équipe Agile livre un **incrément** spécifique d'un produit. Les Sprints durent généralement entre **une** et **quatre** semaines.
 
-The waterfall methodology emphasizes a structured and sequential approach, where each phase must be completed before moving on to the next one. It is often used in projects with well-defined requirements and where changes are expected to be minimal once development begins.
+## Comment la méthodologie Agile aide-t-elle à gérer les risques ?
+La méthodologie Agile aide à gérer les risques en décomposant le projet en morceaux plus petits et en testant et validant continuellement les hypothèses tout au long du développement.
 
-However, one of the main drawbacks of the waterfall methodology is its lack of flexibility. It assumes that all requirements can be defined upfront and that changes can be easily accommodated. In practice, it is often challenging to gather all requirements accurately at the beginning of a project, leading to potential delays or rework if changes are needed later.
+## Qu'est-ce qu'une User Story dans la méthodologie Agile ?
+Une User Story est une **description** brève et de haut niveau d'une fonctionnalité ou exigence du point de vue d'un utilisateur final. Elle guide les efforts de développement et assure que l'équipe reste concentrée sur la livraison de valeur au client.
 
-Many modern project management approaches, such as Agile and iterative methodologies, have emerged as alternatives to the waterfall model, offering more flexibility and adaptability to changing requirements and customer needs.
+## Quels sont les principes clés de la méthodologie Agile ?
+Ils comprennent : **prioriser la satisfaction client**, **accepter le changement**, **livrer fréquemment des logiciels fonctionnels**, favoriser la **collaboration et la communication**, et maintenir un accent sur la **simplicité**.
+
+## Comment mesure-t-on le succès d'un projet Agile ?
+Le succès se mesure généralement par la **quantité de valeur livrée au client**, la **rapidité** de livraison et la capacité de l'équipe à **s'améliorer** continuellement et à s'adapter aux exigences changeantes.
+
+## Quelle est la différence entre Agile et Waterfall ?
+Agile est une approche **itérative** et **incrémentale** axée sur la flexibilité et la collaboration, tandis que Waterfall est une approche **linéaire** et **séquentielle** axée sur la planification, la documentation et le contrôle.
+
+## Qu'est-ce qu'un Product Backlog ?
+Un Product Backlog est une **liste priorisée de fonctionnalités** maintenue par le Product Owner. Il guide les efforts de développement et est continuellement affiné selon les retours et les exigences changeantes.
+
+## Qu'est-ce qu'une Sprint Review ?
+Une Sprint Review est une **réunion** tenue à la **fin** de chaque Sprint où l'équipe Agile **présente** le travail accompli et reçoit les **retours** des **parties prenantes**.
+
+## Qu'est-ce qu'une Rétrospective ?
+Une Rétrospective est une **réunion** tenue à la **fin** de chaque Sprint où l'équipe **réfléchit** à ses performances et identifie des axes d'**amélioration** pour travailler plus efficacement.
+
+## Quel est le rôle du Product Owner ?
+Le Product Owner est responsable de **définir et prioriser les fonctionnalités** du produit et de s'assurer que l'équipe livre de la valeur au client en travaillant étroitement avec les parties prenantes.
+
+## Quel est le rôle de l'équipe de développement ?
+L'équipe de développement est responsable de **concevoir, développer et tester l'incrément du produit** pendant chaque Sprint. Elle est auto-organisée et pluridisciplinaire.
+
+## Qu'est-ce qu'un Burndown Chart ?
+Un Burndown Chart est une **représentation visuelle** de la **quantité** de travail restante dans un Sprint ou dans le projet global. Il aide à suivre l'avancement et à identifier les problèmes potentiels.
+
+## Qu'est-ce que l'Intégration Continue dans la méthodologie Agile ?
+L'Intégration Continue est une pratique où les **modifications de code** sont **fusionnées** dans un dépôt central et **testées** automatiquement de façon régulière, assurant que le code est toujours dans un état fonctionnel.
+
+## Quelle est la différence entre une Release et un Sprint ?
+Une Release est un **jalon** plus large et significatif, tandis qu'un Sprint est une **période délimitée** de livraison d'un incrément. Les Releases englobent généralement plusieurs Sprints.
+
+## Quel est le but du Daily Standup ?
+Fournir une brève **mise à jour** à **l'équipe**, discuter des obstacles et identifier ce qui doit être accompli avant la prochaine réunion. Il maintient l'équipe alignée sur les objectifs du Sprint.
+
+## Qu'est-ce qu'un Sprint Goal ?
+Un Sprint Goal est un énoncé concis décrivant l'objectif du Sprint et la valeur que l'équipe entend livrer au client. Il maintient l'équipe concentrée et alignée.
+
+## Qu'est-ce que la Vélocité dans la méthodologie Agile ?
+La Vélocité est une **mesure** de la quantité de travail qu'une équipe Agile peut accomplir pendant un Sprint, calculée en additionnant les estimations des User Stories complétées. Elle sert à planifier et prévoir les Sprints futurs.
+
+## Qu'est-ce que KANBAN ?
+Kanban est une méthodologie de gestion de projet issue de l'industrie manufacturière, largement adoptée dans le secteur IT. Elle offre une façon visuelle de gérer les flux de travail via un tableau où les tâches progressent à travers des colonnes (« À faire », « En cours », « Terminé »).
+
+## Qu'est-ce que WATERFALL ?
+Waterfall est une méthodologie traditionnelle de gestion de projet qui suit une approche séquentielle linéaire où chaque phase est complétée avant de passer à la suivante.
+
+Les phases séquentielles sont :
+
+1. **Collecte des exigences** : recueil et documentation de toutes les exigences du projet avec les parties prenantes.
+
+2. **Conception du système** : création de spécifications techniques détaillées et de conceptions architecturales.
+
+3. **Implémentation** : développement du code et intégration des composants selon les spécifications de conception.
+
+4. **Tests** : tests approfondis (unitaires, d'intégration, système, acceptance) pour vérifier la conformité aux exigences.
+
+5. **Déploiement** : mise en production du logiciel et mise à disposition des utilisateurs finaux.
+
+6. **Maintenance et support** : maintenance continue, corrections de bugs, mises à jour et support technique.
+
+Le principal inconvénient de Waterfall est son **manque de flexibilité** face aux changements. Des approches modernes comme Agile ont émergé en alternative, offrant plus d'adaptabilité aux besoins changeants.

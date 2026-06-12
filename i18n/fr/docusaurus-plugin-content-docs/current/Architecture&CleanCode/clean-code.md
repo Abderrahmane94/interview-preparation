@@ -4,27 +4,27 @@ sidebar_position: 2
 
 import TOCInline from '@theme/TOCInline';
 
-# Clean Code
+# Code Propre
 # <TOCInline toc={toc} />
 
-## How to deal with legacy code?
-- Understand the Codebase.
-- Test the Code. 
-- Document and Comment. 
-- Refactor in Small Steps.
-- Apply Design Patterns and Principles.
-- Collaborate With Other Developers.
-## SOLID Principals
+## Comment gérer le code legacy ?
+- Comprendre la base de code.
+- Tester le code.
+- Documenter et commenter.
+- Refactoriser par petites étapes.
+- Appliquer les patrons de conception et les principes.
+- Collaborer avec les autres développeurs.
 
-1. **Single Responsibility**: a class should only have one responsibility. Furthermore, it should only have one reason to change.
-2. **Open for Extension, Closed for Modification**: classes should be open for extension but closed for modification. In doing so, we stop ourselves from modifying existing code and causing potential new bugs in an otherwise happy application. 
-3. **Liskov Substitution**: if class A is a subtype of class B, we should be able to replace B with A without disrupting the behavior of our program.
-4. **Interface Segregation**: larger interfaces should be split into smaller ones. By doing so, we can ensure that implementing classes only need to be concerned about the methods that are of interest to them.
-5. **Dependency Inversion**: The principle of dependency inversion refers to the decoupling of software modules. This way, instead of high-level modules depending on low-level modules, both will depend on abstractions.
+## Principes SOLID
 
-## What is the difference between Inheritance, composition, Association & Aggregation ?
-- **Inheritance** is a mechanism in which a subclass inherits the properties and behaviors of its superclass. 
-- **Composition** is a relationship where one class contains an instance of another class as a member variable.
-- **Association** represents a relationship between two or more classes where objects of one class are related to objects of another class.
-- **Aggregation** is a specialized form of association that represents a whole-part relationship. It is a stronger form of association where the associated objects have a relationship where one object (the whole) owns or contains the other objects (the parts).
+1. **Responsabilité Unique** : une classe ne doit avoir qu'une seule responsabilité et qu'une seule raison de changer.
+2. **Ouvert/Fermé** : les classes doivent être ouvertes à l'extension mais fermées à la modification, afin d'éviter de modifier du code existant et d'introduire de nouveaux bugs.
+3. **Substitution de Liskov** : si la classe A est un sous-type de la classe B, on doit pouvoir remplacer B par A sans perturber le comportement du programme.
+4. **Ségrégation des Interfaces** : les grandes interfaces doivent être divisées en interfaces plus petites, afin que les classes d'implémentation n'aient à se préoccuper que des méthodes qui les concernent.
+5. **Inversion des Dépendances** : au lieu que les modules de haut niveau dépendent des modules de bas niveau, les deux doivent dépendre d'abstractions.
 
+## Quelle est la différence entre Héritage, Composition, Association et Agrégation ?
+- **Héritage** : mécanisme par lequel une sous-classe hérite des propriétés et comportements de sa superclasse.
+- **Composition** : relation où une classe contient une instance d'une autre classe comme variable membre.
+- **Association** : relation entre deux classes ou plus où les objets d'une classe sont liés aux objets d'une autre classe.
+- **Agrégation** : forme spécialisée d'association représentant une relation tout-partie, où un objet (le tout) possède ou contient d'autres objets (les parties).

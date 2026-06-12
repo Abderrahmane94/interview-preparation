@@ -1,26 +1,21 @@
 
 
-# The Don'ts
+# Les choses à ne pas faire
 
-- Never be negative about your current/previous employer or colleagues.
+- Ne soyez jamais négatif à propos de votre employeur ou collègues actuels/précédents.
 
-- Don't ask, "What do I need to do in this role?" Be prepared. If it is still not clear what is expected, then ask the question, "What do my daily
-tasks look like?"
+- Ne demandez pas : « Que dois-je faire dans ce poste ? » Préparez-vous. Si ce n'est toujours pas clair, posez plutôt la question : « À quoi ressemblent mes tâches quotidiennes ? »
 
-- Don't ask: "What do you do as a company?" Be prepared. If it is still not clear what is expected, ask the question, "What can you tell me
-about new products or growth plans?"
+- Ne demandez pas : « Que faites-vous en tant qu'entreprise ? » Préparez-vous. Si ce n'est toujours pas clair, posez plutôt la question : « Que pouvez-vous me dire sur vos nouveaux produits ou plans de croissance ? »
 
-- Never start talking about salary yourself during the application! Discuss this with your consultant, he knows about it.
+- Ne commencez jamais vous-même à parler de salaire pendant la candidature ! Discutez-en avec votre consultant, il est au courant.
 
-- Don't tell about yourself with keywords without providing context. For example: 'I am a creative jack-of-all-trades', 'I am results-oriented',
-'I am an all-rounder'. If you say something like that, give a concrete example that shows it
+- Ne vous décrivez pas uniquement avec des mots-clés sans fournir de contexte. Par exemple : « Je suis un touche-à-tout créatif », « Je suis orienté résultats », « Je suis polyvalent ». Si vous dites quelque chose de ce genre, donnez un exemple concret qui l'illustre.
 
-- Never be desperate for the job. Don't say I need this job, this is important to me or I need the money. Be enthusiastic and positive, but not
-desperate.
+- Ne montrez jamais que vous avez désespérément besoin de ce travail. Ne dites pas : « J'ai besoin de ce travail », « C'est important pour moi » ou « J'ai besoin de l'argent ». Soyez enthousiaste et positif, mais pas désespéré.
 
-- Never say, "Someone recommended me" or "The recruiter told me to go here." This comes across as if you have no intrinsic motivation.
+- Ne dites jamais : « Quelqu'un m'a recommandé » ou « Le recruteur m'a dit de venir ici. » Cela donne l'impression que vous n'avez aucune motivation intrinsèque.
 
-- Never say, "I've never heard of you" or "I don't know your product" or "I've never heard of the platform". Even if this is true, saying it
-explicitly is not an advantage. Ask if they can tell you a little more about the company.
+- Ne dites jamais : « Je n'ai jamais entendu parler de vous » ou « Je ne connais pas votre produit » ou « Je n'ai jamais entendu parler de la plateforme ». Même si c'est vrai, le dire explicitement n'est pas un avantage. Demandez plutôt s'ils peuvent vous en dire un peu plus sur l'entreprise.
 
-- It's not a bad thing if your answer is sometimes long but be careful that it doesn't become an endless incoherent story.
+- Ce n'est pas grave si votre réponse est parfois longue, mais veillez à ce qu'elle ne devienne pas une histoire interminable et incohérente.

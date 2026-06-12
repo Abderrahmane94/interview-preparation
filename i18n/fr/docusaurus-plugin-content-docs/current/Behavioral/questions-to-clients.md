@@ -1,9 +1,9 @@
 import TOCInline from '@theme/TOCInline';
 
 
-# Questions to clients
+# Questions aux clients
 # <TOCInline toc={toc} />
 
-## How do you define a good developer?
+## Comment définissez-vous un bon développeur ?
 
-## Can you tell me about the company culture?
+## Pouvez-vous me parler de la culture d'entreprise ?

@@ -4,27 +4,28 @@ import TOCInline from '@theme/TOCInline';
 # Docker
 # <TOCInline toc={toc} />
 
-## What is Docker?
-Docker is an open-source **platform** that allows you to **automate** the **deployment**, **scaling**, and **management** of applications using **containerization**. 
-## What is a Container?
-**Containerization** is a lightweight approach to **virtualization** that enables you to **package** an application and its dependencies into a standardized unit called a container.
-**Containers** provide **isolation**, **portability**, and **reproducibility**, making it easier to **deploy** and **run** applications consistently across different environments.
+## Qu'est-ce que Docker ?
+Docker est une **plateforme** open-source qui permet d'**automatiser** le **déploiement**, la **mise à l'échelle** et la **gestion** des applications grâce à la **conteneurisation**.
 
-## What is the difference between Docker & a virtuel machine?
-Docker and a virtual machine (VM) are both technologies used for **running applications**, but they differ in their approach and architecture:
+## Qu'est-ce qu'un conteneur ?
+La **conteneurisation** est une approche légère de la **virtualisation** qui permet d'**empaqueter** une application et ses dépendances dans une unité standardisée appelée conteneur.
+Les **conteneurs** offrent de l'**isolation**, de la **portabilité** et de la **reproductibilité**, facilitant le **déploiement** et l'**exécution** cohérente des applications dans différents environnements.
 
-1. **Docker**:
-    - Docker is a **containerization platform** that allows applications to be **packaged** and **run** in isolated containers.
-    - It uses the **host operating system's kernel** and **shares system resources**, such as CPU, memory, and disk, with the host and other containers.
-    - Docker containers are **lightweight**, **fast to start and stop**, and have less overhead compared to VMs.
-    - Containers are **portable** and can run consistently across **different environments**, making application deployment and scalability easier.
-    - Docker focuses on packaging the application and its dependencies into a **single container**, providing an efficient and consistent runtime environment.
+## Quelle est la différence entre Docker et une machine virtuelle ?
+Docker et une machine virtuelle (VM) sont deux technologies pour **exécuter des applications**, mais elles diffèrent par leur approche et leur architecture :
 
-2. **Virtual Machine (VM)**:
-    - A VM is a software **emulation of a physical computer**, running an operating system and applications.
-    - VMs create a virtualized environment, isolating the guest operating system and applications from the host system.
-    - Each VM requires its **own complete operating system**, which results in larger resource usage and **slower startup** times compared to containers.
-    - VMs provide stronger **isolation** between **applications** and the **host system**, making them suitable for running different operating systems simultaneously.
-    - VMs are often used for running legacy applications, running multiple applications with different dependencies, or providing a sandboxed environment.
+1. **Docker** :
+    - Docker est une **plateforme de conteneurisation** qui permet d'**empaqueter** et d'**exécuter** des applications dans des conteneurs isolés.
+    - Il utilise le **noyau du système d'exploitation hôte** et **partage les ressources système** (CPU, mémoire, disque) avec l'hôte et les autres conteneurs.
+    - Les conteneurs Docker sont **légers**, **rapides à démarrer et arrêter**, et ont moins de surcharge que les VMs.
+    - Les conteneurs sont **portables** et s'exécutent de façon cohérente dans **différents environnements**, facilitant le déploiement et la scalabilité.
+    - Docker empaquette l'application et ses dépendances dans un **conteneur unique**, fournissant un environnement d'exécution efficace et cohérent.
 
-In summary, **Docker** uses **containerization** to provide **lightweight** and **portable** application execution, while **virtual machines** emulate complete **operating systems** with **stronger isolation** but have **higher resource overhead**. The **choice** between Docker and VMs depends on the **specific use case**, **resource requirements**, and **isolation** needs of the applications being deployed.
+2. **Machine Virtuelle (VM)** :
+    - Une VM est une **émulation logicielle d'un ordinateur physique**, exécutant un système d'exploitation et des applications.
+    - Les VMs créent un environnement virtualisé, isolant le système d'exploitation invité et les applications du système hôte.
+    - Chaque VM nécessite son **propre système d'exploitation complet**, entraînant une plus grande utilisation des ressources et des **temps de démarrage plus lents**.
+    - Les VMs offrent une **isolation** plus forte entre les **applications** et le **système hôte**, les rendant adaptées à l'exécution simultanée de différents systèmes d'exploitation.
+    - Les VMs sont souvent utilisées pour les applications legacy ou les environnements bac à sable.
+
+En résumé, **Docker** utilise la **conteneurisation** pour une exécution **légère** et **portable**, tandis que les **machines virtuelles** émulent des **systèmes d'exploitation** complets avec une **isolation plus forte** mais une **surcharge de ressources** plus élevée. Le **choix** dépend du **cas d'usage**, des **besoins en ressources** et des exigences d'**isolation**.
