@@ -61,6 +61,19 @@ queue.peek();  // 2 (does not remove)
 
 Use `ArrayDeque` for stacks/queues — it's faster than `LinkedList` and `Stack`.
 
+## What is the internal structure of ArrayList and how does it grow?
+`ArrayList` is backed by an `Object[]` array. Key internals:
+- **Default initial capacity**: `10` (on first `add()` — the array is actually empty until then).
+- **Growth**: when full, it creates a new array at **1.5× the current capacity** (`newCapacity = oldCapacity + (oldCapacity >> 1)`).
+- `get(i)` is O(1) — direct array index access.
+- `add(element)` at the end is amortized O(1); insertion/removal in the middle is O(n) due to shifting.
+
+```java
+ArrayList<String> list = new ArrayList<>(); // capacity will become 10 on first add
+// Avoid resizing if you know the size upfront:
+ArrayList<String> list2 = new ArrayList<>(1000); // pre-sized
+```
+
 ## What is the difference between HashSet, LinkedHashSet, and TreeSet?
 
 | | `HashSet` | `LinkedHashSet` | `TreeSet` |

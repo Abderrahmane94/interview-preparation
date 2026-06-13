@@ -225,6 +225,39 @@ class Voiture { String modele; }    // classe — modèle
 Voiture maVoiture = new Voiture();  // objet — instance
 ```
 
+## Pourquoi Java n'autorise-t-il pas l'héritage multiple via les classes ?
+Java n'autorise pas une classe à étendre plus d'une classe afin d'éviter le **problème du diamant** : si deux classes parentes ont une méthode avec la même signature, le compilateur ne peut pas déterminer laquelle la sous-classe doit hériter — créant une ambiguïté.
+
+```java
+class A { void bonjour() { System.out.println("A"); } }
+class B { void bonjour() { System.out.println("B"); } }
+// class C extends A, B {} // Non autorisé — quel bonjour() C utiliserait-il ?
+```
+
+Java résout cela en autorisant l'**héritage multiple uniquement via les interfaces**. Depuis Java 8, si deux interfaces fournissent toutes les deux une méthode `default` avec le même nom, la classe implémentante **doit** la surcharger pour résoudre l'ambiguïté.
+
+## Qu'est-ce que le mot-clé `final` en Java ?
+`final` peut être appliqué à trois choses :
+- **Variable** : la valeur ne peut pas être modifiée une fois assignée. Pour les objets, la référence est fixe mais l'état de l'objet peut encore changer.
+- **Méthode** : ne peut pas être redéfinie par les sous-classes.
+- **Classe** : ne peut pas être étendue (ex. `String`, `Integer` sont finales).
+
+```java
+final int MAX = 100;         // constante
+MAX = 200;                   // ❌ erreur de compilation
+
+final class Singleton { }   // ne peut pas être étendue
+
+class Parent {
+    final void afficher() { } // ne peut pas être redéfinie
+}
+```
+
+## Quand choisir une interface plutôt qu'une classe abstraite ?
+- Choisissez une **classe abstraite** quand vous souhaitez partager une **implémentation commune** entre des classes liées, car elle peut avoir des méthodes concrètes et un état mutable.
+- Choisissez une **interface** quand vous définissez un **contrat** que des classes non liées peuvent remplir, ou quand vous avez besoin d'un **héritage multiple** (une classe peut implémenter plusieurs interfaces).
+- **Règle pratique** : si votre contrat change souvent, la classe abstraite est plus sûre — vous pouvez ajouter des méthodes concrètes sans casser toutes les classes implémentantes. Avec les interfaces, ajouter une nouvelle méthode casse tous les implémenteurs (sauf si vous utilisez une méthode `default` depuis Java 8).
+
 ## Quelle est la différence entre masquage et redéfinition de méthode ?
 - **Redéfinition** : méthodes d'instance — résolue à l'exécution selon le type réel de l'objet.
 - **Masquage** : méthodes `static` — résolue à la compilation selon le type de la référence. Les méthodes statiques ne peuvent pas être redéfinies.

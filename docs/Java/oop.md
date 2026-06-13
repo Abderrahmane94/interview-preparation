@@ -225,6 +225,39 @@ class Car { String model; }       // class — blueprint
 Car myCar = new Car();            // object — instance
 ```
 
+## Why does Java not support multiple inheritance through classes?
+Java does not allow a class to extend more than one class to avoid the **Diamond Problem**: if two parent classes have a method with the same signature, the compiler cannot determine which one the subclass should inherit — creating ambiguity.
+
+```java
+class A { void hello() { System.out.println("A"); } }
+class B { void hello() { System.out.println("B"); } }
+// class C extends A, B {} // Not allowed — which hello() would C use?
+```
+
+Java solves this by allowing **multiple inheritance only through interfaces**. Since Java 8, if two interfaces both provide a `default` method with the same name, the implementing class **must** override it to resolve the ambiguity.
+
+## What is the `final` keyword in Java?
+`final` can be applied to three things:
+- **Variable**: value cannot be changed once assigned. For objects, the reference is fixed but the object's state can still change.
+- **Method**: cannot be overridden by subclasses.
+- **Class**: cannot be extended (e.g., `String`, `Integer` are final).
+
+```java
+final int MAX = 100;         // constant
+MAX = 200;                   // ❌ compile error
+
+final class Singleton { }   // cannot be subclassed
+
+class Parent {
+    final void display() { } // cannot be overridden
+}
+```
+
+## When should you choose an interface over an abstract class?
+- Choose **abstract class** when you want to share **common implementation** among related classes, since it can have concrete methods and mutable state.
+- Choose **interface** when defining a **contract** that unrelated classes can fulfill, or when you need **multiple inheritance** (a class can implement many interfaces).
+- **Practical rule**: if your contract keeps changing, abstract class is safer — you can add concrete methods without breaking all implementing classes. With interfaces, adding a new method breaks all implementors (unless you add a `default` method in Java 8+).
+
 ## What is method hiding vs method overriding?
 - **Overriding**: instance methods — resolved at runtime based on the actual object type.
 - **Hiding**: `static` methods — resolved at compile time based on the reference type. Static methods cannot be overridden; they are hidden.

@@ -220,6 +220,49 @@ void valider(int age) throws IllegalArgumentException {
 }
 ```
 
+## Qu'est-ce que la propagation d'exceptions ?
+Quand une méthode lève une exception et ne la gère pas, l'exception se propage **vers le haut de la pile d'appels** jusqu'à ce qu'elle soit interceptée ou atteigne la JVM (qui termine alors le thread).
+
+- Les **exceptions non vérifiées** se propagent automatiquement sans nécessiter `throws`.
+- Les **exceptions vérifiées** doivent être déclarées explicitement avec `throws` dans chaque signature de méthode pour se propager.
+
+```java
+void m3() { int x = 1 / 0; }           // lève ArithmeticException
+void m2() { m3(); }                      // se propage vers le haut
+void m1() {
+    try { m2(); }
+    catch (ArithmeticException e) { System.out.println("Interceptée : " + e); }
+}
+```
+La pile d'appels se déroule : `m3 → m2 → m1` jusqu'à ce que l'exception soit interceptée.
+
+## Quand le bloc `finally` ne s'exécute-t-il PAS ?
+Le bloc `finally` est presque toujours garanti de s'exécuter — même si une exception survient. Les seuls cas où il ne s'exécutera pas :
+1. **`System.exit()`** est appelé — la JVM s'arrête immédiatement.
+2. **Crash de la JVM** (ex. `kill -9` sur le processus, panne matérielle).
+3. Un **thread démon** est tué quand tous les threads utilisateur se terminent.
+
+```java
+try {
+    System.exit(0);       // la JVM s'arrête ici
+} finally {
+    System.out.println("Ceci ne s'affichera PAS");
+}
+```
+
+## Quelle est la différence entre une Error et une Exception ?
+Les deux étendent `Throwable`, mais servent des objectifs différents :
+- **Error** (`OutOfMemoryError`, `StackOverflowError`) : représente des **problèmes graves de la JVM** — irrécupérables. Vous ne devriez **pas** intercepter les Errors ; corrigez la cause racine.
+- **Exception** : représente des **problèmes au niveau de l'application** — récupérables. Vous les gérez avec try-catch.
+
+```java
+// Ne jamais faire cela :
+try { ... } catch (OutOfMemoryError e) { }  // inutile — la JVM est défaillante
+
+// Approprié :
+try { ... } catch (IOException e) { }        // gérer les conditions récupérables
+```
+
 ## Que sont les méthodes génériques ?
 Une méthode peut déclarer son propre paramètre de type, indépendamment de la classe :
 

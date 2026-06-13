@@ -61,6 +61,19 @@ file.peek();  // 2 (ne retire pas)
 
 Utiliser `ArrayDeque` pour les piles/files — plus rapide que `LinkedList` et `Stack`.
 
+## Quelle est la structure interne d'ArrayList et comment grandit-elle ?
+`ArrayList` est soutenue par un tableau `Object[]`. Points clés internes :
+- **Capacité initiale par défaut** : `10` (au premier `add()` — le tableau est vide jusqu'alors).
+- **Croissance** : quand le tableau est plein, il crée un nouveau tableau à **1,5× la capacité actuelle** (`nouvelleCapacite = ancienneCapacite + (ancienneCapacite >> 1)`).
+- `get(i)` est O(1) — accès direct par index au tableau.
+- `add(element)` en fin de liste est O(1) amorti ; l'insertion/suppression au milieu est O(n) en raison du décalage des éléments.
+
+```java
+ArrayList<String> liste = new ArrayList<>(); // capacité deviendra 10 au premier add
+// Éviter le redimensionnement si vous connaissez la taille à l'avance :
+ArrayList<String> liste2 = new ArrayList<>(1000); // pré-dimensionné
+```
+
 ## Quelle est la différence entre HashSet, LinkedHashSet et TreeSet ?
 
 | | `HashSet` | `LinkedHashSet` | `TreeSet` |

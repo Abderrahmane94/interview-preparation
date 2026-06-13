@@ -162,6 +162,53 @@ Future<String> future = executor.submit(task);
 String result = future.get(); // blocks until done
 ```
 
+## What happens if you call `run()` directly instead of `start()`?
+If you call `run()` directly, **no new thread is created**. The code executes on the **current thread** (main thread), making it behave like a normal method call. Only `start()` creates a new thread and invokes `run()` on it.
+
+```java
+class Task extends Thread {
+    public void run() { System.out.println("Thread: " + Thread.currentThread().getName()); }
+}
+
+Task t = new Task();
+t.run();    // prints: Thread: main   (no new thread!)
+t.start();  // prints: Thread: Thread-0 (new thread!)
+```
+
+Also: **a thread can only be started once**. Calling `start()` again on a completed thread throws `IllegalThreadStateException`.
+
+## Why are `wait()`, `notify()`, and `notifyAll()` defined in `Object`, not `Thread`?
+Because the **lock is held on an object, not on a thread**. Any object can serve as a monitor — threads coordinate by calling these methods on the shared resource they're synchronizing on.
+
+If they were in `Thread`, thread T1 would need to know about thread T2 to call `T2.notify()`. Instead, T1 simply calls `notify()` on the shared object, and whichever thread was waiting on that object gets woken up — threads don't need to know about each other.
+
+```java
+// The shared resource (object) is the coordinator
+synchronized(sharedQueue) {
+    while (sharedQueue.isEmpty()) sharedQueue.wait();   // release lock, wait
+    process(sharedQueue.poll());
+    sharedQueue.notifyAll();                             // wake waiting threads
+}
+```
+
+## What is the difference between `wait()` and `sleep()`?
+
+| | `wait()` | `sleep()` |
+|---|---|---|
+| Defined in | `Object` | `Thread` (static) |
+| Releases lock | ✅ Yes | ❌ No |
+| Must be synchronized | ✅ Yes | ❌ No |
+| Woken by | `notify()` / `notifyAll()` | Timer expiry or interrupt |
+| Purpose | Inter-thread communication | Introduce a pause |
+
+```java
+// wait() — releases the lock so other threads can access the object
+synchronized(lock) { lock.wait(5000); }
+
+// sleep() — keeps the lock, just pauses execution
+Thread.sleep(5000);
+```
+
 ## What are atomic classes in Java?
 Classes in `java.util.concurrent.atomic` that provide lock-free, thread-safe operations using CPU-level compare-and-swap (CAS) instructions.
 

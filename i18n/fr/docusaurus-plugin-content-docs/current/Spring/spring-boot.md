@@ -165,6 +165,54 @@ Par défaut, `spring-boot-starter-web` inclut **Tomcat embarqué**. Quand vous e
 
 Exclu automatiquement des builds de production.
 
+## Qu'est-ce que `@ControllerAdvice` ?
+`@ControllerAdvice` est une spécialisation de `@Component` qui permet de définir une **gestion globale des exceptions**, des attributs de modèle et une initialisation des binders s'appliquant à toutes les classes `@Controller` — évitant la duplication de `@ExceptionHandler` dans chaque contrôleur.
+
+```java
+@ControllerAdvice
+public class GestionnaireExceptionsGlobal {
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<ErreurReponse> gererNonTrouve(ResourceNotFoundException ex) {
+        return ResponseEntity.status(404)
+            .body(new ErreurReponse(ex.getMessage()));
+    }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseEntity<ErreurReponse> gererGenerique(Exception ex) {
+        return ResponseEntity.status(500)
+            .body(new ErreurReponse("Erreur interne"));
+    }
+}
+```
+
+Utilisez `@RestControllerAdvice` (= `@ControllerAdvice` + `@ResponseBody`) pour les APIs REST afin de sérialiser automatiquement les réponses d'erreur en JSON.
+
+## Qu'est-ce que `@Transactional` et comment fonctionne-t-il ?
+`@Transactional` enveloppe une méthode dans une transaction de base de données. Spring utilise l'AOP pour créer un proxy autour du bean — avant l'exécution de la méthode, il ouvre une transaction ; après son exécution, il la commit ; si une `RuntimeException` est levée, il effectue un rollback.
+
+```java
+@Service
+public class ServiceCommande {
+
+    @Transactional                          // commit en cas de succès, rollback sur RuntimeException
+    public void passerCommande(Commande commande) {
+        depotCommande.save(commande);
+        serviceInventaire.reduireStock(commande); // si cela lève une exception, save() est annulé
+    }
+
+    @Transactional(readOnly = true)         // indice pour l'optimiseur, désactive le dirty checking
+    public List<Commande> getCommandes() { ... }
+
+    @Transactional(rollbackFor = ExceptionVerifiee.class) // rollback sur exception vérifiée aussi
+    public void traiter() throws ExceptionVerifiee { ... }
+}
+```
+
+Propriétés clés : `propagation` (REQUIRED, REQUIRES_NEW, etc.), `isolation`, `readOnly`, `rollbackFor`, `timeout`.
+
 ## Comment écrire un test Spring Boot ?
 
 ```java

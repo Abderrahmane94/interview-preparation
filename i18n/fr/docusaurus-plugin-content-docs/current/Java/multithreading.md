@@ -148,6 +148,53 @@ Implémentations principales :
 - `newSingleThreadExecutor()` — un seul thread de travail.
 - `newScheduledThreadPool(n)` — tâches planifiées/périodiques.
 
+## Que se passe-t-il si l'on appelle `run()` directement au lieu de `start()` ?
+Si vous appelez `run()` directement, **aucun nouveau thread n'est créé**. Le code s'exécute sur le **thread courant** (thread principal), se comportant comme un appel de méthode normal. Seul `start()` crée un nouveau thread et invoque `run()` dessus.
+
+```java
+class Tache extends Thread {
+    public void run() { System.out.println("Thread : " + Thread.currentThread().getName()); }
+}
+
+Tache t = new Tache();
+t.run();    // affiche : Thread : main   (pas de nouveau thread !)
+t.start();  // affiche : Thread : Thread-0 (nouveau thread !)
+```
+
+De plus : **un thread ne peut être démarré qu'une seule fois**. Appeler `start()` à nouveau sur un thread terminé lève `IllegalThreadStateException`.
+
+## Pourquoi `wait()`, `notify()` et `notifyAll()` sont-ils définis dans `Object` et non dans `Thread` ?
+Parce que le **verrou est détenu sur un objet, pas sur un thread**. Tout objet peut servir de moniteur — les threads se coordonnent en appelant ces méthodes sur la ressource partagée qu'ils synchronisent.
+
+Si ces méthodes étaient dans `Thread`, le thread T1 devrait connaître le thread T2 pour appeler `T2.notify()`. Au lieu de cela, T1 appelle simplement `notify()` sur l'objet partagé, et le thread qui attendait sur cet objet est réveillé — les threads n'ont pas besoin de se connaître mutuellement.
+
+```java
+// L'objet partagé (ressource) est le coordinateur
+synchronized(filePartagee) {
+    while (filePartagee.isEmpty()) filePartagee.wait();   // libère le verrou, attend
+    traiter(filePartagee.poll());
+    filePartagee.notifyAll();                              // réveille les threads en attente
+}
+```
+
+## Quelle est la différence entre `wait()` et `sleep()` ?
+
+| | `wait()` | `sleep()` |
+|---|---|---|
+| Défini dans | `Object` | `Thread` (statique) |
+| Libère le verrou | ✅ Oui | ❌ Non |
+| Doit être synchronisé | ✅ Oui | ❌ Non |
+| Réveillé par | `notify()` / `notifyAll()` | Expiration du timer ou interruption |
+| Objectif | Communication inter-threads | Introduire une pause |
+
+```java
+// wait() — libère le verrou pour que d'autres threads accèdent à l'objet
+synchronized(verrou) { verrou.wait(5000); }
+
+// sleep() — conserve le verrou, suspend simplement l'exécution
+Thread.sleep(5000);
+```
+
 ## Quelle est la différence entre `Runnable` et `Callable` ?
 
 | | `Runnable` | `Callable<V>` |

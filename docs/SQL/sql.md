@@ -27,6 +27,126 @@ import TOCInline from '@theme/TOCInline';
 - **Data consistency**: SQL databases prioritize strong consistency, while NoSQL databases may sacrifice some consistency for improved performance and scalability.
 - **Development flexibility**: NoSQL databases offer agile development and allow for rapid changes to data models, whereas SQL databases require more planning and upfront schema definition.
 
+## What are SQL Joins?
+SQL joins combine rows from two or more tables based on a related column. There are 4 main types:
+
+1. **INNER JOIN** — returns only rows where the join condition is met in **both** tables.
+```sql
+SELECT e.name, d.name FROM Employee e
+INNER JOIN Department d ON e.dept_id = d.id;
+```
+
+2. **LEFT JOIN** — returns **all rows from the left** table, plus matched rows from the right (NULL for no match).
+```sql
+SELECT e.name, d.name FROM Employee e
+LEFT JOIN Department d ON e.dept_id = d.id;
+```
+
+3. **RIGHT JOIN** — returns **all rows from the right** table, plus matched rows from the left.
+
+4. **FULL JOIN** — returns **all rows from both** tables regardless of match (NULL for non-matching sides).
+
+## What is the difference between TRUNCATE and DELETE?
+
+| | `TRUNCATE` | `DELETE` |
+|---|---|---|
+| Type | DDL | DML |
+| Removes | All rows only | All or specific rows (with `WHERE`) |
+| Transaction log | Minimal (faster) | Logs each deleted row (slower) |
+| Rollback | ❌ Cannot be rolled back | ✅ Can be rolled back |
+| Permission needed | ALTER | DELETE |
+
+```sql
+TRUNCATE TABLE employee;                -- removes all rows, fast
+DELETE FROM employee WHERE name = 'Mark'; -- targeted delete, rollback-able
+```
+
+## What is the difference between DDL and DML?
+
+- **DDL (Data Definition Language)**: defines the database structure. Commands are **auto-committed**.
+  - `CREATE`, `ALTER`, `DROP`, `TRUNCATE`
+- **DML (Data Manipulation Language)**: manages data inside the structure. Commands are **not auto-committed** (can be rolled back).
+  - `INSERT`, `UPDATE`, `DELETE`, `SELECT`
+
+## What is the difference between a Function and a Stored Procedure?
+
+| | Function | Stored Procedure |
+|---|---|---|
+| Return value | Must return a value | Can return zero or n values |
+| Parameters | Input only | Input and output |
+| DML statements | ❌ Not allowed | ✅ Allowed |
+| Transactions | ❌ Not allowed | ✅ Allowed |
+| Can be used in SELECT | ✅ Yes | ❌ No |
+| Exception handling | ❌ No try-catch | ✅ try-catch allowed |
+
+## What is the difference between UNION and UNION ALL?
+Both combine results of two queries (same number of columns required):
+- **UNION**: removes duplicate rows — slightly slower due to deduplication.
+- **UNION ALL**: keeps all rows including duplicates — faster.
+
+```sql
+SELECT name FROM Employees_NY
+UNION ALL                       -- keeps duplicates
+SELECT name FROM Employees_LA;
+```
+
+## What is the difference between Primary Key and Unique Key?
+
+| | Primary Key | Unique Key |
+|---|---|---|
+| Count per table | Only one | Multiple allowed |
+| Null values | ❌ Not allowed | ✅ Allowed |
+| Default index | Clustered | Non-clustered |
+
+## What is the difference between Primary Key and Foreign Key?
+- **Primary Key**: uniquely identifies each row in its own table. No duplicates, no NULLs.
+- **Foreign Key**: a column in one table that references the primary key of another table. Enforces **referential integrity**.
+
+```sql
+-- Department has primary key dept_id
+-- Employee references it as a foreign key
+ALTER TABLE Employee ADD CONSTRAINT fk_dept FOREIGN KEY (dept_id) REFERENCES Department(dept_id);
+```
+
+## What is the difference between clustered and non-clustered index?
+
+| | Clustered Index | Non-clustered Index |
+|---|---|---|
+| Data storage | Physically sorts the table data | Separate structure, stores pointers |
+| Count per table | Only one | Multiple allowed |
+| Created on | Primary key by default | Any column |
+| Read speed | Faster | Slower (extra lookup) |
+| Write speed | Slower | Faster |
+| Extra space | Not needed | Required |
+
+## What is the difference between WHERE and HAVING?
+
+| | WHERE | HAVING |
+|---|---|---|
+| Used with | SELECT, INSERT, UPDATE, DELETE | SELECT only |
+| Filters | Individual rows | Groups |
+| Applied | Before GROUP BY | After GROUP BY |
+| Aggregate functions | ❌ Not allowed | ✅ Allowed |
+
+```sql
+-- WHERE filters rows before grouping
+SELECT dept_id, COUNT(*) FROM Employee WHERE salary > 50000 GROUP BY dept_id;
+
+-- HAVING filters groups after grouping
+SELECT dept_id, COUNT(*) FROM Employee GROUP BY dept_id HAVING COUNT(*) > 5;
+```
+
+## How to find the nth highest salary from Employee table?
+```sql
+SELECT name, salary FROM Employee e1
+WHERE N-1 = (
+    SELECT COUNT(DISTINCT salary) FROM Employee e2
+    WHERE e2.salary > e1.salary
+);
+-- Replace N with 3 for 3rd highest, etc.
+```
+`DISTINCT` handles duplicate salaries. The logic: the Nth highest means exactly N-1 salaries are higher than it.
+
 ## How would you optimize a slow database query?
 To optimize a slow database query, you can consider the following approaches:
 

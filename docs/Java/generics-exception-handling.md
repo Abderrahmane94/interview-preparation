@@ -220,6 +220,49 @@ void validate(int age) throws IllegalArgumentException {
 }
 ```
 
+## What is exception propagation?
+When a method throws an exception and doesn't handle it, the exception propagates **up the call stack** until it is caught or reaches the JVM (which then terminates the thread).
+
+- **Unchecked exceptions** propagate automatically up the stack without needing `throws`.
+- **Checked exceptions** must be explicitly declared with `throws` in each method signature to propagate.
+
+```java
+void m3() { int x = 1 / 0; }           // throws ArithmeticException
+void m2() { m3(); }                      // propagates up
+void m1() {
+    try { m2(); }
+    catch (ArithmeticException e) { System.out.println("Caught: " + e); }
+}
+```
+The call stack unwinds: `m3 → m2 → m1` until the exception is caught.
+
+## When does the `finally` block NOT execute?
+The `finally` block is almost always guaranteed to run — even if an exception occurs. The only cases where it won't execute:
+1. **`System.exit()`** is called — the JVM shuts down immediately.
+2. **JVM crash** (e.g., `kill -9` on the process, hardware failure).
+3. A **daemon thread** is killed when all user threads finish.
+
+```java
+try {
+    System.exit(0);       // JVM exits here
+} finally {
+    System.out.println("This will NOT print");
+}
+```
+
+## What is the difference between Error and Exception?
+Both extend `Throwable`, but they serve different purposes:
+- **Error** (`OutOfMemoryError`, `StackOverflowError`): represents **severe JVM problems** — irrecoverable. You should **not** catch Errors; fix the root cause.
+- **Exception**: represents **application-level problems** — recoverable. You handle these with try-catch.
+
+```java
+// Never do this:
+try { ... } catch (OutOfMemoryError e) { }  // pointless — JVM is broken
+
+// Appropriate:
+try { ... } catch (IOException e) { }        // handle recoverable conditions
+```
+
 ## What are generic methods?
 A method can declare its own type parameter, independent of the class:
 

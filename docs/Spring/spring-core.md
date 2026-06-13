@@ -241,6 +241,19 @@ management:
         include: health, info, metrics
 ```
 
+## What is the difference between BeanFactory and ApplicationContext?
+
+| | `BeanFactory` | `ApplicationContext` |
+|---|---|---|
+| Bean initialization | Lazy (on `getBean()`) | Eager (singleton beans at startup) |
+| Annotation support | ❌ No | ✅ Yes |
+| AOP / Transactions | ❌ Not automatic | ✅ Automatic |
+| Bean scopes supported | singleton, prototype | All scopes |
+| i18n / Events | ❌ No | ✅ Yes |
+| Typical use | Memory-constrained environments | Enterprise applications (standard choice) |
+
+`ApplicationContext` extends `BeanFactory` and adds all the enterprise features. **Always use `ApplicationContext`** unless you have an extreme memory constraint.
+
 ## What is the difference between Spring and Jakarta EE?
 
 - **Spring**: lightweight framework, can run in any servlet container (Tomcat). Offers a unified programming model, rich ecosystem (Boot, Cloud, Security). Convention over configuration.

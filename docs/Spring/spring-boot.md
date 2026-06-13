@@ -165,6 +165,54 @@ By default, `spring-boot-starter-web` includes **embedded Tomcat**. When you run
 
 Excluded from production builds automatically.
 
+## What is `@ControllerAdvice`?
+`@ControllerAdvice` is a specialization of `@Component` that allows you to define **global exception handling**, model attributes, and binder initialization that applies across all `@Controller` classes — avoiding duplication of `@ExceptionHandler` in every controller.
+
+```java
+@ControllerAdvice
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<ErrorResponse> handleNotFound(ResourceNotFoundException ex) {
+        return ResponseEntity.status(404)
+            .body(new ErrorResponse(ex.getMessage()));
+    }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseEntity<ErrorResponse> handleGeneric(Exception ex) {
+        return ResponseEntity.status(500)
+            .body(new ErrorResponse("Internal error"));
+    }
+}
+```
+
+Use `@RestControllerAdvice` (= `@ControllerAdvice` + `@ResponseBody`) for REST APIs to serialize error responses as JSON automatically.
+
+## What is `@Transactional` and how does it work?
+`@Transactional` wraps a method in a database transaction. Spring uses AOP to create a proxy around the bean — before the method runs it opens a transaction; after it completes it commits; if a `RuntimeException` is thrown it rolls back.
+
+```java
+@Service
+public class OrderService {
+
+    @Transactional                          // commits on success, rolls back on RuntimeException
+    public void placeOrder(Order order) {
+        orderRepo.save(order);
+        inventoryService.reduceStock(order); // if this throws, order.save() is rolled back
+    }
+
+    @Transactional(readOnly = true)         // hints optimizer, disables dirty checking
+    public List<Order> getOrders() { ... }
+
+    @Transactional(rollbackFor = CheckedException.class) // roll back on checked exception too
+    public void process() throws CheckedException { ... }
+}
+```
+
+Key properties: `propagation` (REQUIRED, REQUIRES_NEW, etc.), `isolation`, `readOnly`, `rollbackFor`, `timeout`.
+
 ## How do you write a Spring Boot test?
 
 ```java
