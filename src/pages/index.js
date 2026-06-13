@@ -1,37 +1,43 @@
 import React from 'react';
 import clsx from 'clsx';
+import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 import HomepageFeatures from '@site/src/components/HomepageFeatures';
-
-import styles from './index.module.css';
 import Translate from "@docusaurus/Translate";
+import styles from './index.module.css';
 
 function HomepageHeader() {
     const {siteConfig} = useDocusaurusContext();
     return (
         <header className={clsx('hero hero--primary', styles.heroBanner)}>
             <div className="container">
-                <h1 className="hero__title"><Translate>Interview Preparation</Translate></h1>
-                <p className="hero__subtitle"><Translate>Be Ready For Your Job!</Translate></p>
+                <h1 className="hero__title">
+                    <Translate>Interview Preparation</Translate>
+                </h1>
+                <p className="hero__subtitle">
+                    <Translate>Your complete guide to cracking Java &amp; Spring developer interviews</Translate>
+                </p>
+                <div className={styles.buttons}>
+                    <Link
+                        className="button button--secondary button--lg"
+                        to="/docs/Java/oop">
+                        <Translate>Start Studying →</Translate>
+                    </Link>
+                </div>
             </div>
         </header>
     );
 }
 
 export default function Home() {
-    const {siteConfig} = useDocusaurusContext();
     return (
         <Layout
-            title={`Interview Preparation`}
-            description="Description will go into a meta tag in <head />">
-            <HomepageHeader/>
+            title="Interview Preparation"
+            description="Complete Java, Spring, SQL, and DevOps interview preparation guide">
+            <HomepageHeader />
             <main>
-                <h2 style={{color:"grey", display: "flex", justifyContent:'center', alignItems:'center', padding: "2rem 0", width: "100%"}}>
-                    Behavioral - Java - Spring Core - Spring Boot - Spring Data - Spring Web - Spring Security - Spring Test <br/></h2>
-                <h2 style={{color:"grey", display: "flex", justifyContent:'center', alignItems:'center', width: "100%"}}>
-                    Agile - Angular - Maven - SQL - Jenkins - Docker - Git
-                </h2>
+                <HomepageFeatures />
             </main>
         </Layout>
     );

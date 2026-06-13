@@ -4,46 +4,50 @@ import styles from './styles.module.css';
 
 const FeatureList = [
   {
-    title: 'Easy to Use',
-    Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
-    description: (
-      <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
-      </>
-    ),
+    emoji: '☕',
+    title: 'Java Core',
+    description:
+      'OOP, generics, exceptions, multithreading, and collections — from theory to interview-ready answers.',
   },
   {
-    title: 'Focus on What Matters',
-    Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
-    description: (
-      <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-        ahead and move your docs into the <code>docs</code> directory.
-      </>
-    ),
+    emoji: '🍃',
+    title: 'Spring Framework',
+    description:
+      'Spring Core (IoC/DI/AOP), Spring Boot, Spring Data JPA, Spring Security, and Spring MVC.',
   },
   {
-    title: 'Powered by React',
-    Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
-    description: (
-      <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
-      </>
-    ),
+    emoji: '🗄️',
+    title: 'SQL & Databases',
+    description:
+      'SQL joins, indexes, transactions, stored procedures, and query optimization techniques.',
+  },
+  {
+    emoji: '🏗️',
+    title: 'Architecture & Clean Code',
+    description:
+      'Design patterns, SOLID principles, clean code practices, and architectural patterns like MVC.',
+  },
+  {
+    emoji: '🧑‍💼',
+    title: 'Behavioral',
+    description:
+      'How to present yourself, questions to ask employers, and proven tips to succeed in IT interviews.',
+  },
+  {
+    emoji: '🛠️',
+    title: 'DevOps & Tools',
+    description:
+      'Git, Maven, Docker, Jenkins, Agile/Scrum, Angular — everything a senior developer is expected to know.',
   },
 ];
 
-function Feature({Svg, title, description}) {
+function Feature({ emoji, title, description }) {
   return (
-    <div className={clsx('col col--4')}>
-      <div className="text--center">
-        <Svg className={styles.featureSvg} role="img" />
-      </div>
-      <div className="text--center padding-horiz--md">
-        <h3>{title}</h3>
-        <p>{description}</p>
+    <div className={clsx('col col--4', styles.featureCard)}>
+      <div className={styles.featureEmoji}>{emoji}</div>
+      <div className="padding-horiz--md">
+        <h3 className={styles.featureTitle}>{title}</h3>
+        <p className={styles.featureDescription}>{description}</p>
       </div>
     </div>
   );
@@ -53,6 +57,7 @@ export default function HomepageFeatures() {
   return (
     <section className={styles.features}>
       <div className="container">
+        <h2 className={styles.sectionTitle}>Topics Covered</h2>
         <div className="row">
           {FeatureList.map((props, idx) => (
             <Feature key={idx} {...props} />
