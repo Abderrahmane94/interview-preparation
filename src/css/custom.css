@@ -581,55 +581,106 @@ html {
   background: rgba(245, 158, 11, 0.18);
 }
 
-/* ─── Sidebar collapse button ────────────────────────────────── */
-button[class*='collapseSidebarButton'] {
-  height: 40px !important;
-  background: linear-gradient(135deg, var(--ifm-color-primary) 0%, var(--ifm-color-primary-dark) 100%) !important;
-  border-top: none !important;
-  border-radius: 0 0 8px 0 !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 6px !important;
-  font-size: 0.78rem !important;
-  font-weight: 600 !important;
-  color: #fff !important;
-  letter-spacing: 0.04em !important;
-  text-transform: uppercase !important;
-  opacity: 0.92;
-  transition: opacity 0.2s ease, filter 0.2s ease !important;
-  box-shadow: 0 -2px 8px rgba(67, 97, 238, 0.18) !important;
-  position: relative !important;
-  overflow: hidden !important;
-}
+/* ─── Sidebar toggle button ───────────────────────────────────── */
 
-button[class*='collapseSidebarButton']::before {
-  content: '‹';
-  font-size: 1.1rem;
-  font-weight: 700;
-  line-height: 1;
-  transition: transform 0.25s ease;
-}
-
-button[class*='collapseSidebarButton']:hover {
-  opacity: 1 !important;
-  filter: brightness(1.1) !important;
-}
-
-/* Icon SVG inside the button — hide it and use ::before instead */
+/* Hide the default SVG icon — we draw everything with CSS */
 button[class*='collapseSidebarButton'] svg {
   display: none !important;
 }
 
-/* When sidebar is collapsed, show › instead */
-[class*='sidebarWithHideableNavbar'] button[class*='collapseSidebarButton']::before,
-.navbar-sidebar--show ~ * button[class*='collapseSidebarButton']::before {
-  transform: rotate(180deg);
+/* ── Shared base ── */
+button[class*='collapseSidebarButton'] {
+  height: 48px !important;
+  border: none !important;
+  border-top: 1px solid rgba(255,255,255,0.12) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  font-family: var(--ifm-font-family-base) !important;
+  font-size: 0.76rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+  cursor: pointer !important;
+  transition: background 0.22s ease, box-shadow 0.22s ease, transform 0.15s ease !important;
+  position: relative !important;
+  overflow: hidden !important;
 }
 
-[data-theme='dark'] button[class*='collapseSidebarButton'] {
-  background: linear-gradient(135deg, #3a56e8 0%, #1a237e 100%) !important;
-  box-shadow: 0 -2px 8px rgba(67, 97, 238, 0.30) !important;
+/* Ripple shimmer on hover */
+button[class*='collapseSidebarButton']::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.10) 50%, transparent 100%);
+  transform: translateX(-100%);
+  transition: transform 0.4s ease;
+}
+button[class*='collapseSidebarButton']:hover::after {
+  transform: translateX(100%);
+}
+
+/* ── EXPANDED state — "Collapse sidebar" ── */
+button[aria-label="Collapse sidebar"] {
+  background: linear-gradient(135deg, #4361ee 0%, #1a237e 100%) !important;
+  color: #fff !important;
+  border-radius: 0 0 0 0 !important;
+  box-shadow: 0 -3px 12px rgba(67,97,238,0.25) !important;
+}
+
+button[aria-label="Collapse sidebar"]::before {
+  content: '← Hide menu';
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #fff;
+}
+
+button[aria-label="Collapse sidebar"]:hover {
+  background: linear-gradient(135deg, #2c4eeb 0%, #0d32d4 100%) !important;
+  box-shadow: 0 -4px 18px rgba(67,97,238,0.38) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* ── COLLAPSED state — "Expand sidebar" ── */
+button[aria-label="Expand sidebar"] {
+  background: linear-gradient(135deg, #4361ee 0%, #1a237e 100%) !important;
+  color: #fff !important;
+  border-radius: 0 6px 6px 0 !important;
+  width: 28px !important;
+  height: 64px !important;
+  position: fixed !important;
+  left: 0 !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  box-shadow: 3px 0 14px rgba(67,97,238,0.30) !important;
+  z-index: 100 !important;
+  padding: 0 !important;
+  border-left: none !important;
+  border-top: none !important;
+  writing-mode: vertical-rl !important;
+}
+
+button[aria-label="Expand sidebar"]::before {
+  content: '▶';
+  font-size: 0.8rem;
+  color: #fff;
+  line-height: 1;
+}
+
+button[aria-label="Expand sidebar"]:hover {
+  background: linear-gradient(135deg, #2c4eeb 0%, #0d32d4 100%) !important;
+  width: 34px !important;
+  box-shadow: 4px 0 20px rgba(67,97,238,0.42) !important;
+  transform: translateY(-50%) !important;
+}
+
+/* ── Dark mode ── */
+[data-theme='dark'] button[aria-label="Collapse sidebar"],
+[data-theme='dark'] button[aria-label="Expand sidebar"] {
+  background: linear-gradient(135deg, #3a56e8 0%, #0d1b6e 100%) !important;
+  box-shadow: 0 -3px 12px rgba(67,97,238,0.35) !important;
 }
 
 /* Navbar dropdowns — slightly larger touch target */
