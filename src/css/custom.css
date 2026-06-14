@@ -539,22 +539,44 @@ html {
   border-color: rgba(123, 140, 222, 0.28);
 }
 
-/* ─── TOC: JS-highlighted plain-text keywords ───────────────── */
+/* ─── TOC: predefined keyword highlights ────────────────────── */
 .toc-keyword {
-  color: var(--ifm-color-primary-dark);
+  color: var(--ifm-color-primary-darkest);
   font-weight: 700;
-  background: rgba(67, 97, 238, 0.09);
-  border-radius: 3px;
-  padding: 0.05em 0.28em;
-  font-size: 0.93em;
+  background: rgba(67, 97, 238, 0.11);
+  border: 1px solid rgba(67, 97, 238, 0.18);
+  border-radius: 4px;
+  padding: 0.05em 0.32em;
+  font-size: 0.91em;
 }
 
 [data-theme='dark'] .toc-keyword {
-  color: var(--ifm-color-primary-light);
-  background: rgba(123, 140, 222, 0.14);
+  color: var(--ifm-color-primary-lightest);
+  background: rgba(123, 140, 222, 0.16);
+  border-color: rgba(123, 140, 222, 0.25);
 }
 
-/* Slightly dimmer on hover (the parent link already brightens) */
+/* ─── TOC: fallback keyword highlights (softer, warm tone) ──── */
+.toc-fallback {
+  color: #b45309;
+  font-weight: 600;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.22);
+  border-radius: 4px;
+  padding: 0.05em 0.32em;
+  font-size: 0.91em;
+}
+
+[data-theme='dark'] .toc-fallback {
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.1);
+  border-color: rgba(251, 191, 36, 0.2);
+}
+
+/* Hover: brighten slightly */
 .markdown .table-of-contents li a:hover .toc-keyword {
-  background: rgba(67, 97, 238, 0.16);
+  background: rgba(67, 97, 238, 0.18);
+}
+.markdown .table-of-contents li a:hover .toc-fallback {
+  background: rgba(245, 158, 11, 0.18);
 }

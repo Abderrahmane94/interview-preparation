@@ -1,98 +1,160 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from '@docusaurus/router';
 
-// ─── Keywords to highlight in the question list ───────────────────────────────
-// Group 1: exact-case acronyms and class names
-const EXACT_KEYWORDS = [
-  'OOP', 'SOLID', 'AOP', 'IoC', 'DI', 'JPA', 'ORM', 'JVM', 'JDK', 'JRE',
-  'REST', 'RESTful', 'SOAP', 'HTTP', 'API', 'SQL', 'NoSQL', 'MVC', 'MVP',
-  'EJB', 'JSF', 'JWT', 'CORS', 'AMQP', 'CDI',
-  'ArrayList', 'LinkedList', 'HashMap', 'HashSet', 'TreeMap', 'TreeSet',
-  'ConcurrentHashMap', 'LinkedHashMap', 'LinkedHashSet',
-  'BeanFactory', 'ApplicationContext', 'DispatcherServlet',
-  'RabbitMQ', 'Docker', 'Jenkins', 'Maven', 'Gradle',
-  'Thread', 'Runnable', 'Callable', 'ExecutorService',
-  'Optional', 'Stream', 'Lambda',
-  'PUT', 'PATCH', 'POST', 'GET', 'DELETE',
+// ─── Predefined keywords (exact + concept) ───────────────────────────────────
+const KEYWORDS = [
+  // Java core
+  'OOP','SOLID','AOP','IoC','DI','JPA','ORM','JVM','JDK','JRE',
+  'ArrayList','LinkedList','HashMap','HashSet','TreeMap','TreeSet',
+  'ConcurrentHashMap','LinkedHashMap','LinkedHashSet','PriorityQueue',
+  'BeanFactory','ApplicationContext','DispatcherServlet',
+  'Thread','Runnable','Callable','ExecutorService','FutureTask',
+  'Optional','Stream','Lambda','Iterator',
+  'EJB','JSF','CDI','MDB',
+  // Spring
+  'Spring','Hibernate','Actuator','AutoConfiguration',
+  // Web / API
+  'REST','RESTful','SOAP','HTTP','API','JWT','CORS','AMQP',
+  'RabbitMQ','idempotent','microservice','Monolithic',
+  'PUT','PATCH','POST','DELETE','GET',
+  // DB
+  'SQL','NoSQL','MVC','CQRS','JPQL','JDBC',
+  // DevOps / Tools
+  'Docker','Jenkins','Maven','Gradle','Git','SVN','CI/CD',
+  'Scrum','Agile','Kanban','Waterfall','Sprint','Backlog','DevOps',
+  'Container','Kubernetes','Pipeline','Angular',
+  // OOP concepts
+  'polymorphism','encapsulation','abstraction','inheritance','composition',
+  'overloading','overriding','aggregation','association',
+  'deadlock','singleton','immutable','serialization','reflection',
+  // Design patterns
+  'Factory','Observer','Strategy','Decorator','Facade','Adapter',
+  'Builder','Prototype','Composite','Proxy','Command','Template',
+  // Architecture
+  'coupling','cohesion','transaction','indexing','normalization','annotation',
+  // Behavioral / HR keywords
+  'project','customer','client','colleague','problem','solution',
+  'conflict','disagreement','qualities','weakness','weaknesses','strengths',
+  'degree','culture','hire','career','cancelled','blocked','ticket',
+  'developer','company','technical','experience','proud','react',
+  // Agile
+  'methodology','Sprint','Backlog','Master','Story','velocity','retrospective',
+  // Git/Docker
+  'merge','rebase','branching','Container','virtual','machine',
+  // Clean code
+  'legacy','refactor','coupling','cohesion','YAGNI','DRY','KISS',
 ];
 
-// Group 2: conceptual terms (case-insensitive match)
-const CONCEPT_KEYWORDS = [
-  'polymorphism', 'encapsulation', 'abstraction', 'inheritance', 'composition',
-  'overloading', 'overriding', 'aggregation', 'association',
-  'deadlock', 'singleton', 'idempotent', 'microservice', 'monolithic',
-  'immutable', 'serialization', 'reflection', 'annotation',
-  'transaction', 'indexing', 'normalization',
-];
+// ─── Stop words (filtered out in fallback mode) ───────────────────────────────
+const STOP_WORDS = new Set([
+  'what','how','why','when','where','who','which','whose',
+  'is','are','was','were','be','been','being',
+  'do','does','did','have','has','had','will','would','could','should','can','may',
+  'a','an','the',
+  'i','you','we','they','it','he','she','me','us','them',
+  'my','your','our','their','its',
+  'in','of','on','at','to','for','with','by','as','from','between','about','into',
+  'and','or','but','if','than','that','this','these','those','so','nor',
+  'give','tell','describe','explain','define','see','make','get','know','need','use',
+  'some','any','all','not','only','also','there','here','then',
+  'good','best','most','more','less','one','time','way','type','different',
+  'example','situation','case','work','work','used','uses','using',
+  'java', // too generic — appears in every Java doc heading
+]);
 
+// ─── Build combined regex from keyword list ───────────────────────────────────
 function buildKeywordRegex() {
-  // Exact-case terms (|) + concept terms (case-insensitive flag applied separately)
-  const exactPart  = EXACT_KEYWORDS.map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
-  const conceptPart = CONCEPT_KEYWORDS.map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
-  // Combined: exact first (longer matches win), then concepts
-  return new RegExp(`\\b(${exactPart}|${conceptPart})\\b`, 'gi');
+  const escaped = KEYWORDS
+    .map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+    .sort((a, b) => b.length - a.length); // longest first to avoid partial matches
+  return new RegExp(`\\b(${escaped.join('|')})\\b`, 'gi');
 }
 
-// Wrap keyword matches inside a text node with <span class="toc-keyword">
-function highlightTextNode(textNode, regex) {
+// ─── Fallback: pick 1-2 meaningful words from stop-word-filtered text ─────────
+function buildFallbackRegex(linkEl) {
+  const raw = linkEl.textContent
+    .toLowerCase()
+    .replace(/[^a-záàâäãåéèêëíìîïóòôöõúùûüýÿñç\s]/g, ' ');
+
+  const words = raw
+    .split(/\s+/)
+    .filter(w => w.length >= 4 && !STOP_WORDS.has(w));
+
+  if (!words.length) return null;
+
+  // Prefer longer words (more specific), take up to 2
+  const picks = [...new Set(words)]
+    .sort((a, b) => b.length - a.length)
+    .slice(0, 2);
+
+  const escaped = picks.map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+  return new RegExp(`\\b(${escaped.join('|')})\\b`, 'gi');
+}
+
+// ─── Wrap matched text in a text node with <span class="toc-keyword"> ─────────
+function wrapMatches(textNode, regex, cssClass) {
   const text = textNode.nodeValue;
-  if (!regex.test(text)) return;
+  if (!regex.test(text)) return false;
   regex.lastIndex = 0;
 
   const frag = document.createDocumentFragment();
-  let last = 0;
-  let match;
+  let last = 0, match, wrapped = false;
 
   while ((match = regex.exec(text)) !== null) {
-    if (match.index > last) {
-      frag.appendChild(document.createTextNode(text.slice(last, match.index)));
-    }
+    if (match.index > last) frag.appendChild(document.createTextNode(text.slice(last, match.index)));
     const span = document.createElement('span');
-    span.className = 'toc-keyword';
+    span.className = cssClass;
     span.textContent = match[0];
     frag.appendChild(span);
     last = regex.lastIndex;
+    wrapped = true;
   }
-
-  if (last < text.length) {
-    frag.appendChild(document.createTextNode(text.slice(last)));
-  }
-
+  if (last < text.length) frag.appendChild(document.createTextNode(text.slice(last)));
   textNode.parentNode.replaceChild(frag, textNode);
+  return wrapped;
 }
 
-// Walk all text nodes inside an element, skipping <code> (already styled by CSS)
-function highlightInElement(el, regex) {
+// Walk text nodes in el, skipping <code> and already-highlighted spans
+function highlightInElement(el, regex, cssClass = 'toc-keyword') {
   const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, {
     acceptNode(node) {
-      // Skip text inside <code> tags — they're handled by CSS
-      if (node.parentElement.closest('code')) return NodeFilter.FILTER_REJECT;
+      const p = node.parentElement;
+      if (p.closest('code') || p.classList.contains('toc-keyword') || p.classList.contains('toc-fallback'))
+        return NodeFilter.FILTER_REJECT;
       return NodeFilter.FILTER_ACCEPT;
     },
   });
-
   const nodes = [];
   let n;
   while ((n = walker.nextNode())) nodes.push(n);
-  nodes.forEach(node => highlightTextNode(node, regex));
+  let anyWrapped = false;
+  nodes.forEach(node => { if (wrapMatches(node, regex, cssClass)) anyWrapped = true; });
+  return anyWrapped;
 }
 
+// ─── Main enhancement function ────────────────────────────────────────────────
 function injectTocEnhancements(isDocPage) {
   if (!isDocPage) return;
 
-  const regex = buildKeywordRegex();
+  const kwRegex = buildKeywordRegex();
 
-  // 1. Highlight keywords in TOC link text
-  const tocLinks = document.querySelectorAll('.markdown .table-of-contents li a');
-  tocLinks.forEach(link => {
+  // 1. Highlight all TOC links
+  document.querySelectorAll('.markdown .table-of-contents li a').forEach(link => {
     if (link.dataset.highlighted) return;
     link.dataset.highlighted = '1';
-    highlightInElement(link, regex);
+
+    // Try predefined keywords first
+    const hit = highlightInElement(link, kwRegex, 'toc-keyword');
+
+    // Fallback: if no predefined keyword matched AND no <code> exists, find key nouns
+    if (!hit && !link.querySelector('code')) {
+      const fallback = buildFallbackRegex(link);
+      if (fallback) highlightInElement(link, fallback, 'toc-fallback');
+    }
   });
 
-  // 2. Inject clickable "↑ list" link on each question heading
-  const headings = document.querySelectorAll('.markdown h2');
-  headings.forEach(h2 => {
+  // 2. Inject clickable "↑ list" links on each question heading
+  document.querySelectorAll('.markdown h2').forEach(h2 => {
     if (h2.querySelector('.back-to-list-link')) return;
     const link = document.createElement('a');
     link.href = '#';
@@ -107,7 +169,7 @@ function injectTocEnhancements(isDocPage) {
   });
 }
 
-// ─── Floating "Back to Questions" button ─────────────────────────────────────
+// ─── Floating button ──────────────────────────────────────────────────────────
 function BackToQuestionsButton({ visible }) {
   if (!visible) return null;
   return (
@@ -130,14 +192,14 @@ export default function Root({ children }) {
   const isDocPage = location.pathname.includes('/docs/');
 
   useEffect(() => {
-    const handleScroll = () => setVisible(window.scrollY > 500);
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    const onScroll = () => setVisible(window.scrollY > 500);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   useEffect(() => {
-    const timer = setTimeout(() => injectTocEnhancements(isDocPage), 350);
-    return () => clearTimeout(timer);
+    const t = setTimeout(() => injectTocEnhancements(isDocPage), 350);
+    return () => clearTimeout(t);
   }, [location.pathname, isDocPage]);
 
   return (
