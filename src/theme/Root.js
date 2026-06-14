@@ -169,7 +169,7 @@ function injectTocEnhancements(isDocPage) {
   });
 }
 
-// ─── Floating button ──────────────────────────────────────────────────────────
+// ─── Back to questions floating button ───────────────────────────────────────
 function BackToQuestionsButton({ visible }) {
   if (!visible) return null;
   return (
@@ -185,14 +185,88 @@ function BackToQuestionsButton({ visible }) {
   );
 }
 
+// ─── Custom sidebar toggle button ─────────────────────────────────────────────
+function SidebarToggleButton({ isDocPage }) {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    if (!isDocPage) { setIsReady(false); return; }
+
+    let observer = null;
+
+    function readState() {
+      const btn = document.querySelector(
+        'button[aria-label="Collapse sidebar"], button[aria-label="Expand sidebar"]'
+      );
+      if (!btn) return false;
+      setIsCollapsed(btn.getAttribute('aria-label') === 'Expand sidebar');
+      setIsReady(true);
+
+      if (!observer) {
+        observer = new MutationObserver(() => {
+          const b = document.querySelector(
+            'button[aria-label="Collapse sidebar"], button[aria-label="Expand sidebar"]'
+          );
+          if (b) setIsCollapsed(b.getAttribute('aria-label') === 'Expand sidebar');
+        });
+        observer.observe(document.body, {
+          subtree: true, attributes: true, attributeFilter: ['aria-label'],
+        });
+      }
+      return true;
+    }
+
+    // Poll until button is mounted by Docusaurus
+    const interval = setInterval(() => { if (readState()) clearInterval(interval); }, 150);
+    const timeout  = setTimeout(() => clearInterval(interval), 6000);
+
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timeout);
+      if (observer) observer.disconnect();
+    };
+  }, [isDocPage]);
+
+  const toggle = () => {
+    const btn = document.querySelector(
+      'button[aria-label="Collapse sidebar"], button[aria-label="Expand sidebar"]'
+    );
+    if (btn) btn.click();
+  };
+
+  if (!isReady || !isDocPage) return null;
+
+  return (
+    <button
+      onClick={toggle}
+      className={`sidebar-custom-toggle ${isCollapsed ? 'sidebar-custom-toggle--collapsed' : ''}`}
+      title={isCollapsed ? 'Show sidebar' : 'Hide sidebar'}
+      aria-label={isCollapsed ? 'Show sidebar' : 'Hide sidebar'}
+    >
+      {isCollapsed ? (
+        <>
+          <span className="sct-icon">▶</span>
+          <span className="sct-label">Menu</span>
+        </>
+      ) : (
+        <>
+          <span className="sct-icon">◀</span>
+          <span className="sct-label">Hide</span>
+        </>
+      )}
+    </button>
+  );
+}
+
 // ─── Root wrapper ─────────────────────────────────────────────────────────────
 export default function Root({ children }) {
-  const [visible, setVisible] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
   const isDocPage = location.pathname.includes('/docs/');
 
   useEffect(() => {
-    const onScroll = () => setVisible(window.scrollY > 500);
+    const onScroll = () => setScrolled(window.scrollY > 500);
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
@@ -205,7 +279,8 @@ export default function Root({ children }) {
   return (
     <>
       {children}
-      <BackToQuestionsButton visible={isDocPage && visible} />
+      <BackToQuestionsButton visible={isDocPage && scrolled} />
+      <SidebarToggleButton isDocPage={isDocPage} />
     </>
   );
 }
