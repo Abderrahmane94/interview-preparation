@@ -342,3 +342,180 @@ html {
   font-size: 0.8rem;
   color: var(--ifm-color-content-secondary);
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   INLINE TOC — Question list at top of each doc page
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Container card */
+.markdown .table-of-contents {
+  background: var(--ifm-background-surface-color, #fff);
+  border: 1.5px solid rgba(67, 97, 238, 0.18);
+  border-radius: 12px;
+  padding: 1.4rem 1.5rem 1.1rem;
+  margin: 0.5rem 0 2.5rem;
+  list-style: none !important;
+  counter-reset: question-counter;
+  box-shadow: 0 2px 12px rgba(67, 97, 238, 0.07);
+  position: relative;
+}
+
+[data-theme='dark'] .markdown .table-of-contents {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(123, 140, 222, 0.22);
+}
+
+/* "Questions in this section" label */
+.markdown .table-of-contents::before {
+  content: '📋  Questions in this section';
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--ifm-color-primary);
+  margin-bottom: 0.9rem;
+  padding-bottom: 0.65rem;
+  border-bottom: 1px solid rgba(67, 97, 238, 0.14);
+}
+
+[data-theme='dark'] .markdown .table-of-contents::before {
+  border-color: rgba(123, 140, 222, 0.2);
+}
+
+/* Each list item */
+.markdown .table-of-contents li {
+  counter-increment: question-counter;
+  margin-bottom: 0 !important;
+  padding: 0;
+  font-size: 0.92rem;
+}
+
+/* The link itself */
+.markdown .table-of-contents li a {
+  display: flex;
+  align-items: baseline;
+  gap: 0.65rem;
+  padding: 0.38rem 0.55rem;
+  border-radius: 6px;
+  color: var(--ifm-color-content) !important;
+  text-decoration: none !important;
+  font-weight: 400;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+  line-height: 1.45;
+}
+
+/* Numbered counter badge */
+.markdown .table-of-contents li a::before {
+  content: counter(question-counter, decimal-leading-zero);
+  flex-shrink: 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--ifm-color-primary);
+  font-family: var(--ifm-font-family-monospace);
+  opacity: 0.8;
+  min-width: 22px;
+}
+
+/* Hover state */
+.markdown .table-of-contents li a:hover {
+  background: rgba(67, 97, 238, 0.08);
+  color: var(--ifm-color-primary) !important;
+  transform: translateX(3px);
+}
+
+[data-theme='dark'] .markdown .table-of-contents li a:hover {
+  background: rgba(123, 140, 222, 0.12);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FLOATING "BACK TO QUESTIONS" BUTTON
+   ═══════════════════════════════════════════════════════════════ */
+
+.back-to-questions-btn {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  background: var(--ifm-color-primary);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 0.55rem 0.9rem;
+  cursor: pointer;
+  box-shadow: 0 4px 18px rgba(67, 97, 238, 0.4);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.15s;
+  font-family: var(--ifm-font-family-base);
+  animation: fadeSlideIn 0.25s ease;
+}
+
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.back-to-questions-btn:hover {
+  background: var(--ifm-color-primary-dark);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(67, 97, 238, 0.5);
+}
+
+.back-to-questions-arrow {
+  font-size: 1.1rem;
+  line-height: 1;
+  font-weight: 700;
+}
+
+.back-to-questions-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.9;
+}
+
+@media (max-width: 996px) {
+  .back-to-questions-btn {
+    bottom: 1.2rem;
+    right: 1.2rem;
+    padding: 0.5rem 0.75rem;
+  }
+}
+
+/* ─── Injected "↑ list" link on each question heading ───────── */
+.markdown h2 {
+  display: flex !important;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.back-to-list-link {
+  flex-shrink: 0;
+  font-size: 0.68rem !important;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ifm-color-primary) !important;
+  opacity: 0.45;
+  text-decoration: none !important;
+  padding: 0.2rem 0.45rem;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  transition: opacity 0.15s, border-color 0.15s, background 0.15s;
+  white-space: nowrap;
+  margin-left: auto;
+  line-height: 1;
+}
+
+.markdown h2:hover .back-to-list-link,
+.back-to-list-link:hover {
+  opacity: 1;
+  background: rgba(67, 97, 238, 0.08);
+  border-color: rgba(67, 97, 238, 0.2);
+  text-decoration: none !important;
+}
