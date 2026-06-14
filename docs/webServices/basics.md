@@ -42,8 +42,97 @@ Overall, RabbitMQ provides a powerful and flexible messaging infrastructure that
 - **PUT** is used to completely replace an existing resource or create a new one at the specified URI.
 - **PATCH** is used to **partially update** an existing resource.
 ## Monolithic vs microservice
+
+| | Monolithic | Microservices |
+|---|---|---|
+| Structure | Single deployable unit | Independent services, each deployed separately |
+| Deployment | Deploy everything at once | Deploy each service independently |
+| Scaling | Scale the whole app | Scale only the bottleneck service |
+| Tech stack | One language/framework | Each service can use the best tool for the job |
+| Data | Single shared database | Each service owns its own database |
+| Fault isolation | One bug can crash everything | A failure is contained to one service |
+| Complexity | Simple to start | Higher operational complexity (networking, observability) |
+
+**When to use Monolithic**: small teams, early-stage product, simple domain, fast time-to-market.
+
+**When to use Microservices**: large teams, high scale requirements, independent release cycles, complex domain with clear bounded contexts.
+
+> **Rule of thumb**: Start with a well-structured monolith. Extract services when you hit clear pain points — team independence, scaling bottlenecks, or deployment conflicts.
 ## How to define a good API?
+A good API is one that is **easy to use correctly and hard to use incorrectly**. Key criteria:
+
+**1. Clear and consistent naming**
+- Use nouns for resources, not verbs: `/orders` not `/getOrders`.
+- Use plural: `/users/{id}`, `/products`.
+- Be consistent with casing (kebab-case for URLs: `/order-items`).
+
+**2. Correct use of HTTP methods and status codes**
+- `GET` → read, `POST` → create, `PUT/PATCH` → update, `DELETE` → remove.
+- Return `200 OK`, `201 Created`, `204 No Content`, `400 Bad Request`, `404 Not Found`, `500 Internal Server Error` appropriately.
+
+**3. Versioning**
+- Include version in URL (`/api/v1/orders`) or header to avoid breaking existing clients.
+
+**4. Meaningful error messages**
+```json
+{
+  "status": 400,
+  "error": "VALIDATION_ERROR",
+  "message": "Field 'email' is required",
+  "timestamp": "2024-01-15T10:30:00Z"
+}
+```
+
+**5. Pagination, filtering, sorting**
+- `GET /products?page=0&size=20&sort=price,asc`
+
+**6. Security**
+- Use HTTPS always. Authenticate with JWT/OAuth2. Authorize at the resource level.
+
+**7. Documentation**
+- OpenAPI/Swagger spec, with examples for every endpoint.
+
+**8. Idempotency**
+- `GET`, `PUT`, `DELETE` should be idempotent. `POST` is not.
 ## How would you design a RESTful API?
+A step-by-step approach:
+
+**1. Identify the resources**
+Map your domain nouns to resources: `User`, `Order`, `Product`, `Payment`.
+
+**2. Define the endpoints**
+```
+GET    /api/v1/orders          → list orders (with pagination)
+GET    /api/v1/orders/{id}     → get one order
+POST   /api/v1/orders          → create order
+PUT    /api/v1/orders/{id}     → full update
+PATCH  /api/v1/orders/{id}     → partial update
+DELETE /api/v1/orders/{id}     → cancel/delete order
+```
+
+**3. Design the request/response bodies (JSON)**
+```json
+// POST /api/v1/orders — request
+{ "customerId": 42, "items": [{ "productId": 7, "qty": 2 }] }
+
+// response 201 Created
+{ "id": 101, "status": "PENDING", "total": 59.98, "createdAt": "2024-01-15T10:00:00Z" }
+```
+
+**4. Handle errors consistently**
+Return structured error bodies with `status`, `error`, `message`, and optionally `details`.
+
+**5. Add cross-cutting concerns**
+- **Auth**: JWT Bearer token in `Authorization` header.
+- **Versioning**: `/api/v1/` prefix.
+- **Rate limiting**: Return `429 Too Many Requests` when exceeded.
+- **CORS**: Configure for browser clients.
+
+**6. Document with OpenAPI**
+Use `@Operation`, `@ApiResponse`, `@Schema` annotations (SpringDoc) so Swagger UI is generated automatically.
+
+**7. Test the contract**
+Write integration tests with MockMvc / RestAssured that validate status codes and response structure — not just happy paths.
 ## What is an API Contract first? Do you use Swagger first or Code first?
 - **Swagger First** involves writing the API specification first and then generating the API implementation code based on that specification.
 - **Code First** involves writing the API implementation code first and then generating the API specification based on that code.

@@ -7,7 +7,26 @@ import TOCInline from '@theme/TOCInline';
 # <TOCInline toc={toc} />
 
 ## What is EJB?
+**EJB (Enterprise JavaBeans)** is a server-side component architecture for building scalable, transactional, and secure enterprise applications in Java. EJBs run inside an **EJB container** (provided by a Jakarta EE application server like WildFly or GlassFish), which manages their lifecycle, transactions, security, and concurrency automatically.
 
+There are three types of EJBs:
+- **Session Beans** — implement business logic. Can be *Stateless* (no client state between calls), *Stateful* (maintain conversational state), or *Singleton* (one shared instance).
+- **Message-Driven Beans (MDB)** — consume asynchronous messages from a JMS queue or topic.
+- **Entity Beans** — (deprecated since EJB 3.0, replaced by JPA entities).
+
+```java
+@Stateless
+public class OrderService {
+    @PersistenceContext
+    private EntityManager em;
+
+    public void placeOrder(Order order) {
+        em.persist(order); // transaction managed by the container
+    }
+}
+```
+
+> In modern Java development, Spring Boot has largely replaced EJBs for most use cases due to simpler configuration and lighter runtime requirements. EJBs remain relevant in large Jakarta EE enterprise environments.
 
 ## What are the different types of EJBs?
    There are three types of EJBs in JEE:

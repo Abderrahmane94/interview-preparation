@@ -43,11 +43,100 @@ RabbitMQ est largement utilisé dans les systèmes distribués et les architectu
 - **PATCH** est utilisé pour **mettre à jour partiellement** une ressource existante.
 
 ## Monolithique vs Microservices
-- **Monolithique** : une seule application déployée comme une unité.
-- **Microservices** : les applications sont décomposées en services plus petits et indépendants qui peuvent être développés, déployés et maintenus séparément.
+
+| | Monolithique | Microservices |
+|---|---|---|
+| Structure | Unité de déploiement unique | Services indépendants déployés séparément |
+| Déploiement | Tout déployer en même temps | Déployer chaque service indépendamment |
+| Scalabilité | Scaler toute l'application | Scaler uniquement le service goulot d'étranglement |
+| Stack technique | Un seul langage/framework | Chaque service peut utiliser le meilleur outil |
+| Données | Une base de données partagée | Chaque service possède sa propre base de données |
+| Isolation des pannes | Un bug peut tout faire planter | Une panne est contenue à un seul service |
+| Complexité | Simple à démarrer | Complexité opérationnelle plus élevée (réseau, observabilité) |
+
+**Quand utiliser le Monolithe** : petites équipes, produit en phase initiale, domaine simple, time-to-market rapide.
+
+**Quand utiliser les Microservices** : grandes équipes, exigences de scalabilité élevées, cycles de release indépendants, domaine complexe avec des contextes bornés clairs.
+
+> **Règle empirique** : Commencez par un monolithe bien structuré. Extrayez des services lorsque vous rencontrez des problèmes concrets — indépendance des équipes, goulots d'étranglement de scalabilité, ou conflits de déploiement.
 
 ## Comment définir une bonne API ?
+Une bonne API est celle qui est **facile à utiliser correctement et difficile à utiliser de façon incorrecte**. Critères clés :
+
+**1. Nommage clair et cohérent**
+- Utiliser des noms pour les ressources, pas des verbes : `/commandes` pas `/getCommandes`.
+- Utiliser le pluriel : `/utilisateurs/{id}`, `/produits`.
+- Être cohérent dans la casse (kebab-case pour les URLs : `/lignes-commande`).
+
+**2. Utilisation correcte des méthodes HTTP et codes de statut**
+- `GET` → lire, `POST` → créer, `PUT/PATCH` → mettre à jour, `DELETE` → supprimer.
+- Retourner `200 OK`, `201 Created`, `204 No Content`, `400 Bad Request`, `404 Not Found`, `500 Internal Server Error` de façon appropriée.
+
+**3. Versionnage**
+- Inclure la version dans l'URL (`/api/v1/commandes`) ou dans l'en-tête pour éviter de casser les clients existants.
+
+**4. Messages d'erreur significatifs**
+```json
+{
+  "status": 400,
+  "error": "VALIDATION_ERROR",
+  "message": "Le champ 'email' est obligatoire",
+  "timestamp": "2024-01-15T10:30:00Z"
+}
+```
+
+**5. Pagination, filtrage, tri**
+- `GET /produits?page=0&size=20&sort=prix,asc`
+
+**6. Sécurité**
+- Toujours utiliser HTTPS. S'authentifier avec JWT/OAuth2. Autoriser au niveau de la ressource.
+
+**7. Documentation**
+- Spécification OpenAPI/Swagger, avec des exemples pour chaque endpoint.
+
+**8. Idempotence**
+- `GET`, `PUT`, `DELETE` doivent être idempotents. `POST` ne l'est pas.
+
 ## Comment concevoir une API RESTful ?
+Approche étape par étape :
+
+**1. Identifier les ressources**
+Mapper les noms du domaine en ressources : `Utilisateur`, `Commande`, `Produit`, `Paiement`.
+
+**2. Définir les endpoints**
+```
+GET    /api/v1/commandes          → lister les commandes (avec pagination)
+GET    /api/v1/commandes/{id}     → récupérer une commande
+POST   /api/v1/commandes          → créer une commande
+PUT    /api/v1/commandes/{id}     → mise à jour complète
+PATCH  /api/v1/commandes/{id}     → mise à jour partielle
+DELETE /api/v1/commandes/{id}     → annuler/supprimer une commande
+```
+
+**3. Concevoir les corps de requête/réponse (JSON)**
+```json
+// POST /api/v1/commandes — requête
+{ "clientId": 42, "articles": [{ "produitId": 7, "qte": 2 }] }
+
+// réponse 201 Created
+{ "id": 101, "statut": "EN_ATTENTE", "total": 59.98, "creeLe": "2024-01-15T10:00:00Z" }
+```
+
+**4. Gérer les erreurs de façon cohérente**
+Retourner des corps d'erreur structurés avec `status`, `error`, `message` et optionnellement `details`.
+
+**5. Ajouter les préoccupations transversales**
+- **Auth** : token JWT Bearer dans l'en-tête `Authorization`.
+- **Versionnage** : préfixe `/api/v1/`.
+- **Rate limiting** : retourner `429 Too Many Requests` lorsque dépassé.
+- **CORS** : configurer pour les clients navigateurs.
+
+**6. Documenter avec OpenAPI**
+Utiliser les annotations `@Operation`, `@ApiResponse`, `@Schema` (SpringDoc) pour que l'UI Swagger soit générée automatiquement.
+
+**7. Tester le contrat**
+Écrire des tests d'intégration avec MockMvc/RestAssured qui valident les codes de statut et la structure de réponse — pas seulement les cas nominaux.
+
 ## Qu'est-ce que le contrat API first ? Utilisez-vous Swagger first ou Code first ?
 - **Swagger First** consiste à écrire d'abord la spécification API, puis à générer le code d'implémentation basé sur cette spécification.
 - **Code First** consiste à écrire d'abord le code d'implémentation, puis à générer la spécification API basée sur ce code.

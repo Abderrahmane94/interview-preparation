@@ -7,7 +7,26 @@ import TOCInline from '@theme/TOCInline';
 # <TOCInline toc={toc} />
 
 ## Qu'est-ce qu'un EJB ?
-Un EJB (Enterprise JavaBean) est un composant serveur géré par le conteneur EJB qui encapsule la logique métier d'une application d'entreprise.
+**EJB (Enterprise JavaBeans)** est une architecture de composants côté serveur pour créer des applications d'entreprise Java scalables, transactionnelles et sécurisées. Les EJBs s'exécutent dans un **conteneur EJB** (fourni par un serveur d'application Jakarta EE comme WildFly ou GlassFish), qui gère automatiquement leur cycle de vie, les transactions, la sécurité et la concurrence.
+
+Il existe trois types d'EJBs :
+- **Session Beans** — implémentent la logique métier. Peuvent être *Stateless* (pas d'état client entre les appels), *Stateful* (maintiennent un état conversationnel) ou *Singleton* (une instance partagée).
+- **Message-Driven Beans (MDB)** — consomment des messages asynchrones depuis une file ou un topic JMS.
+- **Entity Beans** — (dépréciés depuis EJB 3.0, remplacés par les entités JPA).
+
+```java
+@Stateless
+public class OrderService {
+    @PersistenceContext
+    private EntityManager em;
+
+    public void placeOrder(Order order) {
+        em.persist(order); // transaction gérée par le conteneur
+    }
+}
+```
+
+> Dans le développement Java moderne, Spring Boot a largement remplacé les EJBs pour la plupart des cas d'usage, grâce à une configuration plus simple et des exigences d'exécution allégées. Les EJBs restent pertinents dans les grands environnements Jakarta EE d'entreprise.
 
 ## Quels sont les différents types d'EJB ?
 Il existe trois types d'EJB dans JEE :
