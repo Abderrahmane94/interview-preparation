@@ -4,6 +4,9 @@
  * work well for content-centric websites.
  */
 
+/* ─── Google Fonts ───────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
 /* ─── Color palette ─────────────────────────────────────────── */
 :root {
   --ifm-color-primary: #4361ee;
@@ -13,10 +16,24 @@
   --ifm-color-primary-light: #5a74f0;
   --ifm-color-primary-lighter: #6880f1;
   --ifm-color-primary-lightest: #8fa1f5;
-  --ifm-code-font-size: 95%;
-  --docusaurus-highlighted-code-line-bg: rgba(67, 97, 238, 0.12);
+
+  /* Typography */
+  --ifm-font-family-base: 'Inter', system-ui, -apple-system, sans-serif;
+  --ifm-font-family-monospace: 'JetBrains Mono', 'Fira Code', monospace;
+  --ifm-font-size-base: 16px;
+  --ifm-line-height-base: 1.75;
+  --ifm-font-weight-normal: 400;
+  --ifm-heading-font-weight: 700;
+  --ifm-code-font-size: 90%;
+
+  /* Spacing */
+  --ifm-global-radius: 6px;
+  --ifm-navbar-height: 60px;
+
+  /* Q&A */
   --qa-question-bg: rgba(67, 97, 238, 0.06);
   --qa-question-border: #4361ee;
+  --docusaurus-highlighted-code-line-bg: rgba(67, 97, 238, 0.12);
 }
 
 [data-theme='dark'] {
@@ -32,87 +49,73 @@
   --qa-question-border: #7b8cde;
 }
 
-/* ─── Sidebar TOC ───────────────────────────────────────────── */
-.table-of-contents li {
-  margin-bottom: 12px;
-  font-size: 15px;
-  font-weight: normal;
+/* ─── Smooth scrolling ──────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
 }
 
-.theme-doc-toc-desktop {
-  display: none;
+/* ─── Navbar ─────────────────────────────────────────────────── */
+.navbar {
+  box-shadow: 0 1px 0 rgba(67, 97, 238, 0.12), 0 2px 12px rgba(0, 0, 0, 0.06);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.navbar__title {
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
+}
+
+.navbar__link {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* ─── Doc page title (h1) ───────────────────────────────────── */
+.markdown h1 {
+  font-size: 1.9rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  border-bottom: 2px solid var(--ifm-color-primary);
+  padding-bottom: 0.5rem;
+  margin-bottom: 2rem;
 }
 
 /* ─── Q&A: Question headings (## level) ─────────────────────── */
 .markdown h2 {
   background: var(--qa-question-bg);
   border-left: 4px solid var(--qa-question-border);
-  padding: 0.65rem 1.1rem;
+  padding: 0.7rem 1.1rem;
   border-radius: 0 6px 6px 0;
   margin-top: 2.8rem;
   margin-bottom: 1.1rem;
-  font-size: 1.08rem;
+  font-size: 1.05rem;
   font-weight: 600;
   line-height: 1.5;
+  letter-spacing: -0.01em;
 }
 
 /* ─── Q&A: Sub-headings (### level) ─────────────────────────── */
 .markdown h3 {
-  font-size: 1rem;
+  font-size: 0.97rem;
   font-weight: 600;
   color: var(--ifm-color-primary);
   margin-top: 1.4rem;
-  margin-bottom: 0.5rem;
-}
-
-/* ─── Code blocks ───────────────────────────────────────────── */
-code {
-  border-radius: 4px;
-}
-
-.markdown pre {
-  border-radius: 8px;
-  border: 1px solid rgba(67, 97, 238, 0.15);
-}
-
-[data-theme='dark'] .markdown pre {
-  border-color: rgba(123, 140, 222, 0.2);
-}
-
-/* ─── Tables ────────────────────────────────────────────────── */
-.markdown table {
-  display: table;
-  width: 100%;
-  border-collapse: collapse;
-  margin: 1.2rem 0;
-  font-size: 0.93rem;
-}
-
-.markdown table th {
-  background: var(--ifm-color-primary);
-  color: #fff;
-  font-weight: 600;
-  text-align: left;
-  padding: 0.6rem 0.9rem;
-}
-
-.markdown table td {
-  padding: 0.55rem 0.9rem;
-  vertical-align: top;
-}
-
-.markdown table tr:nth-child(even) {
-  background: var(--qa-question-bg);
+  margin-bottom: 0.4rem;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
 }
 
 /* ─── Inline code ───────────────────────────────────────────── */
 .markdown :not(pre) > code {
+  font-family: var(--ifm-font-family-monospace);
   background: rgba(67, 97, 238, 0.08);
   color: var(--ifm-color-primary-darkest);
   border: 1px solid rgba(67, 97, 238, 0.18);
-  padding: 0.1em 0.35em;
+  padding: 0.12em 0.38em;
   border-radius: 4px;
-  font-size: 0.88em;
+  font-size: 0.86em;
 }
 
 [data-theme='dark'] .markdown :not(pre) > code {
@@ -121,14 +124,110 @@ code {
   border-color: rgba(123, 140, 222, 0.25);
 }
 
-/* ─── Doc article spacing ───────────────────────────────────── */
+/* ─── Code blocks ───────────────────────────────────────────── */
+.markdown pre {
+  border-radius: 8px;
+  border: 1px solid rgba(67, 97, 238, 0.12);
+  font-size: 0.88rem;
+  line-height: 1.65;
+}
+
+[data-theme='dark'] .markdown pre {
+  border-color: rgba(123, 140, 222, 0.18);
+}
+
+.markdown pre code {
+  font-family: var(--ifm-font-family-monospace);
+  font-size: inherit;
+}
+
+/* ─── Tables ────────────────────────────────────────────────── */
+.markdown table {
+  display: table;
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.2rem 0;
+  font-size: 0.91rem;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+}
+
+.markdown table th {
+  background: var(--ifm-color-primary);
+  color: #fff;
+  font-weight: 600;
+  text-align: left;
+  padding: 0.65rem 1rem;
+  font-size: 0.88rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.markdown table td {
+  padding: 0.55rem 1rem;
+  vertical-align: top;
+  border-bottom: 1px solid rgba(67, 97, 238, 0.08);
+}
+
+[data-theme='dark'] .markdown table td {
+  border-color: rgba(123, 140, 222, 0.12);
+}
+
+.markdown table tr:nth-child(even) {
+  background: var(--qa-question-bg);
+}
+
+.markdown table tr:last-child td {
+  border-bottom: none;
+}
+
+/* ─── Links ─────────────────────────────────────────────────── */
+.markdown a {
+  font-weight: 500;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+
+/* ─── Body text ─────────────────────────────────────────────── */
 .markdown p {
-  line-height: 1.75;
+  line-height: 1.8;
   margin-bottom: 0.9rem;
 }
 
 .markdown ul,
 .markdown ol {
-  line-height: 1.75;
+  line-height: 1.8;
   margin-bottom: 0.9rem;
+  padding-left: 1.4rem;
+}
+
+.markdown li {
+  margin-bottom: 0.3rem;
+}
+
+/* ─── Sidebar TOC ───────────────────────────────────────────── */
+.table-of-contents li {
+  margin-bottom: 10px;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.theme-doc-toc-desktop {
+  display: none;
+}
+
+/* ─── Sidebar nav ───────────────────────────────────────────── */
+.menu__link {
+  font-size: 0.88rem;
+  border-radius: 5px;
+}
+
+.menu__link--active {
+  font-weight: 600;
+}
+
+/* ─── Footer ─────────────────────────────────────────────────── */
+.footer {
+  font-size: 0.88rem;
 }
