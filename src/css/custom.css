@@ -231,3 +231,114 @@ html {
 .footer {
   font-size: 0.88rem;
 }
+
+/* ─── Hero gradient override ─────────────────────────────────── */
+.hero--primary {
+  background: linear-gradient(135deg, #3a56e8 0%, #1a237e 100%) !important;
+}
+
+/* ─── Text selection ─────────────────────────────────────────── */
+::selection {
+  background: rgba(67, 97, 238, 0.22);
+  color: inherit;
+}
+
+/* ─── Custom scrollbar (webkit) ─────────────────────────────── */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(67, 97, 238, 0.28);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(67, 97, 238, 0.5);
+}
+
+/* ─── Breadcrumbs ────────────────────────────────────────────── */
+.breadcrumbs__item--active .breadcrumbs__link {
+  color: var(--ifm-color-primary);
+  font-weight: 600;
+}
+
+.breadcrumbs__link {
+  font-size: 0.82rem;
+  border-radius: 4px;
+}
+
+/* ─── Pagination (prev/next at page bottom) ─────────────────── */
+.pagination-nav__link {
+  border-radius: 10px;
+  border: 1px solid rgba(67, 97, 238, 0.2) !important;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.pagination-nav__link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(67, 97, 238, 0.14);
+  border-color: var(--ifm-color-primary) !important;
+}
+
+.pagination-nav__sublabel {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ifm-color-primary);
+  font-weight: 600;
+}
+
+.pagination-nav__label {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+/* ─── Sidebar category labels ────────────────────────────────── */
+.menu__list-item-collapsible > .menu__link {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--ifm-color-primary);
+  padding-top: 1rem;
+}
+
+/* ─── Blockquotes ────────────────────────────────────────────── */
+.markdown blockquote {
+  border-left: 4px solid var(--ifm-color-primary-light);
+  background: var(--qa-question-bg);
+  border-radius: 0 6px 6px 0;
+  padding: 0.8rem 1.1rem;
+  margin: 1.2rem 0;
+  color: var(--ifm-color-content-secondary);
+  font-style: normal;
+}
+
+.markdown blockquote p {
+  margin-bottom: 0;
+}
+
+/* ─── Code copy button ────────────────────────────────────────── */
+.clean-btn.copyButton_node_modules-\@docusaurus-theme-classic-lib-theme-CodeBlock-CopyButton-styles-module {
+  border-radius: 5px;
+}
+
+/* ─── Doc article max-width ──────────────────────────────────── */
+.docMainContainer_node_modules-\@docusaurus-theme-classic-lib-theme-DocPage-Layout-Main-styles-module {
+  max-width: 860px;
+}
+
+/* ─── Admonitions (note / tip / warning / danger) ───────────── */
+.admonition {
+  border-radius: 8px !important;
+  border-left-width: 5px !important;
+}
+
+/* ─── Doc page "last updated" / edit link ───────────────────── */
+.theme-last-updated {
+  font-size: 0.8rem;
+  color: var(--ifm-color-content-secondary);
+}
