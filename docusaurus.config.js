@@ -179,6 +179,12 @@ const config = {
         style: 'dark',
         copyright: `Copyright © 30-06-2023 Interview Preparation. Built with Docusaurus.`,
       },
+      docs: {
+        sidebar: {
+          hideable: true,
+          autoCollapseCategories: true,
+        },
+      },
       prism: {
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,

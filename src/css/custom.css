@@ -581,21 +581,14 @@ html {
   background: rgba(245, 158, 11, 0.18);
 }
 
-/* ─── Hide left sidebar — nav is now in the top bar ─────────── */
-.theme-doc-sidebar-container {
-  display: none !important;
+/* ─── Sidebar collapse button styling ───────────────────────── */
+.theme-doc-sidebar-container button[class*='collapseSidebarButton'] {
+  background: var(--ifm-color-primary);
+  border-top: 1px solid var(--ifm-color-primary-dark);
 }
 
-/* Expand the doc content to use the full width */
-.docPage_vRaB,
-[class*='docPage_'] {
-  max-width: 100% !important;
-}
-
-/* Center and cap the reading width for comfort */
-[class*='docMainContainer_'] article {
-  max-width: 860px;
-  margin: 0 auto;
+.theme-doc-sidebar-container button[class*='collapseSidebarButton']:hover {
+  background: var(--ifm-color-primary-dark);
 }
 
 /* Navbar dropdowns — slightly larger touch target */
