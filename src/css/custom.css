@@ -4,7 +4,7 @@
  * work well for content-centric websites.
  */
 
-/* Professional blue palette */
+/* ─── Color palette ─────────────────────────────────────────── */
 :root {
   --ifm-color-primary: #4361ee;
   --ifm-color-primary-dark: #2c4eeb;
@@ -15,6 +15,8 @@
   --ifm-color-primary-lightest: #8fa1f5;
   --ifm-code-font-size: 95%;
   --docusaurus-highlighted-code-line-bg: rgba(67, 97, 238, 0.12);
+  --qa-question-bg: rgba(67, 97, 238, 0.06);
+  --qa-question-border: #4361ee;
 }
 
 [data-theme='dark'] {
@@ -26,11 +28,14 @@
   --ifm-color-primary-lighter: #9daee8;
   --ifm-color-primary-lightest: #b6c3ef;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+  --qa-question-bg: rgba(123, 140, 222, 0.1);
+  --qa-question-border: #7b8cde;
 }
 
+/* ─── Sidebar TOC ───────────────────────────────────────────── */
 .table-of-contents li {
-  margin-bottom: 15px;
-  font-size: 16px;
+  margin-bottom: 12px;
+  font-size: 15px;
   font-weight: normal;
 }
 
@@ -38,13 +43,92 @@
   display: none;
 }
 
-/* Better code blocks */
+/* ─── Q&A: Question headings (## level) ─────────────────────── */
+.markdown h2 {
+  background: var(--qa-question-bg);
+  border-left: 4px solid var(--qa-question-border);
+  padding: 0.65rem 1.1rem;
+  border-radius: 0 6px 6px 0;
+  margin-top: 2.8rem;
+  margin-bottom: 1.1rem;
+  font-size: 1.08rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+/* ─── Q&A: Sub-headings (### level) ─────────────────────────── */
+.markdown h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ifm-color-primary);
+  margin-top: 1.4rem;
+  margin-bottom: 0.5rem;
+}
+
+/* ─── Code blocks ───────────────────────────────────────────── */
 code {
   border-radius: 4px;
 }
 
-/* Table header styling */
-table th {
+.markdown pre {
+  border-radius: 8px;
+  border: 1px solid rgba(67, 97, 238, 0.15);
+}
+
+[data-theme='dark'] .markdown pre {
+  border-color: rgba(123, 140, 222, 0.2);
+}
+
+/* ─── Tables ────────────────────────────────────────────────── */
+.markdown table {
+  display: table;
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.2rem 0;
+  font-size: 0.93rem;
+}
+
+.markdown table th {
   background: var(--ifm-color-primary);
   color: #fff;
+  font-weight: 600;
+  text-align: left;
+  padding: 0.6rem 0.9rem;
+}
+
+.markdown table td {
+  padding: 0.55rem 0.9rem;
+  vertical-align: top;
+}
+
+.markdown table tr:nth-child(even) {
+  background: var(--qa-question-bg);
+}
+
+/* ─── Inline code ───────────────────────────────────────────── */
+.markdown :not(pre) > code {
+  background: rgba(67, 97, 238, 0.08);
+  color: var(--ifm-color-primary-darkest);
+  border: 1px solid rgba(67, 97, 238, 0.18);
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  font-size: 0.88em;
+}
+
+[data-theme='dark'] .markdown :not(pre) > code {
+  background: rgba(123, 140, 222, 0.12);
+  color: var(--ifm-color-primary-lightest);
+  border-color: rgba(123, 140, 222, 0.25);
+}
+
+/* ─── Doc article spacing ───────────────────────────────────── */
+.markdown p {
+  line-height: 1.75;
+  margin-bottom: 0.9rem;
+}
+
+.markdown ul,
+.markdown ol {
+  line-height: 1.75;
+  margin-bottom: 0.9rem;
 }
