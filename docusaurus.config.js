@@ -123,17 +123,34 @@ const config = {
             items: [
               { type: 'doc', docId: 'Architecture&CleanCode/architecture-pattern', label: 'Architecture Patterns' },
               { type: 'doc', docId: 'UML/UML',                 label: 'UML' },
+              { type: 'doc', docId: 'webServices/basics',      label: 'Web Services & API' },
             ],
           },
-          // ── Web & Databases ───────────────────────────────────
+          // ── Front-End ─────────────────────────────────────────
           {
             type: 'dropdown',
-            label: '🌐 Web & DB',
+            label: '🖥️ Front-End',
             position: 'left',
             items: [
-              { type: 'doc', docId: 'webServices/basics',      label: 'Web Services & API' },
-              { type: 'doc', docId: 'SQL/sql',                 label: 'SQL & Databases' },
               { type: 'doc', docId: 'Angular/basics',          label: 'Angular' },
+            ],
+          },
+          // ── DB ────────────────────────────────────────────────
+          {
+            type: 'dropdown',
+            label: '🗄️ DB',
+            position: 'left',
+            items: [
+              { type: 'doc', docId: 'SQL/sql',                 label: 'SQL & Databases' },
+            ],
+          },
+          // ── Agile ─────────────────────────────────────────────
+          {
+            type: 'dropdown',
+            label: '🔄 Agile',
+            position: 'left',
+            items: [
+              { type: 'doc', docId: 'Agile/scrum',             label: 'Agile & Scrum' },
             ],
           },
           // ── Soft Skills ───────────────────────────────────────
@@ -142,9 +159,8 @@ const config = {
             label: '🧑‍💼 Soft Skills',
             position: 'left',
             items: [
-              { type: 'doc', docId: 'Behavioral/basics',             label: 'Behavioral' },
+              { type: 'doc', docId: 'Behavioral/basics',               label: 'Behavioral' },
               { type: 'doc', docId: 'Behavioral/questions-to-clients', label: 'Questions to Ask' },
-              { type: 'doc', docId: 'Agile/scrum',                   label: 'Agile & Scrum' },
             ],
           },
           // ── Right side ────────────────────────────────────────
