@@ -519,3 +519,42 @@ html {
   border-color: rgba(67, 97, 238, 0.2);
   text-decoration: none !important;
 }
+
+/* ─── TOC: inline <code> tags (from backtick headings) ──────── */
+.markdown .table-of-contents li a code {
+  background: rgba(67, 97, 238, 0.1);
+  color: var(--ifm-color-primary-dark);
+  border: 1px solid rgba(67, 97, 238, 0.2);
+  border-radius: 4px;
+  padding: 0.05em 0.35em;
+  font-size: 0.82em;
+  font-weight: 600;
+  font-family: var(--ifm-font-family-monospace);
+  vertical-align: baseline;
+}
+
+[data-theme='dark'] .markdown .table-of-contents li a code {
+  background: rgba(123, 140, 222, 0.15);
+  color: var(--ifm-color-primary-lightest);
+  border-color: rgba(123, 140, 222, 0.28);
+}
+
+/* ─── TOC: JS-highlighted plain-text keywords ───────────────── */
+.toc-keyword {
+  color: var(--ifm-color-primary-dark);
+  font-weight: 700;
+  background: rgba(67, 97, 238, 0.09);
+  border-radius: 3px;
+  padding: 0.05em 0.28em;
+  font-size: 0.93em;
+}
+
+[data-theme='dark'] .toc-keyword {
+  color: var(--ifm-color-primary-light);
+  background: rgba(123, 140, 222, 0.14);
+}
+
+/* Slightly dimmer on hover (the parent link already brightens) */
+.markdown .table-of-contents li a:hover .toc-keyword {
+  background: rgba(67, 97, 238, 0.16);
+}
