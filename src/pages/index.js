@@ -11,7 +11,6 @@ const stats = [
   { value: '200+', label: 'Q&A' },
   { value: '6',    label: 'Topics' },
   { value: 'EN',   label: '+ FR' },
-  { value: '100%', label: 'Free' },
 ];
 
 function HomepageHeader() {

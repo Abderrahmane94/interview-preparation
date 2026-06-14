@@ -177,7 +177,7 @@ const config = {
       },
       footer: {
         style: 'dark',
-        copyright: `Copyright © 30-06-2023 Interview Preparation. Built with Docusaurus.`,
+        copyright: `Copyright © 15-06-2026 Interview Preparation.`,
       },
       docs: {
         sidebar: {
