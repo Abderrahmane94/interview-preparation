@@ -64,21 +64,85 @@ const config = {
       // Replace with your project's social card
       image: 'img/docusaurus-social-card.jpg',
       navbar: {
-        title: 'Interview Preparation',
+        title: 'Interview Prep',
         logo: {
-          alt: 'My Site Logo',
+          alt: 'Interview Preparation Logo',
           src: 'img/prepa.png',
         },
         items: [
+          // ── Java ──────────────────────────────────────────────
+          {
+            type: 'dropdown',
+            label: '☕ Java',
+            position: 'left',
+            items: [
+              { type: 'doc', docId: 'Java/basics',                    label: 'Basics' },
+              { type: 'doc', docId: 'Java/oop',                       label: 'OOP' },
+              { type: 'doc', docId: 'Java/collections',               label: 'Collections' },
+              { type: 'doc', docId: 'Java/multithreading',            label: 'Multithreading' },
+              { type: 'doc', docId: 'Java/generics-exception-handling', label: 'Generics & Exceptions' },
+              { type: 'doc', docId: 'Java/advanced',                  label: 'Advanced' },
+              { type: 'doc', docId: 'Java/new-in-8-11-17',           label: 'New in Java 8/11/17' },
+              { type: 'doc', docId: 'Java/JEE',                       label: 'JEE' },
+            ],
+          },
+          // ── Spring ────────────────────────────────────────────
+          {
+            type: 'dropdown',
+            label: '🍃 Spring',
+            position: 'left',
+            items: [
+              { type: 'doc', docId: 'Spring/spring-core',     label: 'Spring Core' },
+              { type: 'doc', docId: 'Spring/spring-boot',     label: 'Spring Boot' },
+              { type: 'doc', docId: 'Spring/spring-web',      label: 'Spring Web (MVC)' },
+              { type: 'doc', docId: 'Spring/spring-data',     label: 'Spring Data (JPA)' },
+              { type: 'doc', docId: 'Spring/spring-security', label: 'Spring Security' },
+              { type: 'doc', docId: 'Spring/spring-test',     label: 'Spring Test' },
+            ],
+          },
+          // ── DevOps ────────────────────────────────────────────
+          {
+            type: 'dropdown',
+            label: '🛠️ DevOps',
+            position: 'left',
+            items: [
+              { type: 'doc', docId: 'Docker/docker',           label: 'Docker' },
+              { type: 'doc', docId: 'Kubernetes/kubernetes',   label: 'Kubernetes' },
+              { type: 'doc', docId: 'Helm/helm',               label: 'Helm' },
+              { type: 'doc', docId: 'Terraform/terraform',     label: 'Terraform' },
+              { type: 'doc', docId: 'Git/Git',                 label: 'Git' },
+              { type: 'doc', docId: 'Maven/maven',             label: 'Maven' },
+              { type: 'doc', docId: 'Jenkins/Jenkins',         label: 'Jenkins' },
+            ],
+          },
+          // ── Architecture & Web ────────────────────────────────
+          {
+            type: 'dropdown',
+            label: '🏗️ Architecture',
+            position: 'left',
+            items: [
+              { type: 'doc', docId: 'Architecture&CleanCode/architecture-pattern', label: 'Architecture Patterns' },
+              { type: 'doc', docId: 'webServices/basics',      label: 'Web Services & API' },
+              { type: 'doc', docId: 'SQL/sql',                 label: 'SQL & Databases' },
+              { type: 'doc', docId: 'Angular/basics',          label: 'Angular' },
+              { type: 'doc', docId: 'UML/UML',                 label: 'UML' },
+            ],
+          },
+          // ── Soft Skills ───────────────────────────────────────
+          {
+            type: 'dropdown',
+            label: '🧑‍💼 Soft Skills',
+            position: 'left',
+            items: [
+              { type: 'doc', docId: 'Behavioral/basics',             label: 'Behavioral' },
+              { type: 'doc', docId: 'Behavioral/questions-to-clients', label: 'Questions to Ask' },
+              { type: 'doc', docId: 'Agile/scrum',                   label: 'Agile & Scrum' },
+            ],
+          },
+          // ── Right side ────────────────────────────────────────
           {
             type: 'localeDropdown',
             position: 'right',
-          },
-          {
-            type: 'docSidebar',
-            sidebarId: 'tutorialSidebar',
-            position: 'left',
-            label: 'Questions & Answers',
           },
           {
             href: 'https://github.com/Abderrahmane94/interview-preparation',

@@ -580,3 +580,30 @@ html {
 .markdown .table-of-contents li a:hover .toc-fallback {
   background: rgba(245, 158, 11, 0.18);
 }
+
+/* ─── Hide left sidebar — nav is now in the top bar ─────────── */
+.theme-doc-sidebar-container {
+  display: none !important;
+}
+
+/* Expand the doc content to use the full width */
+.docPage_vRaB,
+[class*='docPage_'] {
+  max-width: 100% !important;
+}
+
+/* Center and cap the reading width for comfort */
+[class*='docMainContainer_'] article {
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+/* Navbar dropdowns — slightly larger touch target */
+.navbar__item.dropdown .navbar__link {
+  font-weight: 600;
+}
+
+/* Keep dropdown menu readable */
+.dropdown__menu {
+  min-width: 200px;
+}
