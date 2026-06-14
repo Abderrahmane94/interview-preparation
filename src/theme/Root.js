@@ -188,54 +188,46 @@ function BackToQuestionsButton({ visible }) {
 // ─── Custom sidebar toggle button ─────────────────────────────────────────────
 function SidebarToggleButton({ isDocPage }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    if (!isDocPage) { setIsReady(false); return; }
+    if (!isDocPage) return;
 
-    let observer = null;
-
-    function readState() {
-      const btn = document.querySelector(
-        'button[aria-label="Collapse sidebar"], button[aria-label="Expand sidebar"]'
-      );
-      if (!btn) return false;
-      setIsCollapsed(btn.getAttribute('aria-label') === 'Expand sidebar');
-      setIsReady(true);
-
-      if (!observer) {
-        observer = new MutationObserver(() => {
-          const b = document.querySelector(
-            'button[aria-label="Collapse sidebar"], button[aria-label="Expand sidebar"]'
-          );
-          if (b) setIsCollapsed(b.getAttribute('aria-label') === 'Expand sidebar');
-        });
-        observer.observe(document.body, {
-          subtree: true, attributes: true, attributeFilter: ['aria-label'],
-        });
+    // Watch the sidebar container for hidden/visible state
+    const observer = new MutationObserver(() => {
+      const sidebar = document.querySelector('.theme-doc-sidebar-container');
+      if (sidebar) {
+        // Docusaurus adds --hidden modifier class when collapsed
+        const hidden = [...sidebar.classList].some(c => c.includes('hidden') || c.includes('Hidden'));
+        setIsCollapsed(hidden);
       }
-      return true;
+    });
+
+    observer.observe(document.body, {
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['class'],
+    });
+
+    // Read initial state
+    const sidebar = document.querySelector('.theme-doc-sidebar-container');
+    if (sidebar) {
+      const hidden = [...sidebar.classList].some(c => c.includes('hidden') || c.includes('Hidden'));
+      setIsCollapsed(hidden);
     }
 
-    // Poll until button is mounted by Docusaurus
-    const interval = setInterval(() => { if (readState()) clearInterval(interval); }, 150);
-    const timeout  = setTimeout(() => clearInterval(interval), 6000);
-
-    return () => {
-      clearInterval(interval);
-      clearTimeout(timeout);
-      if (observer) observer.disconnect();
-    };
+    return () => observer.disconnect();
   }, [isDocPage]);
 
   const toggle = () => {
-    const btn = document.querySelector(
-      'button[aria-label="Collapse sidebar"], button[aria-label="Expand sidebar"]'
-    );
+    // Try aria-label selector first, fall back to class-name selector
+    const btn =
+      document.querySelector('button[aria-label="Collapse sidebar"]') ||
+      document.querySelector('button[aria-label="Expand sidebar"]') ||
+      document.querySelector('button[class*="collapseSidebarButton"]');
     if (btn) btn.click();
   };
 
-  if (!isReady || !isDocPage) return null;
+  if (!isDocPage) return null;
 
   return (
     <button
