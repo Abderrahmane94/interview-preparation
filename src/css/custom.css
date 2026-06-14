@@ -581,14 +581,55 @@ html {
   background: rgba(245, 158, 11, 0.18);
 }
 
-/* ─── Sidebar collapse button styling ───────────────────────── */
-.theme-doc-sidebar-container button[class*='collapseSidebarButton'] {
-  background: var(--ifm-color-primary);
-  border-top: 1px solid var(--ifm-color-primary-dark);
+/* ─── Sidebar collapse button ────────────────────────────────── */
+button[class*='collapseSidebarButton'] {
+  height: 40px !important;
+  background: linear-gradient(135deg, var(--ifm-color-primary) 0%, var(--ifm-color-primary-dark) 100%) !important;
+  border-top: none !important;
+  border-radius: 0 0 8px 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  font-size: 0.78rem !important;
+  font-weight: 600 !important;
+  color: #fff !important;
+  letter-spacing: 0.04em !important;
+  text-transform: uppercase !important;
+  opacity: 0.92;
+  transition: opacity 0.2s ease, filter 0.2s ease !important;
+  box-shadow: 0 -2px 8px rgba(67, 97, 238, 0.18) !important;
+  position: relative !important;
+  overflow: hidden !important;
 }
 
-.theme-doc-sidebar-container button[class*='collapseSidebarButton']:hover {
-  background: var(--ifm-color-primary-dark);
+button[class*='collapseSidebarButton']::before {
+  content: '‹';
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1;
+  transition: transform 0.25s ease;
+}
+
+button[class*='collapseSidebarButton']:hover {
+  opacity: 1 !important;
+  filter: brightness(1.1) !important;
+}
+
+/* Icon SVG inside the button — hide it and use ::before instead */
+button[class*='collapseSidebarButton'] svg {
+  display: none !important;
+}
+
+/* When sidebar is collapsed, show › instead */
+[class*='sidebarWithHideableNavbar'] button[class*='collapseSidebarButton']::before,
+.navbar-sidebar--show ~ * button[class*='collapseSidebarButton']::before {
+  transform: rotate(180deg);
+}
+
+[data-theme='dark'] button[class*='collapseSidebarButton'] {
+  background: linear-gradient(135deg, #3a56e8 0%, #1a237e 100%) !important;
+  box-shadow: 0 -2px 8px rgba(67, 97, 238, 0.30) !important;
 }
 
 /* Navbar dropdowns — slightly larger touch target */
