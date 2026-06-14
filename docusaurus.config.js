@@ -115,17 +115,25 @@ const config = {
               { type: 'doc', docId: 'Jenkins/Jenkins',         label: 'Jenkins' },
             ],
           },
-          // ── Architecture & Web ────────────────────────────────
+          // ── Architecture ──────────────────────────────────────
           {
             type: 'dropdown',
             label: '🏗️ Architecture',
             position: 'left',
             items: [
               { type: 'doc', docId: 'Architecture&CleanCode/architecture-pattern', label: 'Architecture Patterns' },
+              { type: 'doc', docId: 'UML/UML',                 label: 'UML' },
+            ],
+          },
+          // ── Web & Databases ───────────────────────────────────
+          {
+            type: 'dropdown',
+            label: '🌐 Web & DB',
+            position: 'left',
+            items: [
               { type: 'doc', docId: 'webServices/basics',      label: 'Web Services & API' },
               { type: 'doc', docId: 'SQL/sql',                 label: 'SQL & Databases' },
               { type: 'doc', docId: 'Angular/basics',          label: 'Angular' },
-              { type: 'doc', docId: 'UML/UML',                 label: 'UML' },
             ],
           },
           // ── Soft Skills ───────────────────────────────────────
