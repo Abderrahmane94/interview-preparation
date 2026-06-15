@@ -227,6 +227,34 @@ function SidebarToggleButton({ isDocPage }) {
     if (btn) btn.click();
   };
 
+  // Auto-collapse sidebar when a nav link inside it is clicked
+  useEffect(() => {
+    if (!isDocPage) return;
+
+    const handleClick = (e) => {
+      const link = e.target.closest('a');
+      if (!link) return;
+      const sidebar = document.querySelector('.theme-doc-sidebar-container');
+      if (!sidebar || !sidebar.contains(link)) return;
+
+      // Wait briefly so the page navigation starts, then collapse
+      setTimeout(() => {
+        const isHidden = [...sidebar.classList].some(c =>
+          c.includes('hidden') || c.includes('Hidden')
+        );
+        if (!isHidden) {
+          const btn =
+            document.querySelector('button[aria-label="Collapse sidebar"]') ||
+            document.querySelector('button[class*="collapseSidebarButton"]');
+          if (btn) btn.click();
+        }
+      }, 200);
+    };
+
+    document.addEventListener('click', handleClick);
+    return () => document.removeEventListener('click', handleClick);
+  }, [isDocPage]);
+
   if (!isDocPage) return null;
 
   return (
