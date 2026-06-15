@@ -266,12 +266,12 @@ function SidebarToggleButton({ isDocPage }) {
     >
       {isCollapsed ? (
         <>
-          <span className="sct-icon">▶</span>
+          <span className="sct-icon">›</span>
           <span className="sct-label">Menu</span>
         </>
       ) : (
         <>
-          <span className="sct-icon">◀</span>
+          <span className="sct-icon">‹</span>
           <span className="sct-label">Hide</span>
         </>
       )}
