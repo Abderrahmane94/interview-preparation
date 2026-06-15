@@ -266,7 +266,6 @@ export default function Root({ children }) {
     <>
       {children}
       <BackToQuestionsButton visible={isDocPage && scrolled} />
-      <SidebarToggleButton isDocPage={isDocPage} />
     </>
   );
 }

@@ -3,6 +3,6 @@ del /f ".git\HEAD.lock" 2>nul
 del /f ".git\index.lock" 2>nul
 git add -A
 git status
-git commit -m "fix: hide native expand button more aggressively, keep only custom show tab"
+git commit -m "fix: remove custom show tab, use native sidebar toggle only"
 git push origin main
 pause
