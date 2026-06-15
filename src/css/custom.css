@@ -582,7 +582,9 @@ html {
 }
 
 /* ─── Hide native Expand button only (custom SHOW tab handles it) ─ */
-button[aria-label="Expand sidebar"] {
+button[aria-label="Expand sidebar"],
+button[class*="expandButton"],
+button[class*="collapseSidebarButton"] ~ button {
   display: none !important;
 }
 
