@@ -257,24 +257,17 @@ function SidebarToggleButton({ isDocPage }) {
 
   if (!isDocPage) return null;
 
+  // Only render when sidebar is collapsed — no hide button (sidebar auto-hides on nav link click)
+  if (!isCollapsed) return null;
+
   return (
     <button
       onClick={toggle}
-      className={`sidebar-custom-toggle ${isCollapsed ? 'sidebar-custom-toggle--collapsed' : ''}`}
-      title={isCollapsed ? 'Show sidebar' : 'Hide sidebar'}
-      aria-label={isCollapsed ? 'Show sidebar' : 'Hide sidebar'}
+      className="sidebar-custom-toggle sidebar-custom-toggle--collapsed"
+      title="Show sidebar"
+      aria-label="Show sidebar"
     >
-      {isCollapsed ? (
-        <>
-          <span className="sct-icon">›</span>
-          <span className="sct-label">Menu</span>
-        </>
-      ) : (
-        <>
-          <span className="sct-icon">‹</span>
-          <span className="sct-label">Hide</span>
-        </>
-      )}
+      <span className="sct-icon">›</span>
     </button>
   );
 }
