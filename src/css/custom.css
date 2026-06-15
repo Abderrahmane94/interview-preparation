@@ -581,10 +581,33 @@ html {
   background: rgba(245, 158, 11, 0.18);
 }
 
-/* ─── Hide native Docusaurus sidebar toggle ─ */
-button[aria-label="Collapse sidebar"],
+/* ─── Hide native Expand button only (custom SHOW tab handles it) ─ */
 button[aria-label="Expand sidebar"] {
   display: none !important;
+}
+
+/* ─── Style native Collapse sidebar button as a slim bottom strip ─ */
+button[aria-label="Collapse sidebar"] {
+  display: flex !important;
+  width: 100% !important;
+  height: 32px !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  border-top: 1px solid rgba(120,130,170,0.15) !important;
+  color: var(--ifm-color-emphasis-500) !important;
+  font-size: 0.72rem !important;
+  letter-spacing: 0.08em !important;
+  opacity: 0.55 !important;
+  transition: opacity 0.2s ease, background 0.2s ease !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 6px !important;
+  cursor: pointer !important;
+}
+button[aria-label="Collapse sidebar"]:hover {
+  opacity: 1 !important;
+  background: rgba(90,110,230,0.07) !important;
+  color: var(--ifm-color-primary) !important;
 }
 
 /* ─── Custom sidebar toggle — beautiful blue buttons ──────────── */
