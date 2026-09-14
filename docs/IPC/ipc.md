@@ -7,7 +7,7 @@ import TOCInline from '@theme/TOCInline';
 
 
 # IPC — Personal Interview Prep
-# <TOCInline toc={toc} />
+# <TOCInline toc={toc} minHeadingLevel={2} maxHeadingLevel={4} />
 
 > Personal interview prep notes for **Abderrahmane Sardaoui**, tailored to my real background (see CV in the repo root). Keep answers here **consistent** with each other and with the CV — that consistency is the whole point of this page. Placeholders like `[ ... ]` should be filled in with the specific company/project before an actual interview.
 

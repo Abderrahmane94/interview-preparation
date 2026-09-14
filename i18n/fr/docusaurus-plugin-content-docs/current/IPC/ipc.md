@@ -7,7 +7,7 @@ import TOCInline from '@theme/TOCInline';
 
 
 # IPC — Préparation d'entretien personnelle
-# <TOCInline toc={toc} />
+# <TOCInline toc={toc} minHeadingLevel={2} maxHeadingLevel={4} />
 
 > Notes de préparation d'entretien personnelles pour **Abderrahmane Sardaoui**, basées sur mon parcours réel (voir le CV à la racine du dépôt). Garder les réponses **cohérentes** entre elles et avec le CV — c'est tout l'intérêt de cette page. Les placeholders du type `[ ... ]` doivent être remplacés par les informations spécifiques à l'entreprise/au projet avant un vrai entretien.
 
