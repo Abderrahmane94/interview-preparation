@@ -206,3 +206,63 @@ Solves the **dual-write problem**: a service updating its DB **and** publishing 
   - **Aggregate**: a cluster of entities/value objects treated as a single consistency boundary, with one **Aggregate Root** as the only entry point — enforces invariants.
   - **Repository**: abstraction to load/persist aggregates, hiding persistence details from the domain.
   - **Domain Event**: something meaningful that happened in the domain (`OrderPlaced`) — the natural bridge to event-driven integration (Kafka) and the Saga/CQRS patterns.
+
+### What are the core principles of Data Mesh?
+Worth having ready since it's the direction I want to move toward:
+- **Domain-oriented ownership**: each business domain owns and is accountable for its own data, the same way it owns its microservices — no central data team as a bottleneck.
+- **Data as a product**: data exposed by a domain must have the same quality bar as an API — discoverable, documented, trustworthy, with clear SLAs, not just a raw DB dump.
+- **Self-serve data infrastructure platform**: a common platform (storage, pipelines, cataloging, access control) so domain teams can publish/consume data without needing deep infra expertise.
+- **Federated computational governance**: global standards (schemas, security, interoperability) are agreed on and automated/enforced across domains, rather than imposed top-down manually.
+
+### Synchronous (REST) vs asynchronous (event-driven/Kafka) communication — when to use which?
+- **REST/synchronous**: simple to reason about, immediate response, good for request/response use cases (e.g. "get me this resource now"). Downsides: tighter coupling (caller waits on callee's availability), harder to scale under bursty load, failure cascades if not protected (Circuit Breaker).
+- **Event-driven/asynchronous (Kafka)**: services stay decoupled in time (producer doesn't need the consumer to be up), naturally supports multiple subscribers, better for high-throughput/streaming/analytics. Downsides: eventual consistency, harder to trace/debug a business flow, requires idempotent consumers.
+- **In practice**: I use REST for direct client-facing queries and event-driven messaging for cross-service state propagation and workflows (Saga-style).
+
+### How does Spring's IoC/DI container work, and why does it matter?
+- **Inversion of Control (IoC)**: instead of a class creating its own dependencies (`new SomeService()`), the framework creates and provides them — control over object creation is inverted, given to the container.
+- **Dependency Injection (DI)**: the mechanism Spring uses to implement IoC — dependencies are injected via constructor (preferred), setter, or field.
+- **Why it matters**: it decouples components from concrete implementations (you depend on interfaces/abstractions), makes unit testing trivial (inject mocks), and lets Spring manage object lifecycle/scope (`singleton`, `prototype`, etc.) centrally.
+- **Spring Boot auto-configuration** builds on this: based on what's on the classpath and your properties, Spring Boot automatically registers sensible beans (e.g. a `DataSource` if a JDBC driver is present), which you can always override.
+
+### How does `@Transactional` work in Spring, and what should you know about propagation?
+- Spring wraps the annotated method in a **proxy** that starts a transaction before the method runs and commits/rolls back after — this is why `@Transactional` **doesn't work when called from within the same class** (self-invocation bypasses the proxy).
+- **Propagation** defines how a transactional method behaves when called from another transactional context — the two most common:
+  - `REQUIRED` (default): joins the existing transaction if there is one, or creates a new one.
+  - `REQUIRES_NEW`: always starts a new, independent transaction (suspends the current one) — useful for things like audit logging that must persist even if the outer transaction rolls back.
+- **Isolation levels** control how concurrent transactions see each other's uncommitted/committed changes (Read Committed is PostgreSQL's default) — relevant when discussing race conditions on shared data.
+
+### What is the N+1 query problem, and how do you fix it with JPA/Hibernate?
+- **The problem**: fetching a list of N parent entities, then lazily fetching a related collection/entity for *each* one individually — 1 query for the parents + N queries for the children = N+1 queries, instead of 1 or 2.
+- **Fixes**:
+  - **`JOIN FETCH`** in JPQL to eagerly load the association in a single query.
+  - **`@EntityGraph`** to declare which associations to fetch eagerly for a specific query, without changing the entity's default fetch type.
+  - **Batch fetching** (`hibernate.default_batch_fetch_size`) to fetch related entities in batches instead of one-by-one.
+- Always default associations to **`LAZY`** and fetch eagerly only where needed per query — defaulting to `EAGER` everywhere is a common source of hidden N+1 problems.
+
+### What are the SOLID principles, and can you give a practical example?
+- **S — Single Responsibility**: a class should have one reason to change (e.g. separate a `OrderValidator` from `OrderRepository` rather than mixing validation and persistence).
+- **O — Open/Closed**: open for extension, closed for modification — e.g. adding a new payment method via a new `PaymentStrategy` implementation instead of editing a big `if/else` in existing code.
+- **L — Liskov Substitution**: a subtype must be usable wherever its base type is expected, without breaking behavior.
+- **I — Interface Segregation**: prefer several small, specific interfaces over one large one clients are forced to implement in full.
+- **D — Dependency Inversion**: depend on abstractions, not concrete implementations — exactly what Spring's DI enables in practice.
+
+### How do you make a REST API endpoint idempotent, and why does it matter with Kafka/event-driven systems?
+- **Idempotent** means calling the same operation multiple times has the same effect as calling it once — critical because networks retry, and Kafka only guarantees **at-least-once delivery**, so consumers *will* occasionally see the same message twice.
+- **Techniques**: use a unique **idempotency key** per logical operation (client-generated or from the event id) and store which keys have already been processed before applying the effect again; design writes as **`PUT`-style upserts** rather than `POST`-style "always append"; make side effects naturally idempotent where possible (e.g. "set status to SHIPPED" is idempotent, "increment stock by 1" is not).
+
+### How do you manage database schema changes in a team (Flyway/Liquibase)?
+- Schema changes are written as **versioned migration scripts** (e.g. `V1__create_orders_table.sql`) checked into source control alongside the code, and applied automatically on application startup or via CI/CD.
+- This keeps the schema **reproducible** across environments (local, staging, prod) and gives a clear **audit trail** of every change, instead of manual, undocumented DB edits.
+- Best practices: migrations should be **backward-compatible** during rolling deployments (e.g. add a nullable column first, backfill, then make it `NOT NULL` in a later release) so the old and new application versions can both run against the DB during a deploy.
+
+### How do you approach observability in a distributed/microservices system?
+- **Centralized logging**: structured logs (JSON) shipped to a central store (e.g. Elastic) so you can search across all services instead of SSH-ing into individual machines.
+- **Correlation/trace ID**: a unique id generated at the entry point of a request and propagated through every downstream service call (and Kafka message header) — the only practical way to reconstruct a business flow that spans multiple services.
+- **Metrics & dashboards**: exposing key metrics (latency, error rate, throughput, queue lag) and visualizing them (e.g. Grafana) with alerts on thresholds, rather than discovering problems from user complaints.
+- **Health checks**: readiness/liveness endpoints so orchestrators (Kubernetes) can detect and route around unhealthy instances automatically.
+
+### What's the difference between TDD and BDD, and how have you used them together?
+- **TDD (Test-Driven Development)**: write a failing unit test first, write the minimal code to pass it, then refactor — a **developer-facing** discipline focused on code correctness at the unit level (red-green-refactor).
+- **BDD (Behavior-Driven Development)**: describe expected behavior in a shared, readable format (**Gherkin**: Given/When/Then) that both developers and business stakeholders can understand and agree on *before* implementation — a **collaboration** tool as much as a testing one.
+- **In practice**: I use BDD (Cucumber/Gherkin) at the feature/acceptance level to confirm the business behavior is correct and shared with the product owner, and TDD/unit tests underneath to drive the implementation details and edge cases those scenarios don't cover.

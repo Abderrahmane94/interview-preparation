@@ -206,3 +206,63 @@ Résout le **problème de la double écriture** : un service qui met à jour sa 
   - **Aggregate** : un ensemble d'entités/value objects traité comme une seule frontière de cohérence, avec un unique **Aggregate Root** comme point d'entrée — garantit les invariants.
   - **Repository** : abstraction pour charger/persister des agrégats, cachant les détails de persistance au domaine.
   - **Domain Event** : quelque chose de significatif qui s'est produit dans le domaine (`OrderPlaced`) — le pont naturel vers l'intégration événementielle (Kafka) et les patrons Saga/CQRS.
+
+### Quels sont les principes fondamentaux du Data Mesh ?
+À avoir en tête puisque c'est la direction vers laquelle je veux évoluer :
+- **Propriété orientée domaine** : chaque domaine métier possède et est responsable de ses propres données, de la même façon qu'il possède ses microservices — pas d'équipe data centrale comme goulot d'étranglement.
+- **La donnée comme produit** : les données exposées par un domaine doivent avoir le même niveau d'exigence qu'une API — découvrables, documentées, fiables, avec des SLA clairs, pas juste un export brut de base de données.
+- **Plateforme d'infrastructure de données en self-service** : une plateforme commune (stockage, pipelines, catalogage, contrôle d'accès) permettant aux équipes de domaine de publier/consommer des données sans expertise infra poussée.
+- **Gouvernance computationnelle fédérée** : des standards globaux (schémas, sécurité, interopérabilité) sont définis collectivement et appliqués/automatisés à travers les domaines, plutôt qu'imposés d'en haut manuellement.
+
+### Communication synchrone (REST) vs asynchrone (événementielle/Kafka) — quand utiliser quoi ?
+- **REST/synchrone** : simple à raisonner, réponse immédiate, adapté au request/response (« donne-moi cette ressource maintenant »). Inconvénients : couplage plus fort (l'appelant dépend de la disponibilité de l'appelé), plus difficile à scaler sous charge, risque de panne en cascade sans protection (Circuit Breaker).
+- **Événementiel/asynchrone (Kafka)** : les services restent découplés dans le temps (le producteur n'a pas besoin que le consommateur soit disponible), supporte naturellement plusieurs abonnés, mieux adapté au streaming/analytique à fort débit. Inconvénients : cohérence à terme, flux métier plus difficile à tracer/déboguer, nécessite des consommateurs idempotents.
+- **En pratique** : j'utilise REST pour les requêtes directes côté client et la messagerie événementielle pour la propagation d'état entre services et les workflows (style Saga).
+
+### Comment fonctionne le conteneur IoC/DI de Spring, et pourquoi est-ce important ?
+- **Inversion of Control (IoC)** : au lieu qu'une classe crée elle-même ses dépendances (`new SomeService()`), c'est le framework qui les crée et les fournit — le contrôle de la création d'objets est inversé, confié au conteneur.
+- **Dependency Injection (DI)** : le mécanisme utilisé par Spring pour implémenter l'IoC — les dépendances sont injectées par constructeur (préféré), setter, ou champ.
+- **Pourquoi c'est important** : cela découple les composants des implémentations concrètes (on dépend d'interfaces/abstractions), rend les tests unitaires triviaux (injecter des mocks), et laisse Spring gérer le cycle de vie/scope des objets (`singleton`, `prototype`, etc.) de façon centralisée.
+- L'**auto-configuration de Spring Boot** s'appuie là-dessus : selon ce qui est présent sur le classpath et vos propriétés, Spring Boot enregistre automatiquement des beans sensés (ex. un `DataSource` si un driver JDBC est présent), que vous pouvez toujours surcharger.
+
+### Comment fonctionne `@Transactional` dans Spring, et que faut-il savoir sur la propagation ?
+- Spring enveloppe la méthode annotée dans un **proxy** qui démarre une transaction avant l'exécution et commit/rollback après — c'est pourquoi `@Transactional` **ne fonctionne pas lors d'un appel depuis la même classe** (l'auto-invocation contourne le proxy).
+- La **propagation** définit le comportement d'une méthode transactionnelle appelée depuis un autre contexte transactionnel — les deux plus courantes :
+  - `REQUIRED` (par défaut) : rejoint la transaction existante s'il y en a une, sinon en crée une nouvelle.
+  - `REQUIRES_NEW` : démarre toujours une nouvelle transaction indépendante (suspend l'actuelle) — utile par exemple pour un log d'audit qui doit persister même si la transaction englobante est annulée.
+- Les **niveaux d'isolation** contrôlent comment les transactions concurrentes voient les changements non validés/validés des autres (Read Committed est le niveau par défaut de PostgreSQL) — pertinent pour discuter des race conditions sur des données partagées.
+
+### Qu'est-ce que le problème N+1, et comment le corriger avec JPA/Hibernate ?
+- **Le problème** : récupérer une liste de N entités parentes, puis charger paresseusement une collection/entité liée pour *chacune* individuellement — 1 requête pour les parents + N requêtes pour les enfants = N+1 requêtes, au lieu d'1 ou 2.
+- **Corrections** :
+  - **`JOIN FETCH`** en JPQL pour charger l'association de façon eager en une seule requête.
+  - **`@EntityGraph`** pour déclarer quelles associations charger de façon eager pour une requête spécifique, sans changer le fetch type par défaut de l'entité.
+  - **Batch fetching** (`hibernate.default_batch_fetch_size`) pour charger les entités liées par lots plutôt qu'une par une.
+- Toujours mettre les associations en **`LAZY`** par défaut et ne charger en eager que là où c'est nécessaire par requête — le `EAGER` par défaut partout est une source fréquente de N+1 cachés.
+
+### Quels sont les principes SOLID, et un exemple pratique ?
+- **S — Single Responsibility** : une classe doit avoir une seule raison de changer (ex. séparer un `OrderValidator` d'un `OrderRepository` plutôt que mélanger validation et persistance).
+- **O — Open/Closed** : ouvert à l'extension, fermé à la modification — ex. ajouter un nouveau mode de paiement via une nouvelle implémentation `PaymentStrategy` plutôt qu'en modifiant un gros `if/else` dans le code existant.
+- **L — Liskov Substitution** : un sous-type doit pouvoir être utilisé partout où son type de base est attendu, sans casser le comportement.
+- **I — Interface Segregation** : préférer plusieurs interfaces petites et spécifiques à une grande que les clients sont forcés d'implémenter entièrement.
+- **D — Dependency Inversion** : dépendre d'abstractions, pas d'implémentations concrètes — exactement ce que permet la DI de Spring en pratique.
+
+### Comment rendre un endpoint REST idempotent, et pourquoi est-ce important avec Kafka/l'événementiel ?
+- **Idempotent** signifie qu'appeler la même opération plusieurs fois a le même effet que l'appeler une fois — essentiel car les réseaux font des retries, et Kafka ne garantit qu'une livraison **au moins une fois**, donc les consommateurs *verront* parfois le même message deux fois.
+- **Techniques** : utiliser une **clé d'idempotence** unique par opération logique (générée côté client ou issue de l'id de l'événement) et stocker quelles clés ont déjà été traitées avant de réappliquer l'effet ; concevoir les écritures comme des **upserts de type `PUT`** plutôt que des `POST` « toujours ajouter » ; rendre les effets de bord naturellement idempotents quand c'est possible (ex. « passer le statut à EXPÉDIÉ » est idempotent, « incrémenter le stock de 1 » ne l'est pas).
+
+### Comment gérez-vous les évolutions de schéma de base de données en équipe (Flyway/Liquibase) ?
+- Les changements de schéma sont écrits sous forme de **scripts de migration versionnés** (ex. `V1__create_orders_table.sql`), versionnés dans le code source, et appliqués automatiquement au démarrage de l'application ou via la CI/CD.
+- Cela garde le schéma **reproductible** sur tous les environnements (local, staging, prod) et fournit une **traçabilité claire** de chaque changement, au lieu de modifications manuelles non documentées.
+- Bonnes pratiques : les migrations doivent être **rétrocompatibles** pendant un déploiement progressif (ex. ajouter une colonne nullable d'abord, la remplir, puis la passer en `NOT NULL` dans une release ultérieure) afin que l'ancienne et la nouvelle version de l'application puissent toutes deux fonctionner contre la base pendant un déploiement.
+
+### Comment abordez-vous l'observabilité dans un système distribué/microservices ?
+- **Logs centralisés** : logs structurés (JSON) envoyés vers un stockage central (ex. Elastic) pour pouvoir chercher à travers tous les services au lieu de se connecter machine par machine.
+- **Correlation/trace ID** : un identifiant unique généré au point d'entrée d'une requête et propagé à travers chaque appel de service en aval (et dans les headers des messages Kafka) — le seul moyen pratique de reconstituer un flux métier qui traverse plusieurs services.
+- **Métriques et tableaux de bord** : exposer des métriques clés (latence, taux d'erreur, débit, lag de queue) et les visualiser (ex. Grafana) avec des alertes sur seuils, plutôt que de découvrir les problèmes via les plaintes des utilisateurs.
+- **Health checks** : endpoints de readiness/liveness pour que les orchestrateurs (Kubernetes) détectent et contournent automatiquement les instances défaillantes.
+
+### Quelle est la différence entre TDD et BDD, et comment les avez-vous utilisés ensemble ?
+- **TDD (Test-Driven Development)** : écrire un test unitaire qui échoue d'abord, écrire le code minimal pour le faire passer, puis refactoriser — une discipline **côté développeur** centrée sur la correction du code au niveau unitaire (red-green-refactor).
+- **BDD (Behavior-Driven Development)** : décrire le comportement attendu dans un format partagé et lisible (**Gherkin** : Given/When/Then) que développeurs et parties prenantes métier peuvent comprendre et valider *avant* l'implémentation — un outil de **collaboration** autant que de test.
+- **En pratique** : j'utilise le BDD (Cucumber/Gherkin) au niveau fonctionnalité/acceptance pour confirmer que le comportement métier est correct et partagé avec le product owner, et le TDD/tests unitaires en dessous pour piloter les détails d'implémentation et les cas limites que ces scénarios ne couvrent pas.
