@@ -64,13 +64,110 @@ I intentionally focus on **backend development**: API design, business logic, da
 
 ## Technical quick-review
 
-### CQRS, Saga, Kafka Outbox & microservices patterns
-Full write-ups already exist in this repo — review them, don't just memorize the summary below:
-- [CQRS](../Architecture&CleanCode/architecture-pattern.md#what-is-cqrs-command-query-responsibility-segregation)
-- [Saga pattern](../Architecture&CleanCode/architecture-pattern.md#what-is-the-saga-pattern-and-what-problem-does-it-solve) (Choreography vs. Orchestration)
-- [Microservices design patterns overview](../Architecture&CleanCode/architecture-pattern.md#what-are-the-key-design-patterns-used-in-a-microservices-architecture) — API Gateway, Circuit Breaker, Service Discovery, Database per Service, Strangler Fig
-- [Kafka fundamentals](../Kafka/kafka.md) — topics/partitions, consumer groups, ordering, replication, `acks`
-- [Transactional Outbox pattern](../Kafka/kafka.md#what-is-the-transactional-outbox-pattern-and-why-is-it-used-with-kafka) — comes up often when discussing Kafka + database consistency, be ready for it.
+### What is CQRS (Command Query Responsibility Segregation)?
+CQRS is an architectural pattern that **separates the model used to write data (Commands) from the model used to read data (Queries)**.
+- **Commands** change state and return no data (e.g. `CreateOrder`, `UpdateStock`).
+- **Queries** return data and never change state (e.g. `GetOrderById`).
+- The write side and read side can use **different models, and even different databases**, optimized independently (write side normalized for consistency, read side denormalized for fast queries).
+
+### What problem does CQRS solve, and what are its trade-offs?
+- **Problem it solves**: in complex domains, a single model trying to serve both reads and writes efficiently becomes bloated and hard to scale — reads and writes usually have very different performance and shape requirements.
+- **Benefits**: independent scaling of read/write workloads, denormalized/tailored read models, clearer separation of concerns.
+- **Drawbacks**: added complexity (two models, possibly two data stores), eventual consistency between read and write sides, overkill for simple CRUD apps.
+
+### How does CQRS relate to Event Sourcing?
+CQRS and Event Sourcing are **complementary but independent** — CQRS can be used without Event Sourcing.
+- **Event Sourcing** persists state as an ordered sequence of **domain events** instead of the current state only.
+- Combined with CQRS: the **write side** appends events to an event store (source of truth), and the **read side** is built by **projecting** those events into denormalized read models.
+- Gives a full audit trail, but increases complexity and requires handling eventual consistency between the event store and the projections.
+
+### What is the Saga pattern and what problem does it solve?
+The Saga pattern manages **data consistency across multiple services** in a distributed system, replacing a single ACID transaction (impossible across service boundaries in microservices) with a **sequence of local transactions**.
+- Each service performs its own local transaction and publishes an event/message to trigger the next step.
+- If a step fails, the saga runs **compensating transactions** to undo the work already done by previous steps.
+- Example: an order saga = reserve stock → charge payment → ship order. If payment fails, a compensating action releases the reserved stock.
+
+### Choreography vs Orchestration for coordinating a Saga?
+- **Choreography**: each service listens for events and publishes its own events in reaction — no central coordinator. Loosely coupled, but hard to track/debug as the saga grows.
+- **Orchestration**: a central **orchestrator** tells each service what local transaction to execute and handles failures/compensation. Easier to understand/monitor, but the orchestrator can become a bottleneck if not designed carefully.
+
+### How does the Saga pattern relate to eventual consistency?
+Because a saga is a sequence of independent local transactions rather than one atomic transaction, the system is only **eventually consistent** — there's a window where some services have been updated and others haven't. Compensating transactions handle failures, but application code (and users) must tolerate temporary inconsistency.
+
+### What are the key design patterns used in a microservices architecture?
+- **Decomposition**: Decompose by Business Capability / Subdomain (DDD), **Database per Service**, **Strangler Fig**.
+- **Communication**: **API Gateway**, **Service Discovery**, **Backend for Frontend (BFF)**.
+- **Data & consistency**: **Saga**, **CQRS**, **Event Sourcing**, Transactional Outbox.
+- **Resilience**: **Circuit Breaker**, Retry, Bulkhead, Timeout.
+- **Observability**: Log Aggregation, Distributed Tracing, Health Check API.
+
+### What is the API Gateway pattern?
+A **single entry point** in front of the microservices that routes client requests to the right backend service(s), handling cross-cutting concerns once (routing, auth, rate limiting, request aggregation, SSL termination) instead of in every service. Can be specialized per client type as a **Backend for Frontend (BFF)**. Trade-off: an extra hop, and a potential single point of failure if not made highly available.
+
+### What is the Circuit Breaker pattern?
+Prevents a service from repeatedly calling a **downstream service that is failing or slow**, avoiding cascading failures.
+- **Closed**: calls pass through normally.
+- **Open**: after too many failures, calls fail fast for a cooldown period.
+- **Half-Open**: after cooldown, a few trial calls check if the dependency recovered.
+- Often paired with fallback logic and used with Retry/Timeout. Common implementations: Resilience4j, Hystrix (legacy).
+
+### What is the Service Discovery pattern?
+Since service instances are **dynamic** (auto-scaled, restarted, IPs change), clients can't hardcode addresses.
+- **Client-side discovery**: the client queries a **service registry** (Eureka, Consul) and picks an instance itself.
+- **Server-side discovery**: the client calls a **load balancer/router** (cloud LB, Kubernetes Service) which queries the registry and forwards the request.
+
+### What is the Database per Service pattern, and what challenge does it create?
+Each microservice owns **its own private database**, accessible only through that service's API.
+- Benefits: strong loose coupling, polyglot persistence, independent scaling.
+- Challenge: transactions that used to be a single ACID transaction now **span multiple services/databases** — this is exactly why Saga (and CQRS/Event Sourcing/Transactional Outbox) exist.
+
+### What is the Strangler Fig pattern?
+A strategy for **incrementally migrating a legacy monolith to microservices** without a big-bang rewrite. New functionality is built as new microservices while a **facade/router** (often an API Gateway) intercepts calls and routes them either to the new service or the still-existing monolith, until the monolith shrinks and can be retired — the system stays functional and releasable at every step.
+
+### What is Apache Kafka?
+A **distributed event streaming platform** used to **publish, store, and process streams of records** in real time.
+- Built around publish/subscribe, but unlike traditional queues, it **persists messages on disk** and lets consumers re-read them — usable both as a messaging system and a durable event log.
+- Use cases: decoupling microservices, real-time analytics, event sourcing, log aggregation.
+
+### What are the core concepts of Kafka (Topic, Partition, Broker, Producer, Consumer)?
+- **Topic**: a named stream/category of records.
+- **Partition**: a topic is split into partitions, each an **ordered, append-only log** — enables horizontal scaling and parallel consumption.
+- **Broker**: a Kafka server storing partitions; a **cluster** is multiple brokers.
+- **Producer** / **Consumer**: publish to / read from a topic.
+- **Offset**: a record's sequential id within a partition, used to track consumer position.
+
+### How does Kafka guarantee message ordering?
+Only **within a single partition**, not across a topic. Records with the **same key** always go to the **same partition** (via key hash), preserving per-key ordering (e.g. all events for one `orderId`). Strict global ordering requires a single partition, at the cost of parallelism.
+
+### What is a Consumer Group, and how does Kafka scale consumption?
+A set of consumers sharing a `group.id` that cooperate to consume a topic.
+- Kafka assigns each partition to **exactly one consumer** in the group at a time — a topic with N partitions can be consumed in parallel by up to N consumers.
+- Different consumer groups are **independent**: each gets its own copy of every message.
+- If a consumer fails, Kafka triggers a **rebalance**, reassigning its partitions.
+
+### How does Kafka achieve durability and fault tolerance?
+- Each partition has a **replication factor** — replicas stored on multiple brokers.
+- One replica is the **leader** (handles reads/writes); others are **followers** replicating from it.
+- **In-Sync Replicas (ISR)**: followers caught up with the leader. If the leader fails, a new leader is elected from the ISR set.
+- Kafka uses **ZooKeeper** (older) or **KRaft** (newer, ZooKeeper-less) for cluster metadata and leader election.
+
+### `acks=0` vs `acks=1` vs `acks=all` on a Producer?
+- **`acks=0`**: no wait for acknowledgment — fastest, but messages can be lost.
+- **`acks=1`**: waits for the **leader** to acknowledge — good balance, but data can still be lost if the leader fails before replication.
+- **`acks=all`**: waits for **all in-sync replicas** — strongest durability, higher latency.
+
+### How does Kafka compare to a traditional message broker (e.g. RabbitMQ)?
+- **Retention**: Kafka retains messages regardless of consumption (replay possible); RabbitMQ typically removes a message once consumed.
+- **Model**: Kafka is pull-based/log-based; RabbitMQ is push-based with richer routing (exchanges/queues).
+- **Throughput vs features**: Kafka optimized for very high throughput streaming; RabbitMQ offers richer per-message routing/priority out of the box.
+
+### What is the Transactional Outbox pattern, and why is it used with Kafka?
+Solves the **dual-write problem**: a service updating its DB **and** publishing a Kafka event can't do both atomically — if it crashes after the DB commit but before publishing, the event is lost.
+- **How it works**: the service writes the business change **and** a row describing the event to an **outbox table**, in the **same local DB transaction**.
+- A separate process reads the outbox table and publishes to Kafka:
+  - **Polling publisher**: periodically queries and publishes new rows.
+  - **Change Data Capture (CDC)**, e.g. **Debezium**: tails the DB's write-ahead log and streams new rows automatically — more efficient, lower latency.
+- **Guarantee**: **at-least-once delivery** in sync with the DB change — consumers must be **idempotent** to handle possible duplicates.
 
 ### What's new in recent Java versions? (interview talking points)
 - **Records** (Java 16+): concise immutable data carriers — good to mention for DTOs/value objects.

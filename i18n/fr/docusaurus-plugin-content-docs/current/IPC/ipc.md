@@ -64,13 +64,110 @@ Je me concentre volontairement sur le **développement backend** : conception d'
 
 ## Révision technique
 
-### CQRS, Saga, Kafka Outbox et patrons microservices
-Des articles complets existent déjà dans ce dépôt — révisez-les, ne vous contentez pas du résumé ci-dessous :
-- [CQRS](../Architecture&CleanCode/architecture-pattern.md#quest-ce-que-le-cqrs-command-query-responsibility-segregation)
-- [Patron Saga](../Architecture&CleanCode/architecture-pattern.md#quest-ce-que-le-patron-saga-et-quel-problème-résout-il) (Chorégraphie vs Orchestration)
-- [Vue d'ensemble des patrons de conception microservices](../Architecture&CleanCode/architecture-pattern.md#quels-sont-les-principaux-patrons-de-conception-utilisés-dans-une-architecture-microservices) — API Gateway, Circuit Breaker, Service Discovery, Database per Service, Strangler Fig
-- [Fondamentaux de Kafka](../Kafka/kafka.md) — topics/partitions, consumer groups, ordre, réplication, `acks`
-- [Patron Transactional Outbox](../Kafka/kafka.md#quest-ce-que-le-patron-transactional-outbox-et-pourquoi-est-il-utilisé-avec-kafka) — revient souvent quand on parle de Kafka et de cohérence avec la base de données, soyez prêt.
+### Qu'est-ce que le CQRS (Command Query Responsibility Segregation) ?
+Le CQRS est un patron d'architecture qui **sépare le modèle utilisé pour écrire les données (Commandes) du modèle utilisé pour les lire (Requêtes)**.
+- Les **Commandes** modifient l'état et ne retournent pas de données (ex. `CreateOrder`, `UpdateStock`).
+- Les **Requêtes** retournent des données et ne modifient jamais l'état (ex. `GetOrderById`).
+- Le côté écriture et le côté lecture peuvent utiliser **des modèles différents, voire des bases de données différentes**, optimisés indépendamment.
+
+### Quel problème le CQRS résout-il, et quels sont ses compromis ?
+- **Problème résolu** : dans les domaines complexes, un modèle unique servant lecture et écriture devient difficile à maintenir et à faire évoluer.
+- **Avantages** : mise à l'échelle indépendante des charges lecture/écriture, modèles de lecture dénormalisés/adaptés, séparation claire des responsabilités.
+- **Inconvénients** : complexité accrue (deux modèles, parfois deux bases), cohérence à terme entre lecture et écriture, non nécessaire pour du CRUD simple.
+
+### Quel est le lien entre CQRS et Event Sourcing ?
+CQRS et Event Sourcing sont **complémentaires mais indépendants** — le CQRS peut être utilisé sans Event Sourcing.
+- L'**Event Sourcing** persiste l'état comme une séquence ordonnée d'**événements métier** plutôt que l'état courant seul.
+- Combiné au CQRS : le **côté écriture** ajoute des événements dans un event store, et le **côté lecture** est construit en **projetant** ces événements dans des modèles de lecture dénormalisés.
+- Offre une traçabilité complète, mais augmente la complexité et nécessite de gérer la cohérence à terme entre l'event store et les projections.
+
+### Qu'est-ce que le patron Saga et quel problème résout-il ?
+Le patron Saga gère la **cohérence des données à travers plusieurs services**, en remplaçant une transaction ACID unique (impossible entre services) par une **séquence de transactions locales**.
+- Chaque service exécute sa transaction locale puis publie un événement pour déclencher l'étape suivante.
+- Si une étape échoue, la saga exécute des **transactions compensatoires** pour annuler le travail déjà fait.
+- Exemple : saga de commande = réserver le stock → débiter le paiement → expédier. Si le paiement échoue, une compensation libère le stock réservé.
+
+### Chorégraphie vs Orchestration pour coordonner une Saga ?
+- **Chorégraphie** : chaque service écoute des événements et publie les siens en réaction — pas de coordinateur central. Faible couplage, mais difficile à suivre quand la saga grandit.
+- **Orchestration** : un **orchestrateur** central indique à chaque service quelle transaction exécuter et gère les échecs/compensations. Plus facile à comprendre/surveiller, mais peut devenir un goulot d'étranglement.
+
+### Quel est le lien entre Saga et cohérence à terme (eventual consistency) ?
+Une saga étant une séquence de transactions locales indépendantes, le système est seulement **cohérent à terme** — il existe une fenêtre où certains services sont à jour et d'autres non. Les transactions compensatoires gèrent les échecs, mais il faut tolérer une incohérence temporaire.
+
+### Quels sont les principaux patrons de conception microservices ?
+- **Décomposition** : par capacité métier/sous-domaine (DDD), **Database per Service**, **Strangler Fig**.
+- **Communication** : **API Gateway**, **Service Discovery**, **Backend for Frontend (BFF)**.
+- **Données et cohérence** : **Saga**, **CQRS**, **Event Sourcing**, Transactional Outbox.
+- **Résilience** : **Circuit Breaker**, Retry, Bulkhead, Timeout.
+- **Observabilité** : Agrégation de logs, Traçage distribué, API de Health Check.
+
+### Qu'est-ce que le patron API Gateway ?
+Un **point d'entrée unique** devant les microservices qui route les requêtes vers le(s) bon(s) service(s), gérant les préoccupations transverses une seule fois (routage, authentification, rate limiting, agrégation, terminaison SSL) au lieu de les dupliquer partout. Peut être spécialisé par type de client via un **BFF**. Compromis : un saut réseau de plus, et un point de défaillance potentiel s'il n'est pas hautement disponible.
+
+### Qu'est-ce que le patron Circuit Breaker ?
+Empêche un service d'appeler en boucle un **service en aval défaillant ou lent**, évitant les pannes en cascade.
+- **Fermé** : les appels passent normalement.
+- **Ouvert** : après trop d'échecs, les appels échouent immédiatement pendant une période de repos.
+- **Semi-ouvert** : après le repos, quelques appels d'essai vérifient si la dépendance s'est rétablie.
+- Souvent associé à du fallback et utilisé avec Retry/Timeout. Implémentations courantes : Resilience4j, Hystrix (ancien).
+
+### Qu'est-ce que le patron Service Discovery ?
+Comme les instances de service sont **dynamiques**, les clients ne peuvent pas coder en dur les adresses.
+- **Découverte côté client** : le client interroge un **registre de services** (Eureka, Consul) et choisit lui-même une instance.
+- **Découverte côté serveur** : le client appelle un **load balancer/routeur** qui interroge le registre et transmet la requête.
+
+### Qu'est-ce que le patron Database per Service, et quel défi crée-t-il ?
+Chaque microservice possède **sa propre base de données privée**, accessible uniquement via son API.
+- Avantages : fort découplage, persistance polyglotte, mise à l'échelle indépendante.
+- Défi : des transactions autrefois ACID **s'étendent désormais sur plusieurs services/bases** — d'où l'existence du patron Saga (et CQRS/Event Sourcing/Transactional Outbox).
+
+### Qu'est-ce que le patron Strangler Fig ?
+Une stratégie pour **migrer progressivement un monolithe legacy vers des microservices** sans réécriture complète risquée. Les nouvelles fonctionnalités sont construites en microservices tandis qu'une **façade/routeur** (souvent une API Gateway) redirige les appels vers le nouveau service ou le monolithe existant, jusqu'à ce que ce dernier se réduise et puisse être retiré — le système reste fonctionnel et livrable à chaque étape.
+
+### Qu'est-ce qu'Apache Kafka ?
+Une **plateforme de streaming d'événements distribuée** pour **publier, stocker et traiter des flux d'enregistrements** en temps réel.
+- Basée sur le publish/subscribe, mais contrairement aux files traditionnelles, elle **persiste les messages sur disque** et permet de les relire — utilisable comme système de messagerie et comme journal d'événements durable.
+- Cas d'usage : découplage de microservices, analytique temps réel, event sourcing, agrégation de logs.
+
+### Quels sont les concepts de base de Kafka (Topic, Partition, Broker, Producer, Consumer) ?
+- **Topic** : un flux/une catégorie nommée d'enregistrements.
+- **Partition** : un topic est divisé en partitions, chacune un **journal ordonné en ajout uniquement** — permet la mise à l'échelle horizontale et la consommation parallèle.
+- **Broker** : un serveur Kafka stockant des partitions ; un **cluster** regroupe plusieurs brokers.
+- **Producer** / **Consumer** : publient dans / lisent depuis un topic.
+- **Offset** : identifiant séquentiel d'un enregistrement dans une partition, utilisé pour suivre la position du consommateur.
+
+### Comment Kafka garantit-il l'ordre des messages ?
+Seulement **au sein d'une même partition**, pas sur tout un topic. Les enregistrements avec la **même clé** vont toujours à la **même partition** (via le hash de la clé), préservant l'ordre par clé. Un ordre global strict nécessite une seule partition, au prix du parallélisme.
+
+### Qu'est-ce qu'un Consumer Group, et comment Kafka fait-il évoluer la consommation ?
+Un ensemble de consommateurs partageant un `group.id` qui coopèrent pour consommer un topic.
+- Kafka assigne chaque partition à **exactement un consommateur** du groupe à la fois — un topic à N partitions peut être consommé en parallèle par jusqu'à N consommateurs.
+- Différents consumer groups sont **indépendants** : chacun reçoit sa propre copie de chaque message.
+- Si un consommateur tombe en panne, Kafka déclenche un **rebalancing**.
+
+### Comment Kafka assure-t-il la durabilité et la tolérance aux pannes ?
+- Chaque partition a un **facteur de réplication** — des réplicas stockés sur plusieurs brokers.
+- Un réplica est le **leader** (gère lectures/écritures) ; les autres sont des **followers** qui répliquent depuis lui.
+- **In-Sync Replicas (ISR)** : followers à jour avec le leader. Si le leader tombe, un nouveau leader est élu parmi l'ISR.
+- Kafka utilise **ZooKeeper** (ancien) ou **KRaft** (récent, sans ZooKeeper) pour les métadonnées du cluster et l'élection du leader.
+
+### `acks=0` vs `acks=1` vs `acks=all` sur un Producer ?
+- **`acks=0`** : pas d'attente d'accusé de réception — le plus rapide, mais les messages peuvent être perdus.
+- **`acks=1`** : attend l'accusé de réception du **leader** — bon compromis, mais perte possible si le leader tombe avant réplication.
+- **`acks=all`** : attend **tous les réplicas synchronisés** — garantie la plus forte, latence plus élevée.
+
+### Comment Kafka se compare-t-il à un broker traditionnel (ex. RabbitMQ) ?
+- **Rétention** : Kafka conserve les messages indépendamment de leur consommation (rejeu possible) ; RabbitMQ supprime généralement un message une fois consommé.
+- **Modèle** : Kafka est basé sur un journal (pull) ; RabbitMQ est un broker traditionnel (push) avec un routage plus riche (exchanges/queues).
+- **Débit vs fonctionnalités** : Kafka optimisé pour un débit très élevé ; RabbitMQ offre nativement un routage par message plus riche.
+
+### Qu'est-ce que le patron Transactional Outbox, et pourquoi est-il utilisé avec Kafka ?
+Résout le **problème de la double écriture** : un service qui met à jour sa base **et** publie un événement Kafka ne peut pas faire les deux de façon atomique — s'il plante après le commit DB mais avant la publication, l'événement est perdu.
+- **Fonctionnement** : le service écrit le changement métier **et** une ligne décrivant l'événement dans une **table outbox**, dans la **même transaction locale**.
+- Un processus séparé lit la table outbox et publie vers Kafka :
+  - **Polling publisher** : interroge périodiquement et publie les nouvelles lignes.
+  - **Change Data Capture (CDC)**, ex. **Debezium** : suit le write-ahead log de la base et diffuse automatiquement les nouvelles lignes — plus efficace, latence plus faible.
+- **Garantie** : livraison **au moins une fois**, en cohérence avec le changement en base — les consommateurs doivent être **idempotents**.
 
 ### Quoi de neuf dans les versions récentes de Java ? (points à mentionner en entretien)
 - **Records** (Java 16+) : porteurs de données immuables concis — bon à mentionner pour les DTOs/value objects.
