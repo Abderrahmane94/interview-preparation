@@ -198,6 +198,12 @@ Résout le **problème de la double écriture** : un service qui met à jour sa 
 
 ### Domain-Driven Design (DDD)
 
+#### Qu'est-ce que le Domain-Driven Design (DDD) ?
+Le DDD est une approche de conception logicielle centrée sur **la modélisation du logiciel au plus près d'un domaine métier réel**, développée en collaboration étroite avec des experts métier plutôt que conçue isolément par des ingénieurs.
+- Son postulat central : pour les domaines métier complexes, le plus grand risque n'est pas la technologie — c'est de construire le **mauvais modèle** du problème. Le DDD répond à cela en plaçant la compréhension du domaine au centre du processus de conception.
+- Il se divise en deux volets : le **DDD stratégique** (comment découper un grand domaine en périmètres bien délimités — Bounded Context, Ubiquitous Language, Context Mapping) et le **DDD tactique** (les briques utilisées pour modéliser *à l'intérieur* de l'un de ces périmètres — Entities, Value Objects, Aggregates, Repositories, Domain Events).
+- Je le vois moins comme « des règles supplémentaires à suivre » que comme une discipline pour garder le vocabulaire et la structure du code fidèles à la façon dont le métier pense réellement le problème — ce qui paie directement lors de la décomposition d'un système en microservices.
+
 #### DDD — concepts clés
 - **DDD stratégique** :
   - **Bounded Context** : une frontière explicite à l'intérieur de laquelle un modèle de domaine spécifique et son vocabulaire s'appliquent de façon cohérente — c'est exactement ce qui définit le périmètre d'un microservice dans une décomposition alignée sur le DDD.

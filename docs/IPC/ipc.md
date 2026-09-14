@@ -198,6 +198,12 @@ Worth having ready since it's the direction I want to move toward:
 
 ### Domain-Driven Design (DDD)
 
+#### What is Domain-Driven Design (DDD)?
+DDD is an approach to software design that focuses on **modeling software to closely match a real business domain**, developed in close collaboration with domain experts rather than designed in isolation by engineers.
+- Its core premise: for complex business domains, the biggest risk isn't the technology — it's building the **wrong model** of the problem. DDD tackles that by putting domain understanding at the center of the design process.
+- It's split into two halves: **strategic DDD** (how to carve up a large domain into well-bounded pieces — Bounded Context, Ubiquitous Language, Context Mapping) and **tactical DDD** (the building blocks used to model *inside* one of those pieces — Entities, Value Objects, Aggregates, Repositories, Domain Events).
+- I see it less as "extra rules to follow" and more as a discipline for keeping the code's vocabulary and structure honest to how the business actually thinks about the problem — which pays off directly when decomposing a system into microservices.
+
 #### DDD — key concepts
 - **Strategic DDD**:
   - **Bounded Context**: an explicit boundary within which a specific domain model and its terms apply consistently — this is exactly what defines a microservice's scope in a DDD-aligned decomposition.
