@@ -266,3 +266,99 @@ Résout le **problème de la double écriture** : un service qui met à jour sa 
 - **TDD (Test-Driven Development)** : écrire un test unitaire qui échoue d'abord, écrire le code minimal pour le faire passer, puis refactoriser — une discipline **côté développeur** centrée sur la correction du code au niveau unitaire (red-green-refactor).
 - **BDD (Behavior-Driven Development)** : décrire le comportement attendu dans un format partagé et lisible (**Gherkin** : Given/When/Then) que développeurs et parties prenantes métier peuvent comprendre et valider *avant* l'implémentation — un outil de **collaboration** autant que de test.
 - **En pratique** : j'utilise le BDD (Cucumber/Gherkin) au niveau fonctionnalité/acceptance pour confirmer que le comportement métier est correct et partagé avec le product owner, et le TDD/tests unitaires en dessous pour piloter les détails d'implémentation et les cas limites que ces scénarios ne couvrent pas.
+
+### Quelle est votre stratégie de branches Git, et comment gérez-vous merge vs rebase ?
+- J'ai travaillé avec **Gitflow** (branches feature/develop/release/main) et des workflows plus simples **trunk-based / feature-branch** selon l'équipe — le bon choix dépend du rythme de release, pas d'une préférence personnelle.
+- Le **merge** préserve l'historique complet et est sûr pour les branches partagées ; le **rebase** réécrit l'historique sur la base la plus récente pour un **log plus propre et linéaire** — je rebase mes propres branches de feature avant d'ouvrir une merge request, mais je ne rebase jamais une branche sur laquelle d'autres construisent déjà.
+- Je garde des merge requests petites et ciblées, car les grosses MR sont à la fois plus difficiles à relire et plus susceptibles de cacher des bugs.
+
+### À quoi ressemble le cycle de build Maven, et comment gérez-vous les dépendances ?
+- Le cycle de vie par défaut de Maven exécute des phases dans l'ordre : `validate → compile → test → package → verify → install → deploy`. Lancer `mvn package` exécute toutes les phases jusqu'à `package` incluse.
+- **Gestion des dépendances** : déclarées dans le `pom.xml`, résolues de façon transitive depuis des dépôts (cache local → dépôt distant/Nexus/Artifactory) — les conflits sont résolus par la règle « nearest wins » de Maven, d'où l'utilité de `mvn dependency:tree` pour déboguer des conflits de version.
+- **Projets multi-modules** : un POM parent centralise les versions de dépendances/plugins partagées (`dependencyManagement`), pour que les modules enfants restent cohérents sans répéter les numéros de version.
+
+### Comment concevez-vous un pipeline CI/CD (ex. avec Jenkins/GitLab) ?
+- Étapes typiques : **build → tests unitaires → analyse statique (SonarQube/lint) → package/containerisation → tests d'intégration/BDD → déploiement en staging → déploiement en prod (manuel ou automatisé)**.
+- Échouer vite : les vérifications rapides/peu coûteuses (compilation, tests unitaires) s'exécutent avant les plus coûteuses (tests d'intégration, déploiement) pour un retour rapide.
+- Je privilégie des **déploiements petits et fréquents** plutôt que des releases big-bang — des changements plus petits sont plus faciles à relire, tester et annuler en cas de problème.
+- Les secrets/identifiants ne sont jamais codés en dur dans le pipeline — ils proviennent d'un coffre-fort/gestionnaire de credentials injecté à l'exécution.
+
+### Comment abordez-vous les tests unitaires avec JUnit et Mockito ?
+- Les **tests unitaires** isolent une seule classe/méthode — tout collaborateur (repository, client externe) est remplacé par un **mock** (Mockito) afin que le test vérifie la logique de *cette* unité, pas celle de ses dépendances.
+- Je suis le schéma **Arrange-Act-Assert** : préparer les mocks/entrées, appeler la méthode testée, vérifier le résultat (valeur de retour, et/ou qu'un mock a été appelé avec les bons arguments via `verify()`).
+- J'évite le sur-mocking — mocker chaque collaborateur, y compris de simples value objects, rend les tests fragiles et couplés aux détails d'implémentation plutôt qu'au comportement.
+- Pour la logique de persistance, je complète les tests unitaires par un plus petit nombre de **tests d'intégration** (ex. `@DataJpaTest` avec une vraie base de test), car mocker l'ORM lui-même donne une fausse confiance.
+
+### Comment Spring Security gère-t-il l'authentification et l'autorisation (JWT/OAuth2) ?
+- L'**authentification** (qui êtes-vous) passe généralement par une **chaîne de filtres** : une requête traverse un `UsernamePasswordAuthenticationFilter` ou un **filtre JWT** personnalisé qui valide le token et alimente le `SecurityContext`.
+- **Auth basée sur JWT** : le client envoie un token signé (généralement dans l'en-tête `Authorization: Bearer`) ; le serveur valide la signature/expiration de façon **stateless**, sans session côté serveur — adapté aux microservices puisque n'importe quelle instance peut valider le token indépendamment.
+- **OAuth2/OpenID Connect** : délègue l'authentification à un fournisseur d'identité (ex. Keycloak, Azure AD) — l'application fait confiance aux tokens émis par ce fournisseur plutôt que de gérer elle-même les identifiants.
+- **Autorisation** : règles au niveau méthode (`@PreAuthorize`) ou au niveau URL, basées sur les rôles/autorités extraits du token/de la session.
+
+### Comment fonctionnent les repositories Spring Data, et que sont les derived query methods ?
+- Spring Data génère l'implémentation d'une **interface** de repository à l'exécution — vous déclarez seulement le contrat (ex. `extends JpaRepository<Order, Long>`), et Spring fournit le CRUD + pagination/tri gratuitement.
+- **Derived query methods** : nommer une méthode `findByStatusAndCreatedAtAfter(...)` fait que Spring Data analyse le nom de la méthode et génère automatiquement la requête correspondante — pratique pour des requêtes simples, mais pour tout ce qui est complexe je préfère un `@Query` explicite (JPQL ou SQL natif) pour la lisibilité et le contrôle.
+- **Pagination/tri** : passer un paramètre `Pageable`/`Sort` et Spring Data gère `LIMIT`/`OFFSET` et `ORDER BY` pour vous.
+
+### Quelles fonctionnalités Java Streams/lambda utilisez-vous au quotidien ?
+- Les **Streams** pour un traitement déclaratif des collections : `filter`, `map`, `collect(Collectors.toList()/groupingBy(...))` plutôt que des boucles manuelles — plus lisible et moins sujet aux erreurs pour les transformations/agrégations.
+- **Optional** pour rendre explicite l'absence de valeur dans l'API et éviter des `NullPointerException` non contrôlées — j'évite d'appeler `.get()` aveuglément et je préfère `.map()/.orElseThrow()`.
+- Les **références de méthode** (`Order::getStatus`) comme alternative plus concise à une lambda d'une ligne.
+- Un point de vigilance : les streams ne sont pas toujours plus performants qu'une boucle simple pour des cas basiques, et des streams profondément chaînés/imbriqués peuvent nuire à la lisibilité — je les utilise quand ils clarifient l'intention, pas systématiquement.
+
+### Comment gérez-vous la concurrence/le multithreading en Java ?
+- Je privilégie des abstractions de haut niveau plutôt que `Thread`/`synchronized` bruts quand c'est possible : **`ExecutorService`** pour gérer des pools de threads, **`CompletableFuture`** pour composer des pipelines asynchrones non bloquants.
+- Pour l'état mutable partagé, je préfère les utilitaires de **`java.util.concurrent`** (`ConcurrentHashMap`, `AtomicInteger`, `ReentrantLock`) plutôt que des blocs `synchronized` manuels, plus sujets aux erreurs et plus difficiles à raisonner.
+- Connaissance des **virtual threads de Java 21** : pour les charges I/O-bound (typiques des services backend qui appellent des bases/APIs), les virtual threads permettent d'écrire du code bloquant simple qui passe à l'échelle comme du code asynchrone, sans la complexité de la programmation réactive.
+
+### Quelle est votre approche de la gestion des exceptions dans une application Spring Boot ?
+- **Checked vs unchecked** : je privilégie généralement les exceptions unchecked (runtime) pour les erreurs métier dans les apps Spring, car les exceptions checked encombrent les signatures de méthodes à travers les couches sans apporter beaucoup de sécurité.
+- **Gestion centralisée** : un `@ControllerAdvice` avec des méthodes `@ExceptionHandler` qui mappent les exceptions métier vers les bons codes de statut HTTP et un corps de réponse d'erreur cohérent, au lieu de disperser des try/catch dans les contrôleurs.
+- **Échouer avec du sens** : des exceptions personnalisées (`OrderNotFoundException`, `InsufficientStockException`) plutôt qu'un `RuntimeException` générique, pour que l'erreur soit auto-documentée et facile à mapper au bon niveau de réponse/log.
+- Ne jamais avaler une exception silencieusement (bloc `catch` vide) — au minimum, la logger avec assez de contexte pour déboguer plus tard.
+
+### Pouvez-vous citer les principales catégories de patrons GoF avec un exemple utilisé ?
+- **Créationnels** (création d'objets) : ex. **Builder** pour construire un objet complexe étape par étape (courant avec des DTOs immuables), **Factory Method** pour décider quelle implémentation instancier selon un type.
+- **Structurels** (composition de classes/objets) : ex. **Adapter** pour faire correspondre le client d'une API externe à une interface attendue par mon code, **Facade** pour exposer une interface simple au-dessus d'un sous-système complexe.
+- **Comportementaux** (interaction/responsabilité) : ex. **Strategy** pour permuter un algorithme (comme différentes règles de paiement ou de tarification) sans conditionnelles, **Observer** pour publier des événements de domaine vers plusieurs auditeurs.
+- Je considère les patrons comme des **outils pour nommer une solution**, pas un objectif en soi — j'en introduis un quand il réduit la complexité, pas pour paraître sophistiqué.
+
+### À l'aise avec les algorithmes et structures de données, et comment cela se traduit-il au quotidien en backend ?
+- Je ne mobilise pas la théorie algorithmique tous les jours, mais le modèle mental compte constamment : choisir une `HashMap` vs `TreeMap` vs `List` pour une recherche, savoir qu'une boucle imbriquée `O(n²)` sur une grande collection posera problème à l'échelle, ou qu'un index de base de données transforme un scan `O(n)` en recherche `O(log n)`.
+- Concrètement : je fais attention à la **complexité des requêtes/algorithmes quand le volume de données grandit** (pagination plutôt que tout charger, traitement par lots plutôt que ligne par ligne, indexer les bonnes colonnes) — c'est là que la pensée Big-O se manifeste réellement en backend, plus que dans la résolution de puzzles abstraits.
+
+### À quoi sert un outil comme Fivetran, et comment s'inscrit-il dans une logique data product/data mesh ?
+- **Fivetran** est un **outil d'ingestion/ELT managé** : il se connecte aux systèmes sources (bases de données, APIs SaaS) et réplique automatiquement les données vers un entrepôt/lac de données, en gérant la dérive de schéma et les synchronisations incrémentales sans code de pipeline écrit à la main.
+- Il s'inscrit dans la logique **data-as-a-product** car il permet à une équipe de domaine de publier ses données de façon fiable (via un pipeline bien défini et surveillé) sans que chaque équipe réinvente l'ingestion — plus proche d'une « infrastructure de données en self-service » que des scripts ETL maison par source.
+- En tant que développeur backend évoluant vers le data product, je vois la valeur de ce changement : au lieu d'écrire du code d'extraction ponctuel, se concentrer sur la définition de contrats de données propres et laisser l'outillage managé gérer la plomberie.
+
+### Quels sont les principes clés d'une bonne conception d'API REST ?
+- **URLs orientées ressources** (`/orders/{id}`, pas `/getOrder?id=`), les bons **verbes HTTP** (GET/POST/PUT/PATCH/DELETE) et **codes de statut** (201 à la création, 404 vs 400 vs 409, etc.) qui portent du sens sans avoir à lire le corps de la réponse.
+- **Cohérence** : nommage, pagination, filtrage et format d'erreur prévisibles sur tous les endpoints — un client ne devrait pas avoir à deviner.
+- **Versionnement** : anticiper les breaking changes dès le départ (versionnement par URL ou par en-tête) plutôt que de le rajouter sous pression plus tard.
+- **Statelessness** : chaque requête porte tout ce qui est nécessaire à son traitement (token d'auth, paramètres) — pas d'état de session côté serveur, ce qui facilite aussi la mise à l'échelle horizontale.
+
+### Comment décidez-vous quand et comment mettre en cache une donnée ?
+- Mettre en cache quand une donnée est **lue beaucoup plus souvent qu'elle ne change** et que la recalculer/la récupérer est coûteux — candidats classiques : données de référence, agrégations coûteuses, résultats d'appels à des APIs externes.
+- **Où** : en mémoire process (`@Cacheable` de Spring, cache de second niveau d'Hibernate) pour des données à faible churn sur une seule instance ; un cache partagé (Redis) quand plusieurs instances ont besoin d'une vue cohérente ou que le jeu de données est volumineux.
+- **L'invalidation est la partie difficile** — je préfère un **TTL** clair combiné à une invalidation explicite à l'écriture (évincer/mettre à jour l'entrée de cache quand la donnée sous-jacente change) plutôt que de se reposer uniquement sur le TTL, pour éviter de servir des données périmées plus longtemps que ce que le cas d'usage tolère.
+
+### Quelle est la différence entre Docker et Podman, et qu'est-ce qu'un bon Dockerfile ?
+- **Docker** utilise un modèle client-serveur avec un **daemon** en arrière-plan tournant en root par défaut ; **Podman** est **sans daemon** et supporte des conteneurs entièrement **rootless**, un avantage de sécurité concret dans des environnements partagés/réglementés — la CLI est proche d'un remplacement direct (`podman` reprend la plupart des commandes `docker`).
+- Bonnes pratiques **Dockerfile** : utiliser un **build multi-stage** (construire l'app dans une étape, ne copier que l'artefact final dans une image d'exécution allégée) pour garder l'image petite ; figer les versions d'image de base plutôt que `latest` ; s'exécuter avec un **utilisateur non-root** ; ordonner les instructions pour que les couches qui changent rarement (installation des dépendances) précèdent celles qui changent souvent (code applicatif), afin de maximiser la réutilisation du cache de couches.
+
+### Comment expliqueriez-vous les bases de Kubernetes (Pod, Deployment, Service) en entretien ?
+- **Pod** : la plus petite unité déployable — un ou plusieurs conteneurs étroitement couplés partageant réseau/stockage. Les Pods sont **éphémères** ; on ne les gère pas directement en pratique.
+- **Deployment** : gère un ensemble de réplicas de Pod identiques, gère les mises à jour progressives et les rollbacks, et maintient le nombre de réplicas souhaité (redémarre automatiquement les Pods en échec).
+- **Service** : un point de terminaison réseau stable (IP virtuelle/nom DNS) devant un ensemble dynamique de Pods — comme les IP des Pods changent constamment, c'est le Service que les autres composants contactent réellement (c'est le **Service Discovery** natif de Kubernetes).
+- Les **health checks** (`readinessProbe`/`livenessProbe`) permettent à Kubernetes de savoir quand un Pod est prêt à recevoir du trafic ou doit être redémarré — directement lié aux patrons de résilience vus plus haut (le Circuit Breaker complète cela au niveau applicatif).
+
+### Pourquoi utiliser Helm, et quel problème résout-il ?
+- Helm est un **gestionnaire de paquets pour Kubernetes** : un **chart** regroupe un ensemble de manifestes Kubernetes (Deployment, Service, ConfigMap, etc.) sous forme de template réutilisable, versionné et paramétrable, plutôt que de maintenir du YAML brut par environnement.
+- Les **fichiers values** (`values.yaml`) permettent de déployer le même chart différemment selon l'environnement (dev/staging/prod) en surchargeant des paramètres (nombre de réplicas, limites de ressources, tag d'image) sans dupliquer les manifestes.
+- Il apporte aussi une **gestion des releases** : `helm upgrade`/`helm rollback` suivent les révisions, ce qui rend simple l'annulation d'un déploiement problématique.
+
+### À quoi sert Terraform, et quel est l'intérêt de l'Infrastructure as Code ?
+- Terraform permet de déclarer des ressources cloud/infrastructure (VMs, bases de données, réseau, clusters Kubernetes) en **code** (HCL), plutôt qu'en cliquant dans une console — l'état souhaité est versionné, relisable et reproductible entre environnements.
+- **Fichier d'état** : Terraform suit les ressources réelles qu'il gère dans un fichier d'état, et calcule un **plan** (diff entre l'état souhaité et l'état actuel) avant d'appliquer les changements — `terraform plan` avant `terraform apply` est le filet de sécurité contre les changements surprises.
+- Avantage par rapport au provisionnement manuel : **reproductibilité** (recréer un environnement identique à partir du même code), **traçabilité** (chaque changement d'infra passe par une pull request relue, comme le code applicatif), et **reprise après sinistre** (reconstruire l'infrastructure à partir du code plutôt que d'une connaissance tribale).

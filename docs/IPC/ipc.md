@@ -266,3 +266,99 @@ Worth having ready since it's the direction I want to move toward:
 - **TDD (Test-Driven Development)**: write a failing unit test first, write the minimal code to pass it, then refactor — a **developer-facing** discipline focused on code correctness at the unit level (red-green-refactor).
 - **BDD (Behavior-Driven Development)**: describe expected behavior in a shared, readable format (**Gherkin**: Given/When/Then) that both developers and business stakeholders can understand and agree on *before* implementation — a **collaboration** tool as much as a testing one.
 - **In practice**: I use BDD (Cucumber/Gherkin) at the feature/acceptance level to confirm the business behavior is correct and shared with the product owner, and TDD/unit tests underneath to drive the implementation details and edge cases those scenarios don't cover.
+
+### What's your Git branching strategy, and how do you handle merge vs rebase?
+- I've worked with **Gitflow** (feature/develop/release/main branches) and simpler **trunk-based / feature-branch** workflows depending on the team — the right choice depends on release cadence, not personal preference.
+- **Merge** preserves full history and is safe for shared branches; **rebase** rewrites history onto the latest base for a **cleaner, linear log** — I rebase my own feature branches before opening a merge request, but never rebase a branch others are already building on.
+- I keep merge requests small and focused, since large MRs are both harder to review and more likely to hide bugs.
+
+### What does the Maven build lifecycle look like, and how do you manage dependencies?
+- Maven's default lifecycle runs phases in order: `validate → compile → test → package → verify → install → deploy`. Running e.g. `mvn package` runs every phase up to and including `package`.
+- **Dependency management**: declared in `pom.xml`, resolved transitively from repositories (local cache → remote/Nexus/Artifactory) — conflicts are resolved by Maven's "nearest wins" rule, which is why `mvn dependency:tree` is essential for debugging version clashes.
+- **Multi-module projects**: a parent POM centralizes shared dependency/plugin versions (`dependencyManagement`), so child modules stay consistent without repeating version numbers.
+
+### How do you design a CI/CD pipeline (e.g. with Jenkins/GitLab)?
+- Typical stages: **build → unit test → static analysis (SonarQube/lint) → package/containerize → integration/BDD tests → deploy to a staging env → (manual or automated) deploy to prod**.
+- Fail fast: cheap/fast checks (compile, unit tests) run before expensive ones (integration tests, deployment) so feedback comes quickly.
+- I favor **small, frequent deployments** over big-bang releases — smaller changes are easier to review, test, and roll back if something goes wrong.
+- Secrets/credentials are never hardcoded in the pipeline — they come from a vault/credentials store injected at runtime.
+
+### How do you approach unit testing with JUnit and Mockito?
+- **Unit tests** isolate a single class/method — any collaborator (repository, external client) is replaced with a **mock** (Mockito) so the test verifies *this* unit's logic, not its dependencies.
+- I follow **Arrange-Act-Assert**: set up the mocks/inputs, call the method under test, assert the outcome (return value, and/or that a mock was called with the right arguments via `verify()`).
+- I avoid over-mocking — mocking every single collaborator (including simple value objects) makes tests brittle and coupled to implementation details rather than behavior.
+- For persistence-layer logic, I complement unit tests with a smaller number of **integration tests** (e.g. `@DataJpaTest` with a real/test DB) since mocking the ORM itself gives false confidence.
+
+### How does Spring Security handle authentication and authorization (JWT/OAuth2)?
+- **Authentication** (who are you) typically flows through a **filter chain**: a request hits a `UsernamePasswordAuthenticationFilter` or a custom **JWT filter** that validates the token and populates the `SecurityContext`.
+- **JWT-based auth**: the client sends a signed token (usually in the `Authorization: Bearer` header); the server validates the signature/expiry **statelessly**, without a server-side session — a good fit for microservices since any instance can validate the token independently.
+- **OAuth2/OpenID Connect**: delegates authentication to an identity provider (e.g. Keycloak, Azure AD) — the app trusts tokens issued by that provider instead of managing credentials itself.
+- **Authorization**: method-level (`@PreAuthorize`) or URL-level rules based on roles/authorities extracted from the token/session.
+
+### How do Spring Data repositories work, and what are derived query methods?
+- Spring Data generates the implementation of a repository **interface** at runtime — you only declare the contract (e.g. `extends JpaRepository<Order, Long>`), and Spring provides CRUD + paging/sorting for free.
+- **Derived query methods**: naming a method `findByStatusAndCreatedAtAfter(...)` makes Spring Data parse the method name and generate the corresponding query automatically — convenient for simple queries, but for anything complex I prefer an explicit `@Query` (JPQL or native SQL) for readability and control.
+- **Paging/sorting**: pass a `Pageable`/`Sort` parameter and Spring Data handles the `LIMIT`/`OFFSET` and `ORDER BY` for you.
+
+### What Java Streams/lambda features do you use day to day?
+- **Streams** for declarative collection processing: `filter`, `map`, `collect(Collectors.toList()/groupingBy(...))` instead of manual loops — more readable and less error-prone for transformations/aggregations.
+- **Optional** to make the absence of a value explicit in the API and avoid unchecked `NullPointerException`s — I avoid calling `.get()` blindly and prefer `.map()/.orElseThrow()`.
+- **Method references** (`Order::getStatus`) as a more concise alternative to a one-line lambda.
+- Caveat I keep in mind: streams aren't always more performant than a plain loop for simple cases, and deeply chained/nested streams can hurt readability — I use them where they clarify intent, not everywhere by default.
+
+### How do you handle concurrency/multithreading in Java?
+- I prefer higher-level abstractions over raw `Thread`/`synchronized` where possible: **`ExecutorService`** for managing thread pools, **`CompletableFuture`** for composing asynchronous, non-blocking pipelines.
+- For shared mutable state, I reach for **`java.util.concurrent`** utilities (`ConcurrentHashMap`, `AtomicInteger`, `ReentrantLock`) rather than manual `synchronized` blocks, which are more error-prone and harder to reason about.
+- Awareness of **Java 21 virtual threads**: for I/O-bound workloads (typical of backend services calling DBs/APIs), virtual threads let you write simple blocking-style code that scales like async code, without the complexity of reactive programming.
+
+### What's your approach to exception handling in a Spring Boot application?
+- **Checked vs unchecked**: I generally favor unchecked (runtime) exceptions for business errors in Spring apps, since checked exceptions clutter method signatures across layers without adding much safety.
+- **Centralized handling**: a `@ControllerAdvice` with `@ExceptionHandler` methods maps domain exceptions to proper HTTP status codes and a consistent error response body, instead of scattering try/catch across controllers.
+- **Fail with meaning**: custom exceptions (`OrderNotFoundException`, `InsufficientStockException`) instead of generic `RuntimeException`, so the error is self-documenting and easy to map to the right response/log level.
+- Never swallow an exception silently (empty `catch` block) — at minimum log it with enough context to debug later.
+
+### Can you name the main GoF design pattern categories with an example you've used?
+- **Creational** (object creation): e.g. **Builder** for constructing a complex object step by step (common with immutable DTOs), **Factory Method** to decide which implementation to instantiate based on a type.
+- **Structural** (composition of classes/objects): e.g. **Adapter** to make an external API's client match an interface my code expects, **Facade** to expose a simple interface over a complex subsystem.
+- **Behavioral** (interaction/responsibility): e.g. **Strategy** to swap an algorithm (like different payment or pricing rules) without conditionals, **Observer** for publishing domain events to multiple listeners.
+- I treat patterns as **tools to name a solution**, not a goal in themselves — I introduce one when it reduces complexity, not to look sophisticated.
+
+### How comfortable are you with algorithms and data structures, and how does that show up in day-to-day backend work?
+- I don't reach for algorithm theory daily, but the mental model matters constantly: choosing a `HashMap` vs `TreeMap` vs `List` for a lookup, knowing that an `O(n²)` nested loop over a large collection will hurt at scale, or that a DB index turns an `O(n)` scan into an `O(log n)` lookup.
+- Concretely: I pay attention to **query/algorithm complexity when data volume grows** (pagination instead of loading everything, batch processing instead of row-by-row, indexing the right columns) — that's where Big-O thinking actually shows up in backend work, more than solving abstract puzzles.
+
+### What is a tool like Fivetran used for, and how does it fit a data product/data mesh mindset?
+- **Fivetran** is a **managed data ingestion/ELT tool**: it connects to source systems (databases, SaaS APIs) and automatically replicates data into a warehouse/lake, handling schema drift and incremental syncs without hand-written pipeline code.
+- It fits the **data-as-a-product** mindset because it lets a domain team reliably publish its data (as a well-defined, monitored pipeline) without every team reinventing ingestion — closer to "self-serve data infrastructure" than custom ETL scripts per source.
+- As a backend developer moving toward data product work, I see the value in this shift: instead of writing one-off extraction code, focus on defining clean data contracts and let managed tooling handle the plumbing.
+
+### What are the key principles of good REST API design?
+- **Resource-oriented URLs** (`/orders/{id}`, not `/getOrder?id=`), proper **HTTP verbs** (GET/POST/PUT/PATCH/DELETE) and **status codes** (201 on creation, 404 vs 400 vs 409, etc.) that convey meaning without reading the response body.
+- **Consistency**: predictable naming, pagination, filtering, and error response shape across all endpoints — a client shouldn't have to guess.
+- **Versioning**: plan for breaking changes from day one (URL or header-based versioning) rather than retrofitting it under pressure later.
+- **Statelessness**: each request carries everything needed to process it (auth token, params) — no server-side session state, which is also what makes horizontal scaling straightforward.
+
+### How do you decide when and how to cache something?
+- Cache when a piece of data is **read far more often than it changes** and recomputing/refetching it is costly — classic candidates: reference/lookup data, expensive aggregations, results of external API calls.
+- **Where**: in-process (Spring's `@Cacheable`, Hibernate second-level cache) for single-instance/low-churn data; a shared cache (Redis) when multiple instances need a consistent view or the dataset is large.
+- **Invalidation is the hard part** — I prefer a clear **TTL** plus explicit invalidation on write (evict/update the cache entry when the underlying data changes) over relying on TTL alone, to avoid serving stale data longer than acceptable for the use case.
+
+### What's the difference between Docker and Podman, and what makes a good Dockerfile?
+- **Docker** uses a client-server model with a background **daemon** running as root by default; **Podman** is **daemonless** and supports fully **rootless** containers, which is a meaningful security advantage in shared/regulated environments — the CLI is close to a drop-in replacement (`podman` mirrors most `docker` commands).
+- Good **Dockerfile** habits: use a **multi-stage build** (build the app in one stage, copy only the final artifact into a slim runtime image) to keep the image small; pin base image versions instead of `latest`; run as a **non-root user**; order instructions so rarely-changing layers (dependency install) come before frequently-changing ones (application code) to maximize layer-cache reuse.
+
+### How would you explain Kubernetes basics (Pod, Deployment, Service) in an interview?
+- **Pod**: the smallest deployable unit — one or more tightly-coupled containers sharing network/storage. Pods are **ephemeral**; you don't manage them directly in practice.
+- **Deployment**: manages a set of identical Pod replicas, handles rolling updates and rollbacks, and keeps the desired replica count running (restarts failed Pods automatically).
+- **Service**: a stable network endpoint (virtual IP/DNS name) in front of a dynamic set of Pods — since Pod IPs change constantly, the Service is what other components actually talk to (this is Kubernetes' built-in **Service Discovery**).
+- **Health checks** (`readinessProbe`/`livenessProbe`) let Kubernetes know when a Pod is ready to receive traffic or needs to be restarted — directly relevant to the resilience patterns discussed earlier (Circuit Breaker complements this at the application level).
+
+### Why use Helm, and what problem does it solve?
+- Helm is a **package manager for Kubernetes**: a **chart** bundles a set of Kubernetes manifests (Deployment, Service, ConfigMap, etc.) as a reusable, versioned, parameterized template instead of maintaining raw YAML per environment.
+- **Values files** (`values.yaml`) let the same chart be deployed differently per environment (dev/staging/prod) by overriding parameters (replica count, resource limits, image tag) without duplicating manifests.
+- It also gives **release management**: `helm upgrade`/`helm rollback` track revisions, making it straightforward to roll back a bad deployment.
+
+### What is Terraform used for, and what's the benefit of Infrastructure as Code?
+- Terraform lets you declare cloud/infrastructure resources (VMs, databases, networking, Kubernetes clusters) in **code** (HCL), rather than clicking through a console — the desired state is version-controlled, reviewable, and repeatable across environments.
+- **State file**: Terraform tracks the real-world resources it manages in a state file, and computes a **plan** (diff between desired and current state) before applying changes — `terraform plan` before `terraform apply` is the safety net against surprise changes.
+- Benefit over manual provisioning: **reproducibility** (spin up an identical environment from the same code), **auditability** (every infra change goes through a reviewed pull request, like application code), and **disaster recovery** (rebuild infrastructure from code instead of tribal knowledge).
