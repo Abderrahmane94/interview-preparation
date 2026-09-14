@@ -210,6 +210,32 @@ Worth having ready since it's the direction I want to move toward:
   - **Repository**: abstraction to load/persist aggregates, hiding persistence details from the domain.
   - **Domain Event**: something meaningful that happened in the domain (`OrderPlaced`) — the natural bridge to event-driven integration (Kafka) and the Saga/CQRS patterns.
 
+#### What's the difference between an Entity and a Value Object, with an example?
+- An **Entity** is defined by its **identity** (an id), which persists even if every attribute changes over time — e.g. a `Customer` is still the same customer after they change their address or name.
+- A **Value Object** is defined entirely by its **attributes**, has no identity of its own, and is **immutable** — e.g. `Money(amount, currency)` or `Address(street, city, zip)`. Two `Money` objects with the same amount/currency are interchangeable; you never "update" a Value Object, you replace it.
+- Practical rule of thumb: if two instances with identical data should be considered the *same thing*, it's a Value Object; if they should still be distinguishable (like two customers who happen to share a name), it's an Entity.
+
+#### How do you decide the boundaries of an Aggregate?
+- An Aggregate should be the **smallest cluster of objects that must stay consistent together** within a single transaction — not "everything conceptually related."
+- Rule of thumb I follow: **reference other aggregates by id only**, never hold a direct object reference — this keeps aggregates small and avoids loading half the object graph to change one field.
+- Example: an `Order` aggregate holds its `OrderLines` (they can't exist meaningfully without the order and must stay consistent with it — e.g. total must match line items), but it references `Customer` and `Product` only by id, since those are separate aggregates with their own lifecycle and consistency rules.
+- Smaller aggregates mean **less lock contention** and better scalability; oversized aggregates are a common source of performance and concurrency problems.
+
+#### What's the difference between a Domain Service and an Application Service?
+- A **Domain Service** contains **business logic that doesn't naturally belong to a single Entity or Value Object** — e.g. a `PricingService` that calculates a discount based on rules spanning multiple aggregates. It's still pure domain logic, framework-agnostic.
+- An **Application Service** (sometimes called a use case) **orchestrates** a use case: it loads aggregates via repositories, calls domain logic/domain services, handles transactions, and publishes events — but it contains **no business rules itself**, just coordination.
+- Keeping this split explicit prevents business logic from leaking into controllers or infrastructure code — a mistake I actively watch for in code review.
+
+#### What is an Anti-Corruption Layer, and when do you need one?
+- An **Anti-Corruption Layer (ACL)** is a translation layer placed at the boundary between your Bounded Context and an external system (a legacy system, a third-party API, another team's service) with a different or messy model.
+- It converts the external system's model/language into your own domain's Ubiquitous Language, so external concepts, naming, and quirks don't leak into and "corrupt" your clean domain model.
+- I'd reach for one when integrating with a legacy system I don't control, or a vendor API whose data shapes don't match how my domain actually thinks about the problem — better to isolate the mess at one boundary than scatter workarounds through the codebase.
+
+#### How does a Bounded Context map to a microservice in practice?
+- In a DDD-aligned decomposition, each **Bounded Context** typically becomes one **microservice** (or a small, cohesive group of services) — the service boundary and the model boundary line up, which is what keeps each service's domain model coherent and independently evolvable.
+- This is why "decompose by business capability/subdomain" (from the microservices patterns list) and "Bounded Context" are really the same idea seen from two angles — one from architecture, one from domain modeling.
+- Getting this wrong (e.g. splitting services along technical layers instead of business capabilities) is a common cause of chatty, tightly-coupled "distributed monoliths."
+
 ### Hexagonal Architecture
 
 #### Hexagonal Architecture (Ports & Adapters)
@@ -217,6 +243,38 @@ Worth having ready since it's the direction I want to move toward:
 - **Adapters** implement those ports to plug in a concrete technology — a REST controller is a driving/primary adapter (calls into the domain), a JPA repository implementation is a driven/secondary adapter (the domain calls out to it).
 - **Why it matters**: the domain can be unit-tested with no DB/framework involved, and swapping infrastructure (e.g. PostgreSQL → another store, REST → Kafka trigger) doesn't touch business logic.
 - **Relation to DDD**: hexagonal architecture is the structural pattern that DDD's domain model naturally fits into — the "hexagon" is the domain + application layer; DDD gives you the tools (entities, aggregates, domain events) to design what's inside it.
+
+#### How does Hexagonal Architecture differ from a traditional layered (N-tier) architecture?
+- **Layered architecture** typically has strict top-down dependencies: UI → Service → Repository → Database, where the domain/business layer often ends up **depending on the persistence layer** (e.g. domain classes annotated with JPA annotations) — infrastructure concerns leak inward.
+- **Hexagonal architecture inverts that dependency**: the domain defines **ports** (interfaces) it needs, and infrastructure (DB, REST, messaging) implements them as adapters — dependencies point **inward**, toward the domain, not outward toward infrastructure. This is the same idea as the Dependency Inversion Principle (the "D" in SOLID), applied at the architecture level.
+- Practical consequence: in a layered architecture, swapping the database usually means touching the domain/service layer; in hexagonal, it only means writing a new adapter.
+
+#### Can you give concrete examples of driving vs. driven adapters?
+- **Driving (primary) adapters** — things that call *into* the application: a REST controller, a Kafka `@KafkaListener` consumer, a scheduled job, a CLI command. They translate an external trigger into a call on the application's port (use case).
+- **Driven (secondary) adapters** — things the application calls *out* to: a JPA repository implementation, a Kafka producer, an email-sending client, a call to an external payment API. They implement a port the domain/application layer defined.
+- Both sides depend on the hexagon (the domain/application core) through ports — the domain never depends on Spring, JPA, or Kafka classes directly.
+
+#### How would you structure packages for a hexagonal Spring Boot application?
+A common layout I've used:
+- `domain/` — entities, value objects, aggregates, domain services, domain events, and the **port interfaces** (e.g. `OrderRepository`, `PaymentGateway`) — zero framework dependencies, plain Java.
+- `application/` — application services/use cases that orchestrate the domain via ports, handle transactions (`@Transactional`).
+- `adapter/in/web/` — REST controllers (driving adapters) calling into application services.
+- `adapter/in/messaging/` — Kafka consumers (driving adapters).
+- `adapter/out/persistence/` — JPA repository implementations of the domain's port interfaces (driven adapters).
+- `adapter/out/messaging/` — Kafka producers implementing an outbound port (driven adapters).
+- The dependency rule to enforce: `domain` has no dependency on `adapter` or frameworks; `adapter` depends on `domain`/`application`, never the reverse.
+
+#### How does Hexagonal Architecture make testing easier in practice?
+- Because the domain only depends on **ports (interfaces)**, tests can provide **in-memory/fake implementations** of those ports instead of a real database or message broker — fast, deterministic unit tests for business logic with zero infrastructure setup.
+- Integration tests are then narrowed to **just the adapters** (e.g. `@DataJpaTest` for the persistence adapter, a Testcontainers-backed test for the Kafka adapter), each verified in isolation rather than through one slow end-to-end test.
+- This mirrors how I approach TDD/BDD: fast unit tests around the domain, a smaller number of focused integration tests around the edges.
+
+#### Is Hexagonal Architecture the same as Clean Architecture or Onion Architecture?
+They're **variations of the same core idea** — dependencies point inward toward the domain, infrastructure is kept at the edges — but with slightly different framings:
+- **Hexagonal (Ports & Adapters)**: emphasizes symmetry between "driving" and "driven" sides, all through ports.
+- **Onion Architecture**: describes it as concentric layers (domain core → domain services → application services → infrastructure), making the *layering* more explicit.
+- **Clean Architecture** (Uncle Bob): adds explicit **use case** and **interface adapter** layers with a strong emphasis on the Dependency Rule ("source code dependencies only point inward").
+- In interviews I treat them as the same family of architecture and focus on the shared principle (dependency inversion, domain isolation) rather than debating naming — that's what actually matters day to day.
 
 ### Spring & Spring Boot
 

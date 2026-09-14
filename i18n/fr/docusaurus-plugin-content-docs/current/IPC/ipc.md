@@ -210,6 +210,32 @@ Résout le **problème de la double écriture** : un service qui met à jour sa 
   - **Repository** : abstraction pour charger/persister des agrégats, cachant les détails de persistance au domaine.
   - **Domain Event** : quelque chose de significatif qui s'est produit dans le domaine (`OrderPlaced`) — le pont naturel vers l'intégration événementielle (Kafka) et les patrons Saga/CQRS.
 
+#### Quelle est la différence entre une Entity et un Value Object, avec un exemple ?
+- Une **Entity** est définie par son **identité** (un id), qui persiste même si tous ses attributs changent dans le temps — ex. un `Customer` reste le même client même après avoir changé d'adresse ou de nom.
+- Un **Value Object** est défini entièrement par ses **attributs**, n'a pas d'identité propre, et est **immuable** — ex. `Money(amount, currency)` ou `Address(street, city, zip)`. Deux objets `Money` avec le même montant/devise sont interchangeables ; on ne « met jamais à jour » un Value Object, on le remplace.
+- Règle pratique : si deux instances avec les mêmes données doivent être considérées comme *la même chose*, c'est un Value Object ; si elles doivent rester distinguables (comme deux clients qui portent le même nom par coïncidence), c'est une Entity.
+
+#### Comment décidez-vous des frontières d'un Aggregate ?
+- Un Aggregate doit être le **plus petit ensemble d'objets qui doit rester cohérent ensemble** au sein d'une seule transaction — pas « tout ce qui est conceptuellement lié ».
+- Règle que je suis : **référencer les autres agrégats uniquement par id**, jamais par référence d'objet directe — cela garde les agrégats petits et évite de charger la moitié du graphe d'objets pour changer un seul champ.
+- Exemple : un agrégat `Order` contient ses `OrderLines` (elles n'ont pas de sens sans la commande et doivent rester cohérentes avec elle — ex. le total doit correspondre aux lignes), mais il référence `Customer` et `Product` uniquement par id, car ce sont des agrégats séparés avec leur propre cycle de vie et leurs propres règles de cohérence.
+- Des agrégats plus petits signifient **moins de contention de verrous** et une meilleure scalabilité ; des agrégats surdimensionnés sont une cause fréquente de problèmes de performance et de concurrence.
+
+#### Quelle est la différence entre un Domain Service et un Application Service ?
+- Un **Domain Service** contient de la **logique métier qui n'appartient naturellement à aucune Entity ou Value Object unique** — ex. un `PricingService` qui calcule une remise basée sur des règles impliquant plusieurs agrégats. C'est toujours de la logique de domaine pure, indépendante du framework.
+- Un **Application Service** (parfois appelé use case) **orchestre** un cas d'usage : il charge les agrégats via des repositories, appelle la logique de domaine/les domain services, gère les transactions, et publie des événements — mais ne contient **aucune règle métier lui-même**, juste de la coordination.
+- Garder cette séparation explicite évite que la logique métier ne s'infiltre dans les contrôleurs ou le code d'infrastructure — une erreur que je surveille activement en revue de code.
+
+#### Qu'est-ce qu'un Anti-Corruption Layer, et quand en avez-vous besoin ?
+- Un **Anti-Corruption Layer (ACL)** est une couche de traduction placée à la frontière entre votre Bounded Context et un système externe (un système legacy, une API tierce, le service d'une autre équipe) ayant un modèle différent ou désordonné.
+- Il convertit le modèle/langage du système externe dans le Ubiquitous Language de votre propre domaine, pour que les concepts, le nommage et les particularités externes ne s'infiltrent pas dans votre modèle de domaine et ne le « corrompent » pas.
+- J'y recours en intégrant un système legacy que je ne contrôle pas, ou une API fournisseur dont la forme des données ne correspond pas à la façon dont mon domaine pense réellement le problème — mieux vaut isoler le désordre à une seule frontière que disperser des contournements dans tout le code.
+
+#### Comment un Bounded Context se traduit-il en microservice en pratique ?
+- Dans une décomposition alignée sur le DDD, chaque **Bounded Context** devient généralement un **microservice** (ou un petit groupe cohérent de services) — la frontière du service et la frontière du modèle s'alignent, ce qui garde le modèle de domaine de chaque service cohérent et évolutif indépendamment.
+- C'est pourquoi « décomposer par capacité métier/sous-domaine » (dans la liste des patrons microservices) et « Bounded Context » sont en réalité la même idée vue sous deux angles — l'un architectural, l'autre issu de la modélisation du domaine.
+- Se tromper là-dessus (ex. découper les services selon des couches techniques plutôt que des capacités métier) est une cause fréquente de « monolithes distribués » bavards et fortement couplés.
+
 ### Architecture Hexagonale
 
 #### Architecture Hexagonale (Ports & Adapters)
@@ -217,6 +243,38 @@ Résout le **problème de la double écriture** : un service qui met à jour sa 
 - Les **adaptateurs** implémentent ces ports pour brancher une technologie concrète — un contrôleur REST est un adaptateur driving/primaire (appelle le domaine), une implémentation de repository JPA est un adaptateur driven/secondaire (le domaine l'appelle).
 - **Pourquoi c'est important** : le domaine peut être testé unitairement sans base de données ni framework, et changer d'infrastructure (ex. PostgreSQL → un autre stockage, REST → déclenchement Kafka) ne touche pas la logique métier.
 - **Lien avec le DDD** : l'architecture hexagonale est le patron structurel dans lequel le modèle de domaine du DDD s'intègre naturellement — l'« hexagone » représente le domaine + la couche applicative ; le DDD fournit les outils (entités, agrégats, événements de domaine) pour concevoir ce qu'il y a à l'intérieur.
+
+#### En quoi l'architecture hexagonale diffère-t-elle d'une architecture en couches (N-tier) traditionnelle ?
+- Une **architecture en couches** a typiquement des dépendances strictes de haut en bas : UI → Service → Repository → Base de données, où la couche métier/domaine finit souvent par **dépendre de la couche de persistance** (ex. des classes de domaine annotées avec des annotations JPA) — les préoccupations d'infrastructure remontent vers l'intérieur.
+- L'**architecture hexagonale inverse cette dépendance** : le domaine définit les **ports** (interfaces) dont il a besoin, et l'infrastructure (BD, REST, messagerie) les implémente sous forme d'adaptateurs — les dépendances pointent **vers l'intérieur**, vers le domaine, et non vers l'extérieur vers l'infrastructure. C'est la même idée que le Dependency Inversion Principle (le « D » de SOLID), appliquée au niveau architectural.
+- Conséquence pratique : dans une architecture en couches, changer de base de données implique généralement de toucher la couche domaine/service ; en hexagonal, cela signifie seulement d'écrire un nouvel adaptateur.
+
+#### Pouvez-vous donner des exemples concrets d'adaptateurs driving vs driven ?
+- **Adaptateurs driving (primaires)** — ce qui appelle *dans* l'application : un contrôleur REST, un consommateur Kafka `@KafkaListener`, un job planifié, une commande CLI. Ils traduisent un déclencheur externe en un appel sur le port de l'application (le use case).
+- **Adaptateurs driven (secondaires)** — ce que l'application appelle *vers l'extérieur* : une implémentation de repository JPA, un producteur Kafka, un client d'envoi d'e-mails, un appel à une API de paiement externe. Ils implémentent un port défini par la couche domaine/application.
+- Les deux côtés dépendent de l'hexagone (le cœur domaine/application) à travers des ports — le domaine ne dépend jamais directement de classes Spring, JPA ou Kafka.
+
+#### Comment structureriez-vous les packages d'une application Spring Boot hexagonale ?
+Une organisation courante que j'ai utilisée :
+- `domain/` — entités, value objects, agrégats, domain services, événements de domaine, et les **interfaces de port** (ex. `OrderRepository`, `PaymentGateway`) — zéro dépendance framework, Java pur.
+- `application/` — services applicatifs/use cases qui orchestrent le domaine via les ports, gèrent les transactions (`@Transactional`).
+- `adapter/in/web/` — contrôleurs REST (adaptateurs driving) appelant les services applicatifs.
+- `adapter/in/messaging/` — consommateurs Kafka (adaptateurs driving).
+- `adapter/out/persistence/` — implémentations JPA des interfaces de port du domaine (adaptateurs driven).
+- `adapter/out/messaging/` — producteurs Kafka implémentant un port sortant (adaptateurs driven).
+- La règle de dépendance à faire respecter : `domain` n'a aucune dépendance vers `adapter` ou les frameworks ; `adapter` dépend de `domain`/`application`, jamais l'inverse.
+
+#### Comment l'architecture hexagonale facilite-t-elle les tests en pratique ?
+- Comme le domaine ne dépend que de **ports (interfaces)**, les tests peuvent fournir des **implémentations en mémoire/factices** de ces ports au lieu d'une vraie base de données ou d'un vrai broker de messages — des tests unitaires rapides et déterministes pour la logique métier, sans aucune configuration d'infrastructure.
+- Les tests d'intégration sont alors restreints **aux seuls adaptateurs** (ex. `@DataJpaTest` pour l'adaptateur de persistance, un test appuyé sur Testcontainers pour l'adaptateur Kafka), chacun vérifié isolément plutôt que via un seul test end-to-end lent.
+- Cela reflète mon approche du TDD/BDD : des tests unitaires rapides autour du domaine, et un plus petit nombre de tests d'intégration ciblés autour des bords.
+
+#### L'architecture hexagonale est-elle la même chose que la Clean Architecture ou l'Onion Architecture ?
+Ce sont des **variations de la même idée centrale** — les dépendances pointent vers l'intérieur vers le domaine, l'infrastructure reste en périphérie — mais avec des présentations légèrement différentes :
+- **Hexagonale (Ports & Adapters)** : met l'accent sur la symétrie entre les côtés « driving » et « driven », tous deux à travers des ports.
+- **Onion Architecture** : la décrit comme des couches concentriques (cœur du domaine → domain services → application services → infrastructure), rendant la *stratification* plus explicite.
+- **Clean Architecture** (Uncle Bob) : ajoute des couches explicites de **use case** et d'**interface adapter**, avec une forte insistance sur la Dependency Rule (« les dépendances du code source ne pointent que vers l'intérieur »).
+- En entretien, je les traite comme la même famille d'architecture et je me concentre sur le principe partagé (inversion de dépendance, isolation du domaine) plutôt que de débattre du nommage — c'est ce qui compte réellement au quotidien.
 
 ### Spring & Spring Boot
 
