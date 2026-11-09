@@ -54,5 +54,13 @@
   "sidebar.tutorialSidebar.category.UML": {
     "message": "UML",
     "description": "The label for category UML in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.Exercises": {
+    "message": "Exercices",
+    "description": "The label for category Exercises in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.Exercises.link.generated-index.description": {
+    "message": "Entraînement sous forme d'exercices : lisez le code ou le scénario, répondez à voix haute, puis affichez la solution.",
+    "description": "The generated-index page description for category Exercises in sidebar tutorialSidebar"
   }
 }
