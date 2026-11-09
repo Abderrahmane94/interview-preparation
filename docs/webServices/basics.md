@@ -41,6 +41,10 @@ Overall, RabbitMQ provides a powerful and flexible messaging infrastructure that
 ## What is the difference PUT and PATCH?	
 - **PUT** is used to completely replace an existing resource or create a new one at the specified URI.
 - **PATCH** is used to **partially update** an existing resource.
+
+- **PUT** is **idempotent** by definition (sending the same full representation twice gives the same result). **PATCH** is not guaranteed to be idempotent — it depends on the operation (e.g. `"increment stock by 1"` is not).
+- Example: replacing a whole order → `PUT /orders/42`; changing only its status → `PATCH /orders/42`.
+
 ## Monolithic vs microservice
 
 | | Monolithic | Microservices |
@@ -154,6 +158,16 @@ REST (Representational State Transfer) is an architectural style for designing n
 
 ## What are the HTTP status codes
 100, 200, 300, 400 and 500.
+
+## Which HTTP status code should an API return when it successfully creates a resource?
+**`201 Created`**, with a **`Location`** header containing the URI of the new resource. In Spring, `ResponseEntity.created(uri)` sets both:
+
+```java
+return ResponseEntity
+    .created(URI.create("/orders/" + created.getId()))
+    .body(created);
+```
+
 ## What are the Microservices architecture and the key components of a microservices architecture?
 - applications are broken down into smaller, independent services that can be developed, deployed, and maintained separately. 
 - Service Registry, API Gateway, Configuration Server, Load Balancer, and Monitoring and Logging.

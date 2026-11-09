@@ -211,3 +211,21 @@ Interfaces fonctionnelles intégrées (`java.util.function`) :
 - `Consumer<T>` — `void accept(T t)`
 - `Supplier<T>` — `T get()`
 - `BiFunction<T,U,R>` — `R apply(T t, U u)`
+
+## Quelle est la différence entre `map()` et `flatMap()` dans les Streams Java ?
+- **`map()`** transforme **chaque élément en une valeur** (1 → 1). Il ne filtre pas — le filtrage est le rôle de `filter()`.
+- **`flatMap()`** transforme chaque élément en un **stream** puis **aplatit** tous ces streams en un seul (1 → 0..n). Utile pour les collections imbriquées.
+
+```java
+List<Integer> longueurs = List.of("alice", "bob").stream()
+    .map(String::length)
+    .toList(); // [5, 3]
+
+List<List<String>> imbriquee = List.of(
+    List.of("Laptop", "Souris"),
+    List.of("Clavier", "Écran"));
+
+List<String> tousLesArticles = imbriquee.stream()
+    .flatMap(List::stream)
+    .toList(); // [Laptop, Souris, Clavier, Écran]
+```

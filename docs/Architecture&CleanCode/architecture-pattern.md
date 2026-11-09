@@ -43,6 +43,8 @@ The Saga pattern manages **data consistency across multiple services** in a dist
 - If a step fails, the saga runs **compensating transactions** to undo the work already done by previous steps (since you can't simply roll back a distributed transaction).
 - Example: an order saga = reserve stock → charge payment → ship order. If payment fails, a compensating action releases the reserved stock.
 
+- A compensation is a **new business operation**, not a literal rollback (e.g. a **refund** after a successful payment). Production sagas must also handle retries, idempotency, timeouts and **failed compensations**.
+
 ## What are the two main ways to coordinate a Saga (Choreography vs Orchestration)?
 - **Choreography**: each service listens for events and publishes its own events in reaction — there is no central coordinator.
   - Pros: loose coupling, simple for a small number of steps.
@@ -53,6 +55,11 @@ The Saga pattern manages **data consistency across multiple services** in a dist
 
 ## How does the Saga pattern relate to eventual consistency?
 Because a saga is a sequence of independent local transactions rather than one atomic transaction, the system is only **eventually consistent** — there is a window where some services have already been updated and others haven't yet. Compensating transactions handle failure cases, but application code (and users) must tolerate temporary inconsistency, unlike with traditional ACID transactions.
+
+## Why is a normal `@Transactional` insufficient when one microservice calls another?
+`@Transactional` manages a **local** transaction on the service's **own database**. When the Order Service calls the Payment Service, the remote service commits in **its own database** — the caller's transaction does not include it.
+
+So if the payment commits and the Order Service then rolls back, the systems are inconsistent and nothing undoes the payment automatically. This is a business-consistency problem solved with a **Saga** (compensating action: refund), not with a bigger transaction.
 
 ## What are the key design patterns used in a microservices architecture?
 Microservices introduce distributed-system problems (network calls, partial failures, data spread across services) that need dedicated patterns:

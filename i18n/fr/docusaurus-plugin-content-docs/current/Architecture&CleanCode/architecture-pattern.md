@@ -44,6 +44,8 @@ Le patron Saga gère la **cohérence des données à travers plusieurs services*
 - Si une étape échoue, la saga exécute des **transactions compensatoires** pour annuler le travail déjà effectué par les étapes précédentes (car on ne peut pas simplement faire un rollback d'une transaction distribuée).
 - Exemple : une saga de commande = réserver le stock → débiter le paiement → expédier la commande. Si le paiement échoue, une action compensatoire libère le stock réservé.
 
+- Une compensation est une **nouvelle opération métier**, pas un rollback au sens littéral (ex. un **remboursement** après un paiement réussi). Une saga en production doit aussi gérer les retries, l'idempotence, les timeouts et les **compensations en échec**.
+
 ## Quelles sont les deux principales façons de coordonner une Saga (Chorégraphie vs Orchestration) ?
 - **Chorégraphie** : chaque service écoute des événements et publie ses propres événements en réaction — il n'y a pas de coordinateur central.
   - Avantages : faible couplage, simple pour un petit nombre d'étapes.
@@ -54,6 +56,11 @@ Le patron Saga gère la **cohérence des données à travers plusieurs services*
 
 ## Quel est le lien entre le patron Saga et la cohérence à terme (eventual consistency) ?
 Comme une saga est une séquence de transactions locales indépendantes plutôt qu'une transaction atomique unique, le système est seulement **cohérent à terme** — il existe une fenêtre où certains services ont déjà été mis à jour et d'autres non. Les transactions compensatoires gèrent les cas d'échec, mais le code applicatif (et les utilisateurs) doivent tolérer une incohérence temporaire, contrairement aux transactions ACID traditionnelles.
+
+## Pourquoi un `@Transactional` classique ne suffit-il pas quand un microservice en appelle un autre ?
+`@Transactional` gère une transaction **locale** sur la **propre base** du service. Quand l'Order Service appelle le Payment Service, le service distant committe dans **sa propre base** — la transaction de l'appelant ne l'inclut pas.
+
+Donc si le paiement est committé et que l'Order Service fait ensuite un rollback, les systèmes sont incohérents et rien n'annule automatiquement le paiement. C'est un problème de cohérence métier résolu par une **Saga** (action compensatoire : remboursement), pas par une transaction plus large.
 
 ## Quels sont les principaux patrons de conception utilisés dans une architecture microservices ?
 Les microservices introduisent des problèmes de systèmes distribués (appels réseau, pannes partielles, données réparties entre services) qui nécessitent des patrons dédiés :

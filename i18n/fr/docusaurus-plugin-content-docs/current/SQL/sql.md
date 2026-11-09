@@ -169,3 +169,33 @@ Pour optimiser une requête lente, on peut envisager les approches suivantes :
 9. **Tuning de la base de données** : affiner les paramètres de configuration selon les caractéristiques de la charge de travail et les capacités matérielles (allocation mémoire, timeouts, pool de connexions).
 
 10. **Profilage et surveillance** : utiliser des outils de profilage et de surveillance pour identifier les goulots d'étranglement, les requêtes lentes et les opérations gourmandes en ressources.
+
+**Exemple concret** — une requête filtrant 10 millions de commandes par `customer_id` est lente :
+
+```sql
+CREATE INDEX idx_orders_customer_id ON orders (customer_id);
+
+EXPLAIN ANALYZE
+SELECT id, status, total FROM orders WHERE customer_id = 123;
+```
+
+Vérifier que le plan utilise un **index scan** et comparer les temps avant/après ; vérifier aussi la sélectivité, les statistiques de la table (`ANALYZE`) et si `SELECT *` est vraiment nécessaire. Un index n'est pas un gain garanti : PostgreSQL peut quand même choisir un scan séquentiel si beaucoup de lignes correspondent, et chaque index coûte du stockage et ralentit les écritures.
+
+## Que sont les lectures sales (dirty reads), non répétables et fantômes ?
+- **Lecture sale (dirty read)** : lire une modification **non committée** d'une autre transaction, qui peut ensuite être annulée.
+- **Lecture non répétable** : lire **la même ligne** deux fois et obtenir **des valeurs différentes**, car une autre transaction a committé une mise à jour entre-temps.
+- **Lecture fantôme (phantom read)** : exécuter **la même requête** deux fois et obtenir **un ensemble de lignes différent**, car une autre transaction a inséré/supprimé des lignes correspondantes.
+
+Moyen mnémotechnique : *Sale = données non committées · Non répétable = même ligne, valeur différente · Fantôme = même requête, lignes différentes.*
+
+## Quels sont les niveaux d'isolation SQL standards ?
+
+| Niveau d'isolation | Lecture sale | Lecture non répétable | Lecture fantôme |
+|---|---|---|---|
+| `READ UNCOMMITTED` | possible | possible | possible |
+| `READ COMMITTED` | ❌ | possible | possible |
+| `REPEATABLE READ` | ❌ | ❌ | possible (selon la base) |
+| `SERIALIZABLE` | ❌ | ❌ | ❌ |
+
+- `SERIALIZABLE` est le plus strict : les transactions se comportent comme si elles s'exécutaient l'une après l'autre — au prix de blocages ou d'**échecs de sérialisation** qu'il faut rejouer.
+- `@Transactional` de Spring utilise le **niveau par défaut de la base** sauf si `isolation` est précisé. **PostgreSQL utilise `READ COMMITTED` par défaut** (et son `REPEATABLE READ` empêche aussi les fantômes).

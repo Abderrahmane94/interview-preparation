@@ -24,3 +24,10 @@ Spring Web provides several **key components** and features:
 6. **RESTful Web Services**: Spring Web also includes features specifically designed for building RESTful services and APIs. It provides annotations, such as `@RestController`, `@RequestMapping`, and `@PathVariable`, to simplify the development of RESTful endpoints.
 
 7. **Integration with other Spring modules**: Spring Web seamlessly integrates with other modules of the Spring Framework, such as Spring Data, Spring Security, and Spring Boot, enabling you to leverage additional functionalities for data access, security, and application configuration.
+
+## What is the difference between `@Controller` and `@RestController`?
+`@RestController` = `@Controller` + `@ResponseBody`.
+- **`@Controller`**: classic MVC controller — methods usually return a **view name** (e.g. a Thymeleaf template).
+- **`@RestController`**: for REST APIs — the returned object is written **directly to the HTTP response body**, usually serialized as JSON.
+
+Don't confuse with **`@RequestBody`**, which maps the **incoming** request body to a Java object.

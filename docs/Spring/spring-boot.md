@@ -213,6 +213,42 @@ public class OrderService {
 
 Key properties: `propagation` (REQUIRED, REQUIRES_NEW, etc.), `isolation`, `readOnly`, `rollbackFor`, `timeout`.
 
+## Why might `@Transactional` not work when called from another method of the same bean?
+Spring implements `@Transactional` with an **AOP proxy**. A call from one method to another **on the same object** (`this.inner()`) is **self-invocation**: it bypasses the proxy, so the inner method's annotation is **not intercepted** and its settings (propagation, rollback rules…) are ignored.
+
+Fixes:
+- Put the transaction boundary on the **outer** method.
+- Move the transactional method to **another Spring bean** and call it through that bean's proxy.
+
+Nuance: if the outer method already runs in a transaction, the inner method still executes **inside that existing transaction** — only its own annotation is ignored.
+
+## What happens if `@Transactional` is placed on a private method?
+With Spring's standard proxy-based mechanism, a **private method cannot be intercepted**, so the annotation does **not** start a transaction. Put the boundary on a public method of a Spring bean that is called from outside (through the proxy).
+
+## What is the difference between `REQUIRED` and `REQUIRES_NEW` propagation?
+- **`REQUIRED`** (default): **joins** the existing transaction, or creates one if none exists.
+- **`REQUIRES_NEW`**: **suspends** the existing transaction and starts an **independent** one — it can commit even if the outer transaction later rolls back (typical use: audit log).
+
+Like any `@Transactional` setting, it only applies when the call goes **through the proxy** (not on self-invocation).
+
+## Inner `REQUIRED` method throws a `RuntimeException` that the outer method catches — what happens?
+Both methods share **the same transaction**. When the runtime exception escapes the inner method's transactional boundary, Spring marks the shared transaction **rollback-only**.
+
+Even if the outer method catches the exception and continues normally, the transaction **cannot commit**: at the end, Spring rolls back and throws **`UnexpectedRollbackException`**.
+
+**Rollback-only** is a transaction *status* (not an exception) meaning "this transaction must roll back". Catching the exception does **not** clear it. If the inner work must be allowed to fail independently, use `REQUIRES_NEW` or don't let the exception cross a transactional boundary.
+
+## Why should a bank transfer use one database transaction?
+Debiting one account and crediting the other must be **atomic**. With two separate transactions, the debit could commit while the credit fails → money disappears and the accounts are inconsistent. One transaction guarantees both changes **commit together or roll back together**.
+
+```java
+@Transactional
+public void transfer(Long fromId, Long toId, BigDecimal amount) {
+    accountRepo.findById(fromId).orElseThrow().debit(amount);
+    accountRepo.findById(toId).orElseThrow().credit(amount);
+}
+```
+
 ## How do you write a Spring Boot test?
 
 ```java

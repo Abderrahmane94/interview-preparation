@@ -211,3 +211,21 @@ Built-in functional interfaces (`java.util.function`):
 - `Consumer<T>` — `void accept(T t)`
 - `Supplier<T>` — `T get()`
 - `BiFunction<T,U,R>` — `R apply(T t, U u)`
+
+## What is the difference between `map()` and `flatMap()` in Java Streams?
+- **`map()`** transforms **each element into one value** (1 → 1). It does not filter — filtering is `filter()`'s job.
+- **`flatMap()`** transforms each element into a **stream** and **flattens** all those streams into a single stream (1 → 0..n). Useful for nested collections.
+
+```java
+List<Integer> lengths = List.of("alice", "bob").stream()
+    .map(String::length)
+    .toList(); // [5, 3]
+
+List<List<String>> nested = List.of(
+    List.of("Laptop", "Mouse"),
+    List.of("Keyboard", "Monitor"));
+
+List<String> allItems = nested.stream()
+    .flatMap(List::stream)
+    .toList(); // [Laptop, Mouse, Keyboard, Monitor]
+```

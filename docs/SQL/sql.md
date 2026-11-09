@@ -169,3 +169,33 @@ To optimize a slow database query, you can consider the following approaches:
 9. **Database Tuning**: Fine-tune database configuration parameters and settings based on workload characteristics and hardware capabilities. Adjusting parameters like memory allocation, query timeouts, and connection pooling can improve overall performance.
 
 10. **Profiling and Monitoring**: Use profiling and monitoring tools to identify bottlenecks, slow queries, and resource-intensive operations. This helps pinpoint areas that require optimization efforts.
+
+**Concrete example** — a query filtering 10 million orders by `customer_id` is slow:
+
+```sql
+CREATE INDEX idx_orders_customer_id ON orders (customer_id);
+
+EXPLAIN ANALYZE
+SELECT id, status, total FROM orders WHERE customer_id = 123;
+```
+
+Check that the plan uses an **index scan** and compare timings before/after; also check selectivity, table statistics (`ANALYZE`) and whether `SELECT *` is really needed. An index is not a guaranteed win: PostgreSQL may still choose a sequential scan if many rows match, and every index costs storage and slows down writes.
+
+## What are dirty reads, non-repeatable reads and phantom reads?
+- **Dirty read**: reading another transaction's **uncommitted** change, which may later be rolled back.
+- **Non-repeatable read**: reading the **same row** twice and getting **different values**, because another transaction committed an update in between.
+- **Phantom read**: running the **same query** twice and getting a **different set of rows**, because another transaction inserted/deleted matching rows.
+
+Memory aid: *Dirty = uncommitted data · Non-repeatable = same row, different value · Phantom = same query, different rows.*
+
+## What are the standard SQL isolation levels?
+
+| Isolation level | Dirty read | Non-repeatable read | Phantom read |
+|---|---|---|---|
+| `READ UNCOMMITTED` | possible | possible | possible |
+| `READ COMMITTED` | ❌ | possible | possible |
+| `REPEATABLE READ` | ❌ | ❌ | possible (DB-dependent) |
+| `SERIALIZABLE` | ❌ | ❌ | ❌ |
+
+- `SERIALIZABLE` is the strongest: transactions behave as if executed one after another — at the cost of blocking or **serialization failures** that must be retried.
+- Spring's `@Transactional` uses the **database default** unless `isolation` is set. **PostgreSQL defaults to `READ COMMITTED`** (and its `REPEATABLE READ` also prevents phantoms).

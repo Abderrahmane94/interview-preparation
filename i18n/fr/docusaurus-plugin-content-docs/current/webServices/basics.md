@@ -42,6 +42,9 @@ RabbitMQ est largement utilisé dans les systèmes distribués et les architectu
 - **PUT** est utilisé pour remplacer complètement une ressource existante ou en créer une nouvelle à l'URI spécifiée.
 - **PATCH** est utilisé pour **mettre à jour partiellement** une ressource existante.
 
+- **PUT** est **idempotent** par définition (envoyer deux fois la même représentation complète donne le même résultat). **PATCH** n'est pas garanti idempotent — cela dépend de l'opération (ex. « incrémenter le stock de 1 » ne l'est pas).
+- Exemple : remplacer une commande entière → `PUT /orders/42` ; changer seulement son statut → `PATCH /orders/42`.
+
 ## Monolithique vs Microservices
 
 | | Monolithique | Microservices |
@@ -162,6 +165,15 @@ REST (Representational State Transfer) est un style architectural pour la concep
 
 ## Quels sont les codes de statut HTTP ?
 100 (Information), 200 (Succès), 300 (Redirection), 400 (Erreur client) et 500 (Erreur serveur).
+
+## Quel code HTTP une API doit-elle renvoyer après avoir créé une ressource avec succès ?
+**`201 Created`**, avec un en-tête **`Location`** contenant l'URI de la nouvelle ressource. En Spring, `ResponseEntity.created(uri)` positionne les deux :
+
+```java
+return ResponseEntity
+    .created(URI.create("/orders/" + created.getId()))
+    .body(created);
+```
 
 ## Qu'est-ce que l'architecture microservices et ses composants clés ?
 - Les applications sont décomposées en services plus petits et indépendants pouvant être développés, déployés et maintenus séparément.

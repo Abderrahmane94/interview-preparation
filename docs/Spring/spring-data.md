@@ -122,4 +122,85 @@ List<YourEntityClass> entities = session.createQuery(criteriaQuery).getResultLis
 
 In this example, the criteria query is constructed to fetch entities of type `YourEntityClass` where a specific property matches a certain value. The Criteria API provides various methods and options to express more complex queries involving joins, aggregations, subqueries, and more.
 
+## What is the N+1 query problem, and how can you fix it?
+One query loads a list of entities, then **one extra query per entity** loads an association. E.g. loading 100 orders then lazily accessing each order's customer → **1 + 100 queries**.
 
+Fixes:
+- JPQL **`JOIN FETCH`**.
+- Spring Data JPA **`@EntityGraph`**.
+- **DTO projections** that select exactly the needed data.
+- Hibernate `@BatchSize` to load associations in batches.
+
+Don't switch every relationship to `EAGER`. Be careful with **collection fetch joins + pagination**: joins multiply rows and break in-database pagination.
+
+```java
+@Query("SELECT o FROM Order o JOIN FETCH o.customer")
+List<Order> findAllWithCustomer();
+```
+
+## What is `LazyInitializationException`, and how can you prevent it?
+A lazy association is not loaded with the entity. If the **persistence context is closed** (transaction ended) and the code then accesses that association, Hibernate cannot initialize it and throws `LazyInitializationException`.
+
+Prevent it by:
+- Fetching the association **inside the transaction** with `JOIN FETCH` or `@EntityGraph`.
+- Using a **DTO projection**.
+- Accessing the association while the persistence context is still open (e.g. mapping to DTO in the `@Transactional` service).
+
+Avoid `EAGER` everywhere and the *Open Session in View* anti-pattern as blanket fixes.
+
+## What is Hibernate dirty checking?
+An entity loaded inside a persistence context is **managed**. Hibernate keeps a snapshot of its state and, at **flush time**, compares it and generates the needed `UPDATE` statements automatically. So inside a transaction, calling `save()` on a managed entity is generally unnecessary.
+
+```java
+@Transactional
+public void completeOrder(Long id) {
+    Order order = orderRepository.findById(id).orElseThrow();
+    order.setStatus("COMPLETED"); // UPDATE generated at flush, no save() needed
+}
+```
+
+## What are the JPA entity states?
+- **Transient**: new object, not associated with a persistence context.
+- **Managed**: attached to a persistence context — changes are tracked (dirty checking).
+- **Detached**: was managed, but the persistence context is closed / it was evicted.
+- **Removed**: scheduled for deletion at flush.
+
+## What is the difference between `persist()` and `merge()`?
+- **`persist(entity)`**: for a **new** entity — makes **that same instance** managed.
+- **`merge(entity)`**: copies the state of a **detached** entity onto a managed instance and **returns the managed instance**. The object you passed in **stays detached** — use the returned one.
+
+In both cases the SQL is usually executed at **flush/commit**, not immediately.
+
+## What is the difference between `flush()` and `commit()`?
+- **`flush()`**: synchronizes pending changes of the persistence context with the database by **executing SQL** — the transaction stays **open** and can still roll back.
+- **`commit()`**: **ends** the transaction and makes the changes **permanent**. Hibernate normally flushes automatically before commit (depending on the flush mode).
+
+## How does optimistic locking work in JPA/Hibernate?
+Add a `@Version` field. Hibernate adds the version to the `WHERE` clause of each update and increments it:
+
+```sql
+UPDATE product SET stock = ?, version = 6 WHERE id = ? AND version = 5
+```
+
+If two transactions read version 5, the first update succeeds (→ version 6); the second updates **0 rows**, so Hibernate throws an `OptimisticLockException` instead of silently overwriting (**no lost update**). The application handles it — e.g. reload and retry, or ask the user.
+
+```java
+@Entity
+public class Product {
+    @Id private Long id;
+    private int stock;
+    @Version private Long version;
+}
+```
+
+## When would you choose pessimistic locking instead of optimistic locking?
+- **Optimistic**: conflicts are **rare** — no DB locks, conflicts detected at update time.
+- **Pessimistic**: contention is **frequent**, conflicts are costly, or operations must be serialized. It takes a DB lock (`SELECT … FOR UPDATE`); other transactions requesting a conflicting lock **wait** until commit/rollback.
+
+```java
+@Lock(LockModeType.PESSIMISTIC_WRITE)
+@Query("SELECT p FROM Product p WHERE p.id = :id")
+Optional<Product> findByIdForUpdate(Long id);
+```
+
+Trade-offs: lower concurrency, blocking, possible deadlocks — keep these transactions short. Plain reads are not necessarily blocked (depends on the database and lock mode).

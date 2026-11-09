@@ -213,6 +213,42 @@ public class ServiceCommande {
 
 Propriétés clés : `propagation` (REQUIRED, REQUIRES_NEW, etc.), `isolation`, `readOnly`, `rollbackFor`, `timeout`.
 
+## Pourquoi `@Transactional` peut-il ne pas fonctionner lorsqu'il est appelé depuis une autre méthode du même bean ?
+Spring implémente `@Transactional` via un **proxy AOP**. Un appel d'une méthode à une autre **sur le même objet** (`this.inner()`) est une **auto-invocation** : il contourne le proxy, donc l'annotation de la méthode interne n'est **pas interceptée** et ses paramètres (propagation, règles de rollback…) sont ignorés.
+
+Solutions :
+- Placer la frontière transactionnelle sur la méthode **externe**.
+- Déplacer la méthode transactionnelle dans **un autre bean Spring** et l'appeler via le proxy de ce bean.
+
+Nuance : si la méthode externe s'exécute déjà dans une transaction, la méthode interne s'exécute toujours **dans cette transaction existante** — seule sa propre annotation est ignorée.
+
+## Que se passe-t-il si `@Transactional` est placé sur une méthode privée ?
+Avec le mécanisme standard de Spring basé sur les proxys, une **méthode privée ne peut pas être interceptée**, donc l'annotation ne démarre **pas** de transaction. Placer la frontière sur une méthode publique d'un bean Spring appelée de l'extérieur (via le proxy).
+
+## Quelle est la différence entre la propagation `REQUIRED` et `REQUIRES_NEW` ?
+- **`REQUIRED`** (par défaut) : **rejoint** la transaction existante, ou en crée une s'il n'y en a pas.
+- **`REQUIRES_NEW`** : **suspend** la transaction existante et en démarre une **indépendante** — elle peut être committée même si la transaction externe est ensuite annulée (usage typique : journal d'audit).
+
+Comme tout paramètre de `@Transactional`, cela ne s'applique que si l'appel passe **par le proxy** (pas en auto-invocation).
+
+## Une méthode interne `REQUIRED` lève une `RuntimeException` que la méthode externe attrape — que se passe-t-il ?
+Les deux méthodes partagent **la même transaction**. Quand l'exception runtime sort de la frontière transactionnelle de la méthode interne, Spring marque la transaction partagée comme **rollback-only**.
+
+Même si la méthode externe attrape l'exception et continue normalement, la transaction **ne peut pas être committée** : à la fin, Spring effectue un rollback et lève **`UnexpectedRollbackException`**.
+
+**Rollback-only** est un *statut* de transaction (pas une exception) signifiant « cette transaction doit être annulée ». Attraper l'exception ne le **réinitialise pas**. Si le travail interne doit pouvoir échouer indépendamment, utiliser `REQUIRES_NEW` ou ne pas laisser l'exception traverser une frontière transactionnelle.
+
+## Pourquoi un virement bancaire doit-il utiliser une seule transaction de base de données ?
+Débiter un compte et créditer l'autre doit être **atomique**. Avec deux transactions séparées, le débit pourrait être committé alors que le crédit échoue → l'argent disparaît et les comptes sont incohérents. Une seule transaction garantit que les deux modifications sont **committées ensemble ou annulées ensemble**.
+
+```java
+@Transactional
+public void transfer(Long fromId, Long toId, BigDecimal amount) {
+    accountRepo.findById(fromId).orElseThrow().debit(amount);
+    accountRepo.findById(toId).orElseThrow().credit(amount);
+}
+```
+
 ## Comment écrire un test Spring Boot ?
 
 ```java

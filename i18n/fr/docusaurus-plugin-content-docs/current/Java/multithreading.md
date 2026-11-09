@@ -89,6 +89,36 @@ class DrapeauPartagé {
 
 Utiliser `volatile` pour les drapeaux simples. Pour les compteurs, préférer `AtomicInteger`.
 
+## Quelle est la différence entre `volatile` et `synchronized` ?
+
+| | `volatile` | `synchronized` |
+|---|---|---|
+| Visibilité | ✅ Mises à jour visibles par tous les threads | ✅ À l'entrée/sortie du même moniteur |
+| Atomicité des opérations composées (`count++`) | ❌ | ✅ |
+| Exclusion mutuelle | ❌ | ✅ Un seul thread à la fois par moniteur |
+| Usage typique | Drapeaux partagés simples (`running`) | Plusieurs opérations devant s'exécuter atomiquement |
+
+```java
+private volatile boolean running = true;   // drapeau : la visibilité suffit
+
+public synchronized void increment() {      // opération composée : exclusion mutuelle nécessaire
+    count++;
+}
+```
+
+## Pourquoi `count++` n'est-il pas thread-safe ?
+`count++` est une séquence **lecture-modification-écriture** (lire → ajouter 1 → écrire), pas une opération atomique. Deux threads peuvent lire la même valeur, l'incrémenter tous les deux et écrire le même résultat — **un incrément est perdu** (race condition). `volatile` ne corrige pas ce problème.
+
+Solution : une classe atomique (ou `synchronized` / un lock) :
+
+```java
+private final AtomicInteger count = new AtomicInteger();
+
+public void increment() {
+    count.incrementAndGet();
+}
+```
+
 ## Qu'est-ce qu'un deadlock et comment le prévenir ?
 Un **deadlock** survient quand deux threads ou plus attendent chacun un verrou détenu par l'autre, les bloquant tous indéfiniment.
 

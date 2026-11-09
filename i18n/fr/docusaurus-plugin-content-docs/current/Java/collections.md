@@ -149,6 +149,8 @@ map.merge("compteur", 1, Integer::sum); // incrément thread-safe
 
 N'autorise pas les clés ou valeurs `null`. Les itérateurs sont faiblement cohérents.
 
+> **`HashMap` vs `ConcurrentHashMap` — le piège :** les opérations individuelles (`get`, `put`, `putIfAbsent`) sont thread-safe, mais une **séquence** d'opérations n'est pas atomique. `if (!map.containsKey(k)) map.put(k, v);` reste une race condition — utiliser plutôt une méthode atomique comme `putIfAbsent()`, `computeIfAbsent()` ou `merge()`.
+
 ## Qu'est-ce qu'une PriorityQueue ?
 Une file où les éléments sont ordonnés selon l'**ordre naturel** ou un `Comparator`. La **tête** est toujours le plus petit élément (min-heap par défaut).
 

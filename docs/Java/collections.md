@@ -149,6 +149,8 @@ map.merge("count", 1, Integer::sum); // thread-safe increment
 
 Does not allow `null` keys or values. Iterators are weakly consistent (reflect the state at some point during iteration).
 
+> **`HashMap` vs `ConcurrentHashMap` — the trap:** individual operations (`get`, `put`, `putIfAbsent`) are thread-safe, but a **sequence** of operations is not atomic. `if (!map.containsKey(k)) map.put(k, v);` is still a race condition — use an atomic method such as `putIfAbsent()`, `computeIfAbsent()` or `merge()` instead.
+
 ## What is a PriorityQueue?
 A queue where elements are ordered by **natural ordering** or a `Comparator`. The **head** is always the smallest (min-heap by default).
 

@@ -89,6 +89,36 @@ class SharedFlag {
 
 Use `volatile` for simple flags. For counters, prefer `AtomicInteger`.
 
+## What is the difference between `volatile` and `synchronized`?
+
+| | `volatile` | `synchronized` |
+|---|---|---|
+| Visibility | ✅ Updates visible to all threads | ✅ On entering/exiting the same monitor |
+| Atomicity of compound ops (`count++`) | ❌ | ✅ |
+| Mutual exclusion | ❌ | ✅ One thread at a time per monitor |
+| Typical use | Simple shared flags (`running`) | Several operations that must run atomically |
+
+```java
+private volatile boolean running = true;   // flag: visibility is enough
+
+public synchronized void increment() {      // compound op: needs mutual exclusion
+    count++;
+}
+```
+
+## Why is `count++` not thread-safe?
+`count++` is a **read-modify-write** sequence (read → add 1 → write), not one atomic operation. Two threads can read the same value, both increment it and both write the same result — **one increment is lost** (a race condition). `volatile` does not fix this.
+
+Fix it with an atomic class (or `synchronized` / a lock):
+
+```java
+private final AtomicInteger count = new AtomicInteger();
+
+public void increment() {
+    count.incrementAndGet();
+}
+```
+
 ## What is a deadlock and how do you prevent it?
 A **deadlock** occurs when two or more threads are each waiting for a lock held by the other, causing all to block forever.
 
