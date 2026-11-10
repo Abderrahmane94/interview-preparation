@@ -55,6 +55,10 @@
     "message": "UML",
     "description": "The label for category UML in sidebar tutorialSidebar"
   },
+  "sidebar.tutorialSidebar.category.FOD Justice": {
+    "message": "SPF Justice",
+    "description": "The label for category FOD Justice in sidebar tutorialSidebar"
+  },
   "sidebar.tutorialSidebar.category.Exercises": {
     "message": "Exercices",
     "description": "The label for category Exercises in sidebar tutorialSidebar"
