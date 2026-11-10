@@ -39,12 +39,63 @@ Mon focus : **logique métier, conception d'API, modélisation des données et f
 ### Les langues
 L'anglais pour l'entretien ne pose aucun problème. Je suis francophone ; j'ai des **notions limitées de néerlandais** et je suis **ouvert à les développer** si le poste le demande — dans un environnement bilingue FR/NL, c'est naturel d'y travailler.
 
-### Exemples concrets à préparer (architecture, refactoring, problèmes complexes)
-> Préparer 3 courtes histoires en **STAR** : Situation → Tâche → Action → Résultat (avec un chiffre si possible). Compléter les `[ ... ]`.
+### Histoires STAR (architecture, refactoring, problème complexe)
+> Construites à partir de mon CV. Tout ce qui est entre `[à confirmer : …]` doit être remplacé par ce qui s'est **réellement** passé — l'intervieweur creusera les détails, donc ne raconter que ce que je peux défendre. Objectif : **~1 minute** par histoire, puis le laisser poser ses questions. (À raconter en anglais pendant l'entretien.)
 
-1. **Architecture** — `[une fonctionnalité où vous avez séparé la logique métier de l'infrastructure : ex. déplacer des règles métier d'un service/contrôleur vers l'entité/l'agrégat, introduire des ports/adaptateurs pour un système externe]`. Résultat : `[tests plus simples, moins de régressions…]`.
-2. **Refactoring** — `[un modèle anémique ou un « god service » refactoré : suppression des setters publics, méthodes exprimant l'intention, tests écrits d'abord]`. Résultat : `[…]`.
-3. **Problème complexe** — `[un bug de production : N+1/performance, concurrence/doublons, problème de transaction ou Kafka — comment vous l'avez diagnostiqué (logs, SQL, métriques), la cause racine, la correction]`. Résultat : `[…]`.
+#### Histoire 1 — Architecture : isoler les fournisseurs d'IA documentaire derrière des ports (IRIS IMS / IRISNext)
+- **Situation :** Sur **IRISNext** (plateforme de content services du groupe Canon), l'extraction de documents reposait sur plusieurs fournisseurs d'IA cloud — **Azure Document AI, AWS Textract, GCP Document AI** — plus **PDFBox** pour les PDF. `[à confirmer : le code et les formats de réponse propres à chaque fournisseur étaient dispersés dans le code métier, donc ajouter ou changer de fournisseur impliquait de toucher beaucoup de classes et cassait des tests.]`
+- **Tâche :** Ajouter/étendre un fournisseur `[à confirmer : lequel, ou quelle fonctionnalité]` sans augmenter le couplage, et garder la logique d'extraction testable.
+- **Action :**
+  - Défini un **port sortant** dans le cœur (ex. `DocumentExtractor`) qui renvoie **notre propre modèle** (champs, confiance, pages), pas la réponse du fournisseur.
+  - Écrit **un adaptateur par fournisseur** qui traduit le format du fournisseur vers ce modèle — une **anti-corruption layer**.
+  - La logique métier (validation, post-traitement) ne dépend que du port → **testée unitairement avec un faux extracteur** ; chaque adaptateur a ses propres tests d'intégration.
+  - Choix du fournisseur par **configuration** `[à confirmer : par client / par type de document]`.
+- **Résultat :** `[à confirmer : ajouter un fournisseur = un nouvel adaptateur + de la configuration au lieu de modifications partout ; moins de régressions ; tests plus rapides]`.
+- **Lien avec le SPF Justice :** même approche pour le **pré-remplissage de la fiche victime** depuis les systèmes de gestion de dossiers, ou pour les intégrations **JustView / KIOSK / JustConsult** — les modèles externes restent en périphérie.
+- **Relances probables :** *« N'était-ce pas de la sur-ingénierie ? »* → non : plusieurs implémentations réelles + API fournisseurs changeantes = exactement là où les ports sont rentables. *« Et si un fournisseur est en panne ? »* → timeouts, retries sur les appels idempotents, circuit breaker, fournisseur de repli ou erreur claire.
+
+#### Histoire 2 — Refactoring : corriger un écran CRM lent (Poliscrypts)
+- **Situation :** Dans le **CRM** que nous avons construit (clients, leads, pipeline commercial, reporting — Spring Boot, Hibernate, PostgreSQL), `[à confirmer : la liste des clients/du pipeline devenait lente avec la croissance des données — plusieurs secondes par page]`.
+- **Tâche :** Trouver la cause racine et corriger sans casser les fonctionnalités existantes.
+- **Action :**
+  - **Mesuré d'abord** : activé les logs SQL/statistiques Hibernate → trouvé un **N+1** (`[à confirmer : une requête par client pour ses contacts/opportunités]`) causé par des associations **EAGER** et des entités exposées directement dans l'API.
+  - Passé les associations en **LAZY**, utilisé **`JOIN FETCH` / `@EntityGraph`** là où le détail était nécessaire et des **projections DTO** pour la liste.
+  - Ajouté des **index** sur les colonnes filtrées/triées après vérification avec `EXPLAIN ANALYZE`.
+  - Ajouté du **cache** pour les données de référence peu changeantes `[à confirmer : lesquelles]`.
+  - Écrit des tests **avant** le refactoring (tests de caractérisation) pour garder un comportement identique.
+- **Résultat :** `[à confirmer : requêtes par page de ~N à 2–3 ; temps de réponse de X s à Y ms]`.
+- **Lien avec le SPF Justice :** c'est exactement le problème **CaseFile / Exhibit en EAGER** — je l'ai corrigé en production, pas seulement en théorie.
+- **Relances probables :** *« Comment avez-vous détecté le N+1 ? »* → logs SQL + statistiques Hibernate, requêtes identiques répétées. *« Pourquoi ne pas simplement ajouter un cache ? »* → le cache masque le problème et ajoute des soucis d'invalidation ; corriger les requêtes d'abord.
+
+#### Histoire 3 — Problème complexe : fiabiliser un batch de facturation (Sonelgaz)
+- **Situation :** Chez **Sonelgaz** (fournisseur national d'énergie), je maintenais des applications de **facturation, gestion de trésorerie et comptabilité auxiliaire** (Java EE, Hibernate, PostgreSQL), dans une équipe de 8 développeurs. `[à confirmer : un batch de facturation traitait un gros volume d'enregistrements ; quand un enregistrement échouait, tout le traitement était annulé / ou une relance créait des factures en double.]`
+- **Tâche :** Rendre le batch **fiable et rejouable** — des données financières, donc aucune facture perdue ni en double.
+- **Action :**
+  - Clarifié la règle métier avec les parties prenantes : **au mieux** — traiter les enregistrements valides, signaler les invalides.
+  - Traitement par **paquets (chunks)**, **une transaction par paquet/enregistrement**, pour qu'un enregistrement défectueux n'annule pas les autres.
+  - Rendu le traitement **idempotent** : une **contrainte unique** sur la clé métier `[à confirmer : client + période de facturation]` pour qu'une relance ne crée pas de doublons.
+  - Produit un **rapport d'erreurs** (enregistrement, raison) pour l'équipe métier et permis de **ne retraiter que les enregistrements en échec**.
+  - Ajouté des tests unitaires + d'intégration sur les scénarios d'échec.
+- **Résultat :** `[à confirmer : plus de relance complète / plus de factures en double ; échecs corrigés et rejoués le jour même]`.
+- **Lien avec le SPF Justice :** c'est la question **« 200 certifications, la n°137 échoue »** dans la vraie vie, et le même schéma que les **flux PV « non traités correctement »** et la **migration E-inventaris** : frontière transactionnelle par unité de travail, idempotence, rapport d'erreurs, rejeu.
+- **Relances probables :** *« Combien d'enregistrements étaient mis à jour quand un échouait, avant votre correction ? »* → expliquer la grosse transaction unique → rollback complet. *« Pourquoi pas `REQUIRES_NEW` dans la même classe ? »* → l'auto-invocation contourne le proxy ; il faut un autre bean.
+
+#### Histoire 4 — Défaut critique : traitement d'événements Kafka non fiable (TVH Group — poste actuel)
+- **Situation :** Chez **TVH Group** (plateformes internationales de pièces détachées et d'équipements industriels, Waregem), nos services Spring Boot échangent des événements **Kafka** et stockent les données dans **PostgreSQL**. `[à confirmer : un défaut critique — certains événements étaient traités deux fois (ou perdus/bloqués) après des redémarrages ou rebalancings du consommateur, ce qui créait des données dupliquées ou incohérentes, ex. sur les commandes/le stock/les pièces.]`
+- **Tâche :** Trouver rapidement la cause racine (impact métier sur des clients internationaux) et garantir que cela **ne puisse plus se reproduire**, pas seulement corriger les données.
+- **Action :**
+  - **Diagnostic** avec les logs, les métriques de lag du consommateur et les données : `[à confirmer : les offsets étaient committés après le traitement (at-least-once), donc un redémarrage rejouait des événements, mais le handler n'était pas idempotent]`.
+  - Rendu le consommateur **idempotent** : une table d'événements traités avec une **contrainte unique sur l'ID d'événement**, écrite dans la **même transaction** que la mise à jour métier.
+  - Séparé les erreurs **transitoires** (retry avec backoff) des **messages empoisonnés** (envoyés vers un **dead letter topic** avec topic/partition/offset d'origine et l'erreur), pour qu'un mauvais message ne bloque plus la partition.
+  - Écrit un **scénario BDD (Cucumber/Gherkin)** avec le métier — *« Étant donné un événement déjà traité, quand il est reçu à nouveau, alors aucun doublon n'est créé »* — plus des tests d'intégration, et ajouté du **monitoring/des alertes** sur le DLT et le lag du consommateur.
+  - Nettoyé les données incohérentes existantes avec un **script ponctuel vérifié**, et partagé la cause racine en **revue de code / discussion d'architecture** pour appliquer le même schéma aux autres consommateurs.
+- **Résultat :** `[à confirmer : plus aucun doublon depuis la correction ; les échecs sont visibles et rejouables depuis le DLT au lieu d'être silencieux ; temps de résolution réduit]`.
+- **Lien avec le SPF Justice :** les **flux PV** ont exactement ce problème à grande échelle (970 000 PV judiciaires non traités correctement) : traitement idempotent, classification des erreurs, DLQ + rejeu, monitoring et réconciliation.
+- **Relances probables :** *« Pourquoi pas de l'exactly-once ? »* → les transactions Kafka couvrent Kafka-vers-Kafka, pas l'écriture en base ; at-least-once + idempotence est le choix pratique. *« `@Transactional` sur le listener ne rend-il pas atomiques la mise à jour en base et le commit de l'offset ? »* → non, ce sont deux commits séparés. *« Comment savez-vous que la correction fonctionne ? »* → le test BDD/d'intégration rejoue le même événement, plus les métriques en production.
+
+> **Points TVH pour la question « expérience actuelle » :** plateformes internationales à grande échelle, services orientés événements avec Kafka, **DDD**, **TDD**, **BDD avec Cucumber/Gherkin** avec les product managers et la QA, revues de code et discussions d'architecture, monitoring des performances et correction des goulots d'étranglement, Helm/Terraform/Jenkins pour le déploiement.
+
+> **Histoire de secours (travail d'équipe, si demandé) :** chez Sonelgaz, j'ai **accompagné l'intégration de nouveaux développeurs** sur l'architecture et le code, et animé des **sessions de formation utilisateurs** — à utiliser s'ils demandent comment je partage la connaissance.
 
 ---
 

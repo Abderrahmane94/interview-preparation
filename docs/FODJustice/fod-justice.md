@@ -39,12 +39,63 @@ My focus is **business logic, API design, data modeling and reliability**: Sprin
 ### Languages
 English for the interview is perfectly fine. I'm a native French speaker; I have **limited notions of Dutch** and I'm **open to developing them** if the role needs it — in a bilingual FR/NL environment that's a natural thing to work on.
 
-### Concrete examples to prepare (architecture, refactoring, complex problems)
-> Prepare 3 short stories with **STAR**: Situation → Task → Action → Result (with a number if possible). Fill in the `[ ... ]`.
+### STAR stories (architecture, refactoring, complex problems)
+> Built from my CV. Everything in `[confirm: …]` must be replaced with what **really** happened — the interviewer will dig into details, so only tell what I can defend. Target: **~1 minute** per story, then let them ask.
 
-1. **Architecture** — `[a feature where you separated domain logic from infrastructure: e.g. moving business rules from a service/controller into the entity/aggregate, introducing ports/adapters for an external system]`. Result: `[easier testing, fewer regressions…]`.
-2. **Refactoring** — `[an anemic model or a "god service" you refactored: removed public setters, added intention-revealing methods, added tests first]`. Result: `[…]`.
-3. **Complex problem** — `[a production bug: N+1/performance, concurrency/duplicates, transaction or Kafka issue — how you diagnosed it (logs, SQL, metrics), the root cause, the fix]`. Result: `[…]`.
+#### Story 1 — Architecture: isolating document-AI providers behind ports (IRIS IMS / IRISNext)
+- **Situation:** On **IRISNext** (Canon Group's content-services platform), document extraction relied on several cloud AI providers — **Azure Document AI, AWS Textract, GCP Document AI** — plus **PDFBox** for PDF handling. `[confirm: provider-specific code/response formats were spread across the business code, so adding or switching a provider meant touching many classes and broke tests.]`
+- **Task:** Add/extend a provider `[confirm: which one, or which feature]` without increasing coupling, and keep the extraction logic testable.
+- **Action:**
+  - Defined an **outbound port** in the core (e.g. `DocumentExtractor`) returning **our own domain model** (fields, confidence, pages), not the vendor's response.
+  - Wrote **one adapter per provider** that maps the vendor format to that model — an **anti-corruption layer**.
+  - Business logic (validation, post-processing) depends only on the port → **unit-tested with a fake extractor**; each adapter has its own integration tests.
+  - Provider selection by **configuration** `[confirm: per tenant / per document type]`.
+- **Result:** `[confirm: adding a provider became a new adapter + config instead of changes across the codebase; fewer regressions; faster tests]`.
+- **Link to FOD Justice:** same approach for **pre-filling the victim form** from case-management systems, or for the **JustView / KIOSK / JustConsult** integrations — external models stay at the edge.
+- **Likely follow-ups:** *"Wasn't it over-engineering?"* → no: several real implementations + volatile vendor APIs = exactly where ports pay off. *"How do you handle a provider being down?"* → timeouts, retries on idempotent calls, circuit breaker, fallback provider or clear error.
+
+#### Story 2 — Refactoring: fixing a slow CRM screen (Poliscrypts)
+- **Situation:** In the **CRM** we built (customers, leads, sales pipeline, reporting — Spring Boot, Hibernate, PostgreSQL), `[confirm: the customer/pipeline list became slow as data grew — several seconds per page]`.
+- **Task:** Find the root cause and fix it without breaking existing features.
+- **Action:**
+  - **Measured first**: enabled Hibernate SQL logging/statistics → found an **N+1** (`[confirm: one query per customer for its contacts/opportunities]`) caused by **EAGER** associations and entities mapped directly to the API.
+  - Switched associations to **LAZY**, used **`JOIN FETCH` / `@EntityGraph`** where the details were needed and **DTO projections** for the list.
+  - Added **indexes** on the filtered/sorted columns after checking `EXPLAIN ANALYZE`.
+  - Added **caching** for slow-changing reference data `[confirm: which data]`.
+  - Wrote tests **before** refactoring (characterization tests) so the behavior stayed identical.
+- **Result:** `[confirm: queries per page from ~N to 2–3; response time from X s to Y ms]`.
+- **Link to FOD Justice:** exactly the **CaseFile / Exhibit EAGER** problem — I've fixed it in production, not only in theory.
+- **Likely follow-ups:** *"How did you detect the N+1?"* → SQL logs + Hibernate statistics, repeated identical queries. *"Why not just add a cache?"* → caching hides the problem and adds invalidation issues; fix the queries first.
+
+#### Story 3 — Complex problem: reliable invoicing batch (Sonelgaz)
+- **Situation:** At **Sonelgaz** (national energy provider) I maintained applications for **invoicing, treasury management and auxiliary accounting** (Java EE, Hibernate, PostgreSQL), in a team of 8 developers. `[confirm: an invoicing batch processed a large volume of records; when one record failed, the whole run was rolled back / or a rerun created duplicate invoices.]`
+- **Task:** Make the batch **reliable and re-runnable** — financial data, so no lost or duplicated invoices.
+- **Action:**
+  - Clarified the business rule with stakeholders: **best effort** — valid records must be processed, invalid ones reported.
+  - Processed in **chunks**, **one transaction per chunk/record**, so one bad record doesn't roll back the others.
+  - Made processing **idempotent**: a **unique constraint** on the business key `[confirm: customer + billing period]` so a rerun can't create duplicates.
+  - Produced an **error report** (record, reason) for the business team and allowed **reprocessing only the failed records**.
+  - Added unit + integration tests on the failure scenarios.
+- **Result:** `[confirm: no more full reruns / no duplicate invoices; failures fixed and replayed the same day]`.
+- **Link to FOD Justice:** this is the **"200 certifications, #137 fails"** question in real life, and the same pattern as the **PV flows "not processed correctly"** and the **E-inventaris migration**: transaction boundary per unit of work, idempotency, error report, replay.
+- **Likely follow-ups:** *"How many records were updated when one failed, before your fix?"* → explain the single big transaction → full rollback. *"Why not `REQUIRES_NEW` in the same class?"* → self-invocation bypasses the proxy; it must be another bean.
+
+#### Story 4 — Critical defect: unreliable Kafka event processing (TVH Group — current job)
+- **Situation:** At **TVH Group** (global spare-parts and industrial-equipment platforms, Waregem), our Spring Boot services exchange **Kafka** events and store data in **PostgreSQL**. `[confirm: a critical defect — some events were processed twice (or lost/stuck) after consumer restarts or rebalances, leading to duplicated or inconsistent data, e.g. on orders/stock/parts.]`
+- **Task:** Find the root cause quickly (business impact on international customers) and make sure it **can't happen again**, not just patch the data.
+- **Action:**
+  - **Diagnosed** with logs, consumer-lag metrics and the data: `[confirm: offsets were committed after processing (at-least-once), so a restart replayed events, but the handler wasn't idempotent]`.
+  - Made the consumer **idempotent**: a processed-event table with a **unique constraint on the event ID**, written in the **same DB transaction** as the business update.
+  - Separated **transient** errors (retry with backoff) from **poison messages** (sent to a **dead letter topic** with the original topic/partition/offset and error), so one bad message no longer blocks the partition.
+  - Wrote a **BDD scenario (Cucumber/Gherkin)** with the business — *"Given an event already processed, when it is received again, then no duplicate is created"* — plus integration tests, and added **monitoring/alerts** on the DLT and consumer lag.
+  - Cleaned up the existing inconsistent data with a **one-off, verified script**, and shared the root cause in the **code review / architecture discussion** so the pattern was applied to the other consumers.
+- **Result:** `[confirm: no more duplicates since the fix; failures now visible and replayable from the DLT instead of silent; MTTR reduced]`.
+- **Link to FOD Justice:** the **PV flows** have exactly this problem at scale (970,000 judicial PVs not processed correctly): idempotent processing, error classification, DLQ + replay, monitoring and reconciliation.
+- **Likely follow-ups:** *"Why not exactly-once?"* → Kafka transactions cover Kafka-to-Kafka, not the DB write; at-least-once + idempotency is the practical choice. *"Doesn't `@Transactional` on the listener make the DB update and the offset commit atomic?"* → no, they remain two separate commits. *"How do you know the fix works?"* → the BDD/integration test replays the same event, plus production metrics.
+
+> **TVH talking points for the "current experience" question:** large-scale international platforms, Kafka event-driven services, **DDD**, **TDD**, **BDD with Cucumber/Gherkin** together with product managers and QA, code reviews and architectural discussions, performance monitoring and bottleneck fixing, Helm/Terraform/Jenkins for deployment.
+
+> **Back-up story (teamwork, if asked):** at Sonelgaz I **onboarded new developers** on the architecture and codebase and gave **user training sessions** — use it if they ask how I share knowledge.
 
 ---
 
