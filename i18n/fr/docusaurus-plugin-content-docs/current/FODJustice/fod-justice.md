@@ -20,15 +20,19 @@ Je m'appelle **Abderrahmane Sardaoui**. Je suis **développeur backend** avec **
 
 Mon focus : **logique métier, conception d'API, modélisation des données et fiabilité** — Spring Boot, Spring Data/Hibernate, PostgreSQL, Kafka, avec les pratiques TDD, DDD et BDD. J'ai aussi travaillé avec **Angular** plus tôt dans ma carrière, donc je suis à l'aise côté front-end et dans les discussions de bout en bout.
 
-### Que savez-vous du SPF Justice et de Just-on-Web ?
-> **À vérifier avant l'entretien** — compléter avec la description du projet reçue de la recruteuse ; ne rien affirmer qui n'ait pas été vérifié.
+### Que savez-vous du SPF Justice et du projet ?
+- Le **SPF Justice / FOD Justitie** est le **Service public fédéral Justice** belge : il soutient les cours et tribunaux et le ministère public, les prisons, et les services de justice pour les citoyens et les professionnels — une administration **bilingue FR/NL**.
+- **Le projet** modernise la gestion des **victimes et des dossiers judiciaires**, dans l'écosystème numérique de la Justice (et dans le cadre de l'accord de gouvernement). Trois piliers :
+  1. **Fiche victime numérique dans Just-on-Web.** Depuis le **1er septembre 2022**, les victimes de certains faits reçoivent une lettre d'information et une **fiche victime** pour exercer leurs droits lors de l'**exécution de la peine du condamné** : être informées, être entendues, proposer des conditions (ex. **interdiction de contact**). ~**16 000** lettres/fiches envoyées en 2022. Aujourd'hui c'est du **papier** : lourd, manuel, source d'erreurs et difficile à compléter pour les victimes. La version numérique apporte des instructions claires, l'**introduction en ligne depuis le domicile**, le **pré-remplissage** (ex. l'auteur), une **plateforme sécurisée**, la possibilité de **modifier la fiche après envoi**, l'**intégration directe avec les systèmes de gestion de dossiers**, et moins de charge pour les greffes et services d'accueil.
+  2. **Dossier numérique national** — devient la **source centrale unique des pièces définitives de procédure**. Accès interne via **JustView**, externe via **KIOSK** et **JustConsult**. L'ancien système **E-inventaris** sera **mis hors service** après **migration** de ses pièces → un seul système à maintenir, plus de scans répétés, une seule source authentique pour les intégrations, sécurité/audit/archivage renforcés.
+  3. **PV numériques Police ↔ Justice** — déjà échangés via les flux **JUS** (judiciaires) et **CIR** (circulation) : 13,4 M de PV de circulation (276 000 non traités correctement) et 5,1 M de PV judiciaires (970 000 non traités correctement). Aujourd'hui le PV numérique n'est qu'une **copie conforme sans signature numérique** — la version papier reste la pièce authentique. Avec **JustConsult 2.0 (fin T4 2026)**, citoyens, avocats et experts consulteront le dossier national, PV compris → passage au **PV numérique authentique**, fin de l'échange papier, **suivi strict de bout en bout** des flux.
+- **Ce que cela implique techniquement pour moi :** des données personnelles sensibles (**RGPD**, **authentification/autorisation** fortes, **piste d'audit**), de l'**intégration** avec plusieurs systèmes de la Justice, de la **migration de données**, des **flux de messages fiables** (ces chiffres « non traités correctement » sont exactement un problème d'idempotence / gestion d'erreurs / réconciliation), et du code **maintenable sur le long terme**.
 
-- Le **SPF Justice / FOD Justitie** est le **Service public fédéral Justice** belge : il soutient l'organisation judiciaire (cours et tribunaux, ministère public), les prisons, et les services liés à la justice pour les citoyens et les professionnels. C'est une **administration publique bilingue (FR/NL)**.
-- **Just-on-Web** est l'une de ses **applications/plateformes web** — `[à compléter avec la description du projet : utilisateurs, fonctionnalités principales, stack technique, organisation de l'équipe]`.
-- Ce que cela implique techniquement : des **données juridiques** (intégrité forte, auditabilité, traçabilité), des **systèmes à longue durée de vie** (la maintenabilité compte plus que les effets de mode), et des **contraintes du secteur public** (sécurité, vie privée/RGPD, accessibilité).
+> **Point à placer :** « Ce qui m'a frappé dans la description du projet, ce sont les chiffres des PV — près d'un million de PV judiciaires non traités correctement. C'est le genre de problème que j'aime : rendre des flux d'intégration fiables et traçables, avec un traitement idempotent, une gestion d'erreurs claire et du monitoring. »
 
 ### Pourquoi ce poste ?
-- **Un domaine qui a du sens** : un logiciel qui soutient la justice et les citoyens — l'exactitude et l'intégrité des données comptent vraiment, et c'est exactement là où j'aime travailler.
+- **Un domaine qui a du sens** : un logiciel qui aide directement les **victimes** à exercer leurs droits et rend la justice plus efficace — l'exactitude, la sécurité et l'intégrité des données comptent vraiment, et c'est exactement là où j'aime travailler.
+- **Les défis techniques que j'aime** : intégration entre systèmes, flux de messages fiables, migration de données, traitement sécurisé de données sensibles.
 - **La stabilité** : je recherche une **mission à long terme** où je peux acquérir une connaissance approfondie d'un domaine et d'un code.
 - **L'adéquation technique** : DDD, architecture hexagonale, Spring Boot, JPA/PostgreSQL — c'est mon quotidien.
 
@@ -41,6 +45,44 @@ L'anglais pour l'entretien ne pose aucun problème. Je suis francophone ; j'ai d
 1. **Architecture** — `[une fonctionnalité où vous avez séparé la logique métier de l'infrastructure : ex. déplacer des règles métier d'un service/contrôleur vers l'entité/l'agrégat, introduire des ports/adaptateurs pour un système externe]`. Résultat : `[tests plus simples, moins de régressions…]`.
 2. **Refactoring** — `[un modèle anémique ou un « god service » refactoré : suppression des setters publics, méthodes exprimant l'intention, tests écrits d'abord]`. Résultat : `[…]`.
 3. **Problème complexe** — `[un bug de production : N+1/performance, concurrence/doublons, problème de transaction ou Kafka — comment vous l'avez diagnostiqué (logs, SQL, métriques), la cause racine, la correction]`. Résultat : `[…]`.
+
+---
+
+## Questions de conception liées au projet
+
+> Questions probables du type « comment le construiriez-vous ? » liées au projet. Même structure de réponse : **besoins → conception → compromis**.
+
+#### Comment concevriez-vous la fiche victime numérique ?
+- **Modèle du domaine** : un **agrégat** `VictimForm` lié à un **dossier d'exécution par ID**, avec un cycle de vie (`DRAFT → SUBMITTED → AMENDED → PROCESSED`) et les choix de la victime (être informée, être entendue, conditions proposées comme une interdiction de contact) sous forme de **value objects** avec leur propre validation.
+- **Pré-remplissage** : les données (auteur, référence du dossier) viennent du système de gestion des dossiers via un **port sortant / adaptateur** — une **anti-corruption layer** pour que le modèle externe ne fuie pas dans le domaine ; la victime ne voit que ce qu'elle a le droit de voir.
+- **Sécurité** : authentification forte du citoyen (ex. eID belge / itsme via le service d'authentification fédéral), **autorisation par fiche** (une victime n'accède qu'à la sienne), chiffrement en transit et au repos, **aucune donnée personnelle dans les logs** (RGPD), règles de conservation.
+- **Intégration** : à la soumission, publier un événement `VictimFormSubmitted` avec le **patron outbox** pour que les systèmes de gestion des dossiers / greffes le reçoivent de façon fiable ; consommateurs **idempotents**.
+- **UX pour les victimes** : formulaire pas à pas (wizard), instructions claires, sauvegarde de brouillons, accessibilité (WCAG), i18n **FR/NL** (et DE).
+
+#### « Les victimes peuvent modifier la fiche après envoi » — comment le gérez-vous ?
+- Ne jamais écraser silencieusement : conserver des **versions** (numéro de `version` + `submittedAt`) ou un **historique en ajout seul**, pour que greffes et juges sachent **ce qui a été déclaré et quand** — cela peut avoir une valeur juridique.
+- **Verrouillage optimiste** (`@Version`) si une victime et un agent peuvent modifier en même temps.
+- Règle métier : modification autorisée **jusqu'à** une certaine étape (ex. avant qu'une décision soit prise) — garantie dans l'**agrégat**, pas seulement dans l'UI.
+- Chaque modification lève un événement `VictimFormAmended` → les systèmes en aval sont notifiés, plus une **piste d'audit** complète (qui, quand, quoi).
+
+#### Comment migreriez-vous les pièces d'E-inventaris vers le dossier national ?
+- D'abord **inventaire et mapping** (métadonnées, types de pièces, liens avec les dossiers), puis un job de migration **rejouable et idempotent** : chaque pièce a un **ID source stable**, donc une relance ignore ce qui est déjà migré (`ON CONFLICT DO NOTHING` / table de statut de migration).
+- Des **paquets (chunks)** avec une transaction par paquet, un **rapport d'erreurs** par pièce, un retry pour celles en échec — ne jamais tout arrêter pour un enregistrement défectueux.
+- **Vérification** : comptages par entité, **checksums** du contenu des fichiers, échantillonnage par les utilisateurs métier ; un **dry run** sur une copie des données de production.
+- **Migrer entité par entité** (comme prévu par le projet), avec une bascule par entité et un plan de retour arrière ; ancien système en lecture seule pendant la bascule, mise hors service seulement après validation.
+
+#### Des millions de PV échangés, des centaines de milliers « non traités correctement » — comment fiabiliser le flux ?
+- D'abord **comprendre pourquoi** : catégoriser les échecs (format invalide, données de référence manquantes, erreurs techniques, doublons) avec des **logs structurés et des métriques par type d'erreur**.
+- **Valider à l'entrée** selon un **contrat/schéma** ; rejeter avec une raison claire et exploitable par machine, renvoyée à l'émetteur.
+- **Traitement idempotent** basé sur l'identifiant unique du PV (contrainte unique) → les retries et renvois ne créent pas de doublons.
+- **Retries avec backoff** pour les erreurs techniques, **dead letter queue** pour les messages empoisonnés, avec un outillage pour **corriger et rejouer**.
+- **Réconciliation** : comparer envoyé vs reçu vs traité (comptages par jour/flux), alerter sur les écarts — le « suivi strict et complet des flux numériques » demandé par le projet.
+- **Correlation ID** à travers les systèmes Police → Justice pour un traçage de bout en bout.
+
+#### Qu'est-ce qui change quand le PV numérique devient la pièce authentique ?
+- **Intégrité et authenticité** : une **signature numérique** (ex. signature/cachet électronique qualifié selon eIDAS) vérifiée à la réception ; stocker une **empreinte (hash)** pour prouver que le document n'a pas été modifié.
+- **Immutabilité** : une pièce authentique n'est **jamais modifiée** — les corrections sont de nouvelles versions/pièces liées à l'originale.
+- **Archivage à long terme** (formats comme PDF/A, validation des signatures dans le temps), **contrôle d'accès strict et audit** de chaque consultation (qui a consulté quel PV, via JustConsult/KIOSK/JustView).
 
 ---
 

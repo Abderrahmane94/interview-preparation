@@ -20,15 +20,19 @@ My name is **Abderrahmane Sardaoui**. I'm a **backend developer** with **more th
 
 My focus is **business logic, API design, data modeling and reliability**: Spring Boot, Spring Data/Hibernate, PostgreSQL, Kafka, with TDD, DDD and BDD practices. I also worked with **Angular** earlier in my career, so I'm comfortable on the front-end side and in end-to-end discussions.
 
-### What do you know about FOD Justice and Just-on-Web?
-> **Verify before the interview** — complete this with the project description received from the recruiter; don't state anything you haven't checked.
+### What do you know about FOD Justice and the project?
+- **FOD Justitie / SPF Justice** is the Belgian **Federal Public Service Justice**: it supports the courts and prosecution, prisons, and justice services for citizens and professionals — a **bilingual FR/NL** administration.
+- **The project** modernizes how Justice handles **victims and case files**, inside the Justice digital ecosystem (and in line with the government agreement). Three pillars:
+  1. **Digital victim form on Just-on-Web.** Since **1 September 2022**, victims of certain offences receive an information letter and a **victim form** so they can exercise their rights during the **execution of the offender's sentence**: be informed, be heard, propose conditions (e.g. a **no-contact order**). ~**16,000** letters/forms were sent in 2022. Today it's **paper**: heavy, manual, error-prone and hard for victims to fill in. The digital version brings clear guidance, **online submission from home**, **pre-filled data** (e.g. the offender), a **secure platform**, the possibility to **modify the form after submission**, **direct integration with case-management systems**, and less work for court registries and victim-support services.
+  2. **National digital case file** — becomes the **single central source of final procedural documents**. Internal access via **JustView**, external via **KIOSK** and **JustConsult**. The old **E-inventaris** system will be **decommissioned** after its documents are **migrated** → one system to maintain, no repeated scanning, one authentic source for integrations, stronger security/audit/archiving.
+  3. **Digital police reports (PV) Police ↔ Justice** — already exchanged digitally through the **JUS** (judicial) and **CIR** (traffic) flows: 13.4 M traffic PVs (276,000 not processed correctly) and 5.1 M judicial PVs (970,000 not processed correctly). Today the digital PV is only a **certified copy without digital signature** — the paper version is still the authentic one. With **JustConsult 2.0 (end of Q4 2026)**, citizens, lawyers and experts will consult the national file including PVs → move to the **authentic digital PV**, end of paper exchange, **strict end-to-end tracking** of the flows.
+- **What it means technically for me:** sensitive personal data (**GDPR**, strong **authentication/authorization**, **audit trail**), **integration** with several Justice systems, **data migration**, **reliable message flows** (those "not processed correctly" numbers are exactly an idempotency / error-handling / reconciliation problem), and **long-lived, maintainable** code.
 
-- **FOD Justitie / SPF Justice** is the Belgian **Federal Public Service Justice**: it supports the judicial system (courts, prosecution), prisons, and the justice-related services offered to citizens and professionals. It is a **bilingual (FR/NL) public administration**.
-- **Just-on-Web** is one of its **web applications/platforms** — `[fill in from the project description: users, main features, tech stack, team setup]`.
-- What it means technically: **legal data** (strong integrity, auditability, traceability), **long-lived systems** (maintainability matters more than hype), and **public-sector constraints** (security, privacy/GDPR, accessibility).
+> **Talking point:** "What struck me in the project description is the PV numbers — almost a million judicial PVs not processed correctly. That's the kind of problem I like: making integration flows reliable and traceable, with idempotent processing, clear error handling and monitoring."
 
 ### Why this role?
-- **Meaningful domain**: software that supports the justice system and citizens — correctness and data integrity really matter, which is exactly where I enjoy working.
+- **Meaningful domain**: software that directly helps **victims** exercise their rights and makes justice more efficient — correctness, security and data integrity really matter, which is exactly where I enjoy working.
+- **Technical challenges I like**: integration between systems, reliable message flows, data migration, secure handling of sensitive data.
 - **Stability**: I'm looking for a **long-term mission** where I can build deep knowledge of a domain and a codebase.
 - **Technical fit**: DDD, hexagonal architecture, Spring Boot, JPA/PostgreSQL — this is my daily work.
 
@@ -41,6 +45,44 @@ English for the interview is perfectly fine. I'm a native French speaker; I have
 1. **Architecture** — `[a feature where you separated domain logic from infrastructure: e.g. moving business rules from a service/controller into the entity/aggregate, introducing ports/adapters for an external system]`. Result: `[easier testing, fewer regressions…]`.
 2. **Refactoring** — `[an anemic model or a "god service" you refactored: removed public setters, added intention-revealing methods, added tests first]`. Result: `[…]`.
 3. **Complex problem** — `[a production bug: N+1/performance, concurrency/duplicates, transaction or Kafka issue — how you diagnosed it (logs, SQL, metrics), the root cause, the fix]`. Result: `[…]`.
+
+---
+
+## Project-specific design questions
+
+> Likely "how would you build it?" questions linked to the project. Answer with the same structure: **requirements → design → trade-offs**.
+
+#### How would you design the digital victim form?
+- **Domain model**: a `VictimForm` **aggregate** linked to a **case/execution file by ID**, with a status lifecycle (`DRAFT → SUBMITTED → AMENDED → PROCESSED`) and the victim's choices (be informed, be heard, proposed conditions like a no-contact order) as **value objects** with their own validation.
+- **Pre-filling**: data (offender, case reference) comes from the case-management system through an **outbound port / adapter** — an **anti-corruption layer** so the external model doesn't leak into the domain; the victim only sees what they are allowed to see.
+- **Security**: strong citizen authentication (e.g. Belgian eID / itsme via the federal authentication service), **authorization per form** (a victim only accesses their own), encryption in transit and at rest, **no personal data in logs** (GDPR), data retention rules.
+- **Integration**: on submission, publish a `VictimFormSubmitted` event with the **outbox pattern** so the case-management systems / registries receive it reliably; consumers are **idempotent**.
+- **UX for victims**: step-by-step (wizard), clear instructions, save drafts, accessible (WCAG), **FR/NL** (and DE) i18n.
+
+#### "Victims can modify the form after submission" — how do you handle that?
+- Never overwrite silently: keep **versions** (`version` number + `submittedAt`) or an **append-only history**, so registries and judges know **what was declared when** — it can have legal value.
+- **Optimistic locking** (`@Version`) if a victim and an agent can edit concurrently.
+- Business rule: modification allowed **until** a given step (e.g. before a decision is taken) — enforced in the **aggregate**, not only in the UI.
+- Each change raises a `VictimFormAmended` event → the downstream systems are notified, plus a full **audit trail** (who, when, what).
+
+#### How would you migrate documents from E-inventaris to the national file?
+- **Inventory and mapping** first (metadata, document types, links to cases), then a **repeatable, idempotent** migration job: each document has a **stable source ID**, so rerunning skips what's already migrated (`ON CONFLICT DO NOTHING` / migration status table).
+- **Chunks** with one transaction per chunk, an **error report** per document, retry for the failed ones — never stop everything for one bad record.
+- **Verification**: counts per entity, **checksums** of file content, sampling by business users; a **dry run** on a copy of production data.
+- **Migrate entity by entity** (as the project plans), with a switch-over per entity and a rollback plan; old system read-only during the cut-over, decommission only after validation.
+
+#### Millions of PVs exchanged, hundreds of thousands "not processed correctly" — how would you make the flow reliable?
+- **Find out why** first: categorize failures (invalid format, missing reference data, technical errors, duplicates) with **structured logs and metrics per error type**.
+- **Validate at the entry** against a **contract/schema**; reject with a clear, machine-readable reason sent back to the sender.
+- **Idempotent processing** keyed on the PV's unique identifier (unique constraint) → retries and re-sends don't create duplicates.
+- **Retries with backoff** for technical errors, **dead letter queue** for poison messages, with tooling to **fix and replay**.
+- **Reconciliation**: compare what was sent vs received vs processed (counts per day/flow), alert on gaps — the "strict and complete tracking of digital flows" the project requires.
+- **Correlation ID** across Police → Justice systems for end-to-end tracing.
+
+#### What changes when the digital PV becomes the authentic document?
+- **Integrity and authenticity**: a **digital signature** (e.g. qualified electronic signature/seal under eIDAS) verified on receipt; store a **hash** to prove the document wasn't altered.
+- **Immutability**: an authentic document is **never updated** — corrections are new versions/documents linked to the original.
+- **Long-term archiving** (formats like PDF/A, signature validation over time), **strict access control and audit** of every consultation (who viewed which PV, via JustConsult/KIOSK/JustView).
 
 ---
 
